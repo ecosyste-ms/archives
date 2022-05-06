@@ -75,9 +75,12 @@ class Archive
     Dir.mktmpdir do |dir|
       download_file(dir)
       base_path = extract(dir)
+      full_path = File.join(base_path, file_path)
       return nil if base_path.nil?
       begin
-        return File.read(File.join(base_path, file_path))
+        return File.read(full_path)
+      rescue Errno::EISDIR
+        return Dir.glob("**/*", File::FNM_DOTMATCH, base: full_path).tap{|a| a.delete(".")}
       rescue Errno::ENOENT
         return nil
       end
