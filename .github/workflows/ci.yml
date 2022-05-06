@@ -22,4 +22,4 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
-        run: bundle exec rake db:create db:migrate test
+        run: bundle exec rake test
