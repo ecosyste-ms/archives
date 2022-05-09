@@ -27,7 +27,7 @@ class Archive
       `unzip -qj #{path} -d #{destination}`
     when "application/gzip"
       destination = File.join(dir, 'tar')
-      p `mkdir #{destination} && tar xzf #{path} -C #{destination} --strip-components 1`
+      `mkdir #{destination} && tar xzf #{path} -C #{destination} --strip-components 1`
     else
       if extension == '.gem'
         destination = File.join(dir, 'tar')
@@ -71,16 +71,24 @@ class Archive
     File.extname(basename)
   end
 
-  def file_contents(file_path)
+  def contents(file_path)
     Dir.mktmpdir do |dir|
       download_file(dir)
       base_path = extract(dir)
       full_path = File.join(base_path, file_path)
       return nil if base_path.nil?
       begin
-        return File.read(full_path)
+        return {
+          name: basename,
+          directory: false,
+          contents: File.read(full_path)
+        }
       rescue Errno::EISDIR
-        return Dir.glob("**/*", File::FNM_DOTMATCH, base: full_path).tap{|a| a.delete(".")}
+        return {
+          name: basename,
+          directory: true,
+          contents: Dir.glob("**/*", File::FNM_DOTMATCH, base: full_path).tap{|a| a.delete(".")}
+        }        
       rescue Errno::ENOENT
         return nil
       end
