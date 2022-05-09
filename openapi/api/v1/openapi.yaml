@@ -1,0 +1,65 @@
+openapi: 3.0.1
+info:
+  title: "Ecosyste.ms: Archives"
+  description: "An open API service providing package, version and dependency metadata many open source software ecosystems and registries."
+  contact:
+    name: Ecosyste.ms
+    email: support@ecosyste.ms
+    url: https://ecosyste.ms 
+  version: 1.0.0
+externalDocs:
+  description: GitHub Repository
+  url: https://github.com/ecosyste-ms/archives
+servers:
+- url: https://archives.ecosyste.ms/api/v1
+paths:
+  /archives/list:
+    get:
+      summary: list files in a package archive
+      operationId: list
+      parameters:
+        - name: url
+          in: query
+          description: url to package archive
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+  /archives/contents:
+    get:
+      summary: get contents of a path from a package archive
+      operationId: contents
+      parameters:
+        - name: url
+          in: query
+          description: url to package archive
+          required: true
+          type: string
+        - name: path
+          in: query
+          description: path to file or folder in package archive
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Content'
+components:
+  schemas:
+    Content:
+      type: object
+      properties:
+        name:
+          type: string
+        directory:
+          type: boolean
+        contents:
+          type: string
