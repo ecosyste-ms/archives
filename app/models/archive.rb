@@ -28,17 +28,26 @@ class Archive
     when "application/gzip"
       destination = File.join(dir, 'tar')
       `mkdir #{destination} && tar xzf #{path} -C #{destination} --strip-components 1`
-    else
-      if extension == '.gem'
+    when "application/x-tar"
+      if extension == '.gem' # rubygems
         destination = File.join(dir, 'tar')
         data_destination = File.join(dir, 'data')
         data_path = File.join(destination, 'data.tar.gz')
         `mkdir #{destination} && tar xf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
         destination = data_destination
+      elsif domain == 'repo.hex.pm' # elixir
+        destination = File.join(dir, 'tar')
+        data_destination = File.join(dir, 'data')
+        data_path = File.join(destination, 'contents.tar.gz')
+        `mkdir #{destination} && tar xf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
+        destination = data_destination
       else
-        # not supported
-        destination = nil
+        destination = File.join(dir, 'tar')
+        `mkdir #{destination} && tar xf #{path} -C #{destination}`
       end
+    else
+      # not supported
+      destination = nil
     end
     return destination
   end
@@ -69,6 +78,10 @@ class Archive
 
   def extension
     File.extname(basename)
+  end
+
+  def domain
+    URI.parse(url).host.downcase
   end
 
   def contents(file_path)
