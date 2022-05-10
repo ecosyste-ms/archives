@@ -54,7 +54,7 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     actual_response = JSON.parse(@response.body)
 
     assert_equal actual_response, {
-      "name"=>"base62-2.0.1.tgz", 
+      "name"=>".eslintignore", 
       "directory"=>false, 
       "contents"=>"**/*{.,-}min.js
 "
@@ -70,7 +70,7 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     actual_response = JSON.parse(@response.body)
 
     assert_equal actual_response, {
-      "name"=>"base62-2.0.1.tgz",
+      "name"=>"lib",
       "directory"=>true,
       "contents"=>["ascii.js", "custom.js", "legacy.js"]
     }

@@ -79,13 +79,13 @@ class Archive
       return nil if base_path.nil?
       begin
         return {
-          name: basename,
+          name: file_path,
           directory: false,
           contents: File.read(full_path)
         }
       rescue Errno::EISDIR
         return {
-          name: basename,
+          name: file_path,
           directory: true,
           contents: Dir.glob("**/*", File::FNM_DOTMATCH, base: full_path).tap{|a| a.delete(".")}
         }        
