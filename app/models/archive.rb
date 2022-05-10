@@ -33,7 +33,7 @@ class Archive
         destination = File.join(dir, 'tar')
         data_destination = File.join(dir, 'data')
         data_path = File.join(destination, 'data.tar.gz')
-        `mkdir #{destination} && tar xzf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
+        `mkdir #{destination} && tar xf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
         destination = data_destination
       else
         # not supported
