@@ -20,6 +20,7 @@ RUN apk add --update \
     tzdata \
     curl-dev \
     libc6-compat \
+    tar \
  && rm -rf /var/cache/apk/* \
  && gem update --system \
  && gem install bundler foreman \
