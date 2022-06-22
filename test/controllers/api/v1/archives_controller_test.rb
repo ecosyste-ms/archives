@@ -45,6 +45,45 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     ]
   end
 
+  test 'list zip' do
+    stub_request(:get, "https://github.com/adobe/parcel-plugin-htl/archive/refs/heads/master.zip")
+      .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','parcel-plugin-htl-master.zip')).read })
+
+    get list_api_v1_archives_path(url: 'https://github.com/adobe/parcel-plugin-htl/archive/refs/heads/master.zip')
+    assert_response :success
+    actual_response = JSON.parse(@response.body)
+
+    assert_equal actual_response, [".circleci",
+      ".circleci/config.yml",
+      ".eslintignore",
+      ".eslintrc.js",
+      ".github",
+      ".github/move.yml",
+      ".gitignore",
+      ".npmignore",
+      ".releaserc.js",
+      ".snyk",
+      "CHANGELOG.md",
+      "CODE_OF_CONDUCT.md",
+      "CONTRIBUTING.md",
+      "LICENSE.txt",
+      "README.md",
+      "package-lock.json",
+      "package.json",
+      "src",
+      "src/HTLAsset.js",
+      "src/HelixJSAsset.js",
+      "src/engine",
+      "src/engine/RuntimeTemplate.js",
+      "src/index.js",
+      "test",
+      "test/example",
+      "test/example/bla.css",
+      "test/example/html.htl",
+      "test/testGeneratedCode.js"
+    ]
+  end
+
   test 'contents of a file' do
     stub_request(:get, "https://registry.npmjs.org/base62/-/base62-2.0.1.tgz")
       .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','base62-2.0.1.tgz')).read })
