@@ -24,7 +24,7 @@ class Archive
     case mime_type(path)
     when "application/zip"
       destination = File.join(dir, 'zip')
-      `unzip -qj #{path} -d #{destination}`
+      `mkdir #{destination} && bsdtar --strip-components=1 -xvf #{path} -C #{destination} > /dev/null 2>&1 `
     when "application/gzip"
       destination = File.join(dir, 'tar')
       `mkdir #{destination} && tar xzf #{path} -C #{destination} --strip-components 1`
