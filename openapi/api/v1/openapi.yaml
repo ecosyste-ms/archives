@@ -8,8 +8,7 @@ info:
     url: https://ecosyste.ms 
   version: 1.0.0
   license:
-    name: CC BY-SA 4.0
-    identifier: CC-BY-SA-4.0
+    name: CC-BY-SA-4.0
     url: https://creativecommons.org/licenses/by-sa/4.0/
 externalDocs:
   description: GitHub Repository
@@ -26,7 +25,8 @@ paths:
           in: query
           description: url to package archive
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         200:
           description: OK
@@ -34,6 +34,8 @@ paths:
             application/json:
               schema:
                 type: array
+                items:
+                  type: string
   /archives/contents:
     get:
       summary: get contents of a path from a package archive
@@ -43,12 +45,14 @@ paths:
           in: query
           description: url to package archive
           required: true
-          type: string
+          schema:
+            type: string
         - name: path
           in: query
           description: path to file or folder in package archive
           required: true
-          type: string
+          schema:
+            type: string
       responses:
         200:
           description: OK
