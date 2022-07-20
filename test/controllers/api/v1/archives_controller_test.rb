@@ -84,6 +84,29 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     ]
   end
 
+  test 'list jar' do
+    stub_request(:get, "https://repo.clojars.org/org/clojars/majorcluster/clj-data-adapter/0.2.1/clj-data-adapter-0.2.1.jar")
+      .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','clj-data-adapter-0.2.1.jar')).read })
+
+    get list_api_v1_archives_path(url: 'https://repo.clojars.org/org/clojars/majorcluster/clj-data-adapter/0.2.1/clj-data-adapter-0.2.1.jar')
+    assert_response :success
+    actual_response = JSON.parse(@response.body)
+
+    assert_equal actual_response, ["MANIFEST.MF",
+      "core.clj",
+      "leiningen",
+      "leiningen/org.clojars.majorcluster",
+      "leiningen/org.clojars.majorcluster/clj-data-adapter",
+      "leiningen/org.clojars.majorcluster/clj-data-adapter/README.md",
+      "leiningen/org.clojars.majorcluster/clj-data-adapter/project.clj",
+      "maven",
+      "maven/org.clojars.majorcluster",
+      "maven/org.clojars.majorcluster/clj-data-adapter",
+      "maven/org.clojars.majorcluster/clj-data-adapter/pom.properties",
+      "maven/org.clojars.majorcluster/clj-data-adapter/pom.xml"
+    ]
+  end
+
   test 'contents of a file' do
     stub_request(:get, "https://registry.npmjs.org/base62/-/base62-2.0.1.tgz")
       .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','base62-2.0.1.tgz')).read })
