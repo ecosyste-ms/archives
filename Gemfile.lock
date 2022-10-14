@@ -135,7 +135,7 @@ GEM
       racc (~> 1.4)
     popper_js (2.11.6)
     public_suffix (5.0.0)
-    puma (5.6.5)
+    puma (6.0.0)
       nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.4)
@@ -241,7 +241,7 @@ DEPENDENCIES
   debug
   jbuilder
   mocha
-  puma (~> 5.0)
+  puma (~> 6.0)
   rack-attack
   rack-attack-rate-limit
   rack-cors
