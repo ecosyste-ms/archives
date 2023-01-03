@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.3"
+ruby "3.2.0"
 
 gem "rails", "~> 7.0.4"
 gem "sprockets-rails"
@@ -17,6 +17,7 @@ gem 'rack-cors'
 gem 'rswag-api'
 gem 'rswag-ui'
 gem 'bootstrap'
+gem "nokogiri", '1.14.0.rc1'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
