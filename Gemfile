@@ -17,7 +17,7 @@ gem 'rack-cors'
 gem 'rswag-api'
 gem 'rswag-ui'
 gem 'bootstrap'
-gem "nokogiri", '1.14.0.rc1'
+gem "nokogiri", '1.14.0'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
