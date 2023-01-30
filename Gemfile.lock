@@ -91,7 +91,7 @@ GEM
       ffi (>= 1.15.0)
     execjs (2.8.1)
     ffi (1.15.5)
-    globalid (1.0.1)
+    globalid (1.1.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
     i18n (1.12.0)
