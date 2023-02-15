@@ -84,8 +84,6 @@ GEM
     crass (1.0.6)
     date (3.3.3)
     debug (1.7.1)
-      irb (>= 1.5.0)
-      reline (>= 0.3.1)
     erubi (1.12.0)
     ethon (0.16.0)
       ffi (>= 1.15.0)
@@ -96,9 +94,6 @@ GEM
     hashdiff (1.0.1)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    io-console (0.6.0)
-    irb (1.6.2)
-      reline (>= 0.3.0)
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
@@ -184,8 +179,6 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
-    reline (0.3.2)
-      io-console (~> 0.5)
     rexml (3.2.5)
     rswag-api (2.8.0)
       railties (>= 3.1, < 7.1)
@@ -248,7 +241,7 @@ DEPENDENCIES
   debug
   jbuilder
   mocha
-  nokogiri (= 1.14.2)
+  nokogiri
   puma (~> 6.1)
   rack-attack
   rack-attack-rate-limit
@@ -266,7 +259,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.2.0p0
+   ruby 3.2.1p0
 
 BUNDLED WITH
-   2.4.5
+   2.4.6
