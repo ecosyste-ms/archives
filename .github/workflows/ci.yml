@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependent libraries
-        run: sudo apt-get install libarchive-tools
+        run: sudo apt-get install libarchive-tools libidn11-dev 
       - name: Set up Node
         uses: actions/setup-node@v3.6.0
         with:
