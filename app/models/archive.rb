@@ -151,7 +151,7 @@ class Archive
       return {
         name: readme_file,
         raw: raw,
-        formatted: html,
+        html: html,
         plain: Nokogiri::HTML(html).try(:text),
         extension: File.extname(readme_file),
         language: language,

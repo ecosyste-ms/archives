@@ -122,6 +122,7 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
 "
 }
   end
+  
 
   test 'contents of a folder' do
     stub_request(:get, "https://registry.npmjs.org/base62/-/base62-2.0.1.tgz")
@@ -144,5 +145,23 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
 
     get contents_api_v1_archives_path(url: 'https://registry.npmjs.org/base62/-/base62-2.0.1.tgz', path: 'fib')
     assert_response :missing
+  end
+
+  test 'readme' do
+    stub_request(:get, "https://registry.npmjs.org/base62/-/base62-2.0.1.tgz")
+      .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','base62-2.0.1.tgz')).read })
+
+    get readme_api_v1_archives_path(url: 'https://registry.npmjs.org/base62/-/base62-2.0.1.tgz')
+    assert_response :success
+    actual_response = JSON.parse(@response.body)
+
+    assert_equal actual_response['name'], 'Readme.md'
+    assert_equal actual_response['raw'][0..30], "# [Base62.js](http://libraries."
+    assert_equal actual_response['html'][0..30], "<h1><a href=\"http://libraries.i"
+    assert_equal actual_response['plain'][0..8], "Base62.js"
+    
+    assert_equal actual_response['extension'], '.md'
+    assert_equal actual_response['language'], "Markdown"
+    assert_equal actual_response['other_readme_files'], []
   end
 end

@@ -96,7 +96,7 @@ components:
           type: string
         raw:
           type: string
-        formatted:
+        html:
           type: string
         plain:
           type: string
