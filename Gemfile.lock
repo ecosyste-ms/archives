@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    RedCloth (4.3.2)
     actioncable (7.0.4.3)
       actionpack (= 7.0.4.3)
       activesupport (= 7.0.4.3)
@@ -68,6 +69,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.4)
       public_suffix (>= 2.0.2, < 6.0)
+    asciidoctor (2.0.18)
     autoprefixer-rails (10.4.13.0)
       execjs (~> 2)
     bindex (0.8.1)
@@ -78,10 +80,14 @@ GEM
       popper_js (>= 2.11.6, < 3)
       sassc-rails (>= 2.0.0)
     builder (3.2.4)
+    cgi (0.3.6)
+    charlock_holmes (0.7.7)
+    commonmarker (0.23.9)
     concurrent-ruby (1.2.2)
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    creole (0.5.0)
     date (3.3.3)
     debug (1.7.2)
       irb (>= 1.5.0)
@@ -90,12 +96,21 @@ GEM
     ethon (0.16.0)
       ffi (>= 1.15.0)
     execjs (2.8.1)
+    expression_parser (0.9.0)
     ffi (1.15.5)
+    github-linguist (7.25.0)
+      cgi
+      charlock_holmes (~> 0.7.7)
+      mini_mime (~> 1.0)
+      rugged (~> 1.0)
+    github-markup (4.0.1)
     globalid (1.1.0)
       activesupport (>= 5.0)
     hashdiff (1.0.1)
+    htmlentities (4.3.4)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
+    idn-ruby (0.1.5)
     io-console (0.6.0)
     irb (1.6.4)
       reline (>= 0.3.0)
@@ -113,7 +128,6 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    mini_portile2 (2.8.1)
     minitest (5.18.0)
     mocha (2.0.2)
       ruby2_keywords (>= 0.0.5)
@@ -128,9 +142,6 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     nio4r (2.5.9)
-    nokogiri (1.14.3)
-      mini_portile2 (~> 2.8.0)
-      racc (~> 1.4)
     nokogiri (1.14.3-aarch64-linux)
       racc (~> 1.4)
     nokogiri (1.14.3-arm64-darwin)
@@ -139,7 +150,11 @@ GEM
       racc (~> 1.4)
     nokogiri (1.14.3-x86_64-linux)
       racc (~> 1.4)
+    org-ruby (0.9.12)
+      rubypants (~> 0.2)
     popper_js (2.11.7)
+    psych (5.1.0)
+      stringio
     public_suffix (5.0.1)
     puma (6.2.1)
       nio4r (~> 2.0)
@@ -184,6 +199,9 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    rdoc (6.5.0)
+      psych (>= 4.0.0)
+    redcarpet (3.6.0)
     reline (0.3.3)
       io-console (~> 0.5)
     rexml (3.2.5)
@@ -193,6 +211,8 @@ GEM
       actionpack (>= 3.1, < 7.1)
       railties (>= 3.1, < 7.1)
     ruby2_keywords (0.0.5)
+    rubypants (0.7.1)
+    rugged (1.6.3)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -214,13 +234,20 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    stringio (3.0.5)
     thor (1.2.1)
     tilt (2.1.0)
     timeout (0.3.2)
+    twitter-text (3.1.0)
+      idn-ruby
+      unf (~> 0.1.0)
     typhoeus (1.4.0)
       ethon (>= 0.9.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.8.2)
     web-console (4.2.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -233,37 +260,54 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wikicloth (0.8.3)
+      builder
+      expression_parser
+      htmlentities
+      nokogiri
+      twitter-text
     zeitwerk (2.6.7)
 
 PLATFORMS
   aarch64-linux-musl
   arm64-darwin-21
-  ruby
   x86_64-darwin-20
   x86_64-linux
 
 DEPENDENCIES
+  RedCloth
+  asciidoctor
   bootsnap
   bootstrap
+  commonmarker
+  creole
   debug
+  github-linguist
+  github-markup
   jbuilder
   mocha
   nokogiri
+  org-ruby
   puma (~> 6.2)
   rack-attack
   rack-attack-rate-limit
   rack-cors
   rails (~> 7.0.4)
   rails-controller-testing
+  rdoc
+  redcarpet
+  rexml
   rswag-api
   rswag-ui
   sassc-rails
   shoulda
   sprockets-rails
+  twitter-text
   typhoeus
   tzinfo-data
   web-console
   webmock
+  wikicloth
 
 RUBY VERSION
    ruby 3.2.2p0

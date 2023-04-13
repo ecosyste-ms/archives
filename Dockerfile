@@ -22,12 +22,19 @@ RUN apk add --update \
     libc6-compat \
     tar \
     libarchive-tools \
+    icu-dev \
+    cmake \
+    perl \
+    libidn-dev \
+    py-pip \
  && rm -rf /var/cache/apk/* \
  && gem update --system \
  && gem install bundler foreman \
  && bundle config --global frozen 1 \
  && bundle config set without 'test' \
- && bundle install --jobs 2
+ && bundle install --jobs 2 \
+&& pip install docutils
+
 
 # ========================================================
 # Application layer

@@ -19,6 +19,19 @@ gem 'rswag-ui'
 gem 'bootstrap'
 gem "nokogiri"
 
+gem "github-markup", require: "github/markup"
+gem "redcarpet", :platforms => :ruby
+gem "RedCloth"
+gem "commonmarker"
+gem "rdoc"
+gem "org-ruby"
+gem "creole"
+gem "wikicloth"
+gem "twitter-text"
+gem "asciidoctor"
+gem "github-linguist"
+gem 'rexml'
+
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end

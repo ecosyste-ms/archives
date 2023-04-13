@@ -11,7 +11,7 @@ class Archive
 
     request = Typhoeus::Request.new(url, followlocation: true)
     request.on_headers do |response|
-      return nil if response.code != 200
+      return nil unless [200,301,302].include? response.code
     end
     request.on_body { |chunk| downloaded_file.write(chunk) }
     request.on_complete { downloaded_file.close }
@@ -106,5 +106,57 @@ class Archive
         return nil
       end
     end   
+  end
+
+  def supported_readme_format?(path)
+    [
+      /md/i,
+      /mdown/i,
+      /mkdn/i,
+      /mdn/i,
+      /mdtext/i,
+      /markdown/i,
+      /textile/i,
+      /org/i,
+      /creole/i,
+      /mediawiki/i,
+      /wiki/i,
+      /adoc|asc(iidoc)?/i,
+      /re?st(\.txt)?/i,
+      /pod/i,
+      /rdoc/i
+    ].any? do |regexp|
+      path =~ /\.(#{regexp})\z/
+    end
+  end
+
+  def readme
+    Dir.mktmpdir do |dir|
+      download_file(dir)
+      base_path = extract(dir)
+
+      return nil if base_path.nil?
+      all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
+
+      readme_files = all_files.select{|path| path.match(/^readme/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
+      readme_files = readme_files.sort_by(&:length)
+      readme_file = readme_files.first
+
+      return nil if readme_file.nil?
+
+      raw = File.read(File.join(base_path, readme_file))
+      html = GitHub::Markup.render(readme_file, raw.force_encoding("UTF-8"))
+      language = GitHub::Markup.language(readme_file, raw.force_encoding("UTF-8")).try(:name)
+
+      return {
+        name: readme_file,
+        raw: raw,
+        formatted: html,
+        plain: Nokogiri::HTML(html).try(:text),
+        extension: File.extname(readme_file),
+        language: language,
+        other_readme_files: readme_files - [readme_file]
+      }
+    end
   end
 end

@@ -60,6 +60,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Content'
+  /archives/readme:
+    get:
+      summary: get readme from a package archive
+      operationId: readme
+      parameters:
+        - name: url
+          in: query
+          description: url to package archive
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Readme'
 components:
   schemas:
     Content:
@@ -71,3 +89,22 @@ components:
           type: boolean
         contents:
           type: string
+    Readme:
+      type: object
+      properties:
+        name:
+          type: string
+        raw:
+          type: string
+        formatted:
+          type: string
+        plain:
+          type: string
+        extension:
+          type: string
+        language:
+          type: string
+        other_readme_files:
+          type: array
+          items:
+            type: string
