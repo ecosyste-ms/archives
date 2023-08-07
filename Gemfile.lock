@@ -67,7 +67,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     asciidoctor (2.0.20)
     autoprefixer-rails (10.4.13.0)
@@ -82,7 +82,7 @@ GEM
     builder (3.2.4)
     cgi (0.3.6)
     charlock_holmes (0.7.7)
-    commonmarker (0.23.9)
+    commonmarker (0.23.10)
     concurrent-ruby (1.2.2)
     crack (0.4.5)
       rexml
@@ -128,11 +128,11 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    minitest (5.18.1)
-    mocha (2.0.4)
+    minitest (5.19.0)
+    mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
-    net-imap (0.3.6)
+    net-imap (0.3.7)
       date
       net-protocol
     net-pop (0.1.2)
@@ -159,7 +159,7 @@ GEM
     puma (6.3.0)
       nio4r (~> 2.0)
     racc (1.7.1)
-    rack (2.2.7)
+    rack (2.2.8)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-attack-rate-limit (1.1.0)
@@ -186,7 +186,7 @@ GEM
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
       activesupport (>= 5.0.1.rc1)
-    rails-dom-testing (2.1.1)
+    rails-dom-testing (2.2.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -204,7 +204,7 @@ GEM
     rdoc (6.5.0)
       psych (>= 4.0.0)
     redcarpet (3.6.0)
-    reline (0.3.6)
+    reline (0.3.7)
       io-console (~> 0.5)
     rexml (3.2.6)
     rswag-api (2.10.1)
@@ -268,7 +268,7 @@ GEM
       htmlentities
       nokogiri
       twitter-text
-    zeitwerk (2.6.9)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   aarch64-linux-musl
