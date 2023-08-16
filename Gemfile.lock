@@ -236,7 +236,7 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    stringio (3.0.7)
+    stringio (3.0.8)
     thor (1.2.2)
     tilt (2.2.0)
     timeout (0.4.0)
