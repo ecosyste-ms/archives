@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install dependent libraries
         run: sudo apt-get install libarchive-tools libidn11-dev 
       - name: Set up Node
