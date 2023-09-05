@@ -106,7 +106,7 @@ GEM
       mini_mime (~> 1.0)
       rugged (~> 1.0)
     github-markup (4.0.1)
-    globalid (1.2.0)
+    globalid (1.2.1)
       activesupport (>= 6.1)
     hashdiff (1.0.1)
     htmlentities (4.3.4)
