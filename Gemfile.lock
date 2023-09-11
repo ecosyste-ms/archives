@@ -97,7 +97,7 @@ GEM
     erubi (1.12.0)
     ethon (0.16.0)
       ffi (>= 1.15.0)
-    execjs (2.8.1)
+    execjs (2.9.0)
     expression_parser (0.9.0)
     ffi (1.15.5)
     github-linguist (7.26.0)
