@@ -84,4 +84,6 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
+
+  config.secret_key_base = '<%= ENV["SECRET_KEY_BASE"] %>'
 end
