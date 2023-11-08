@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - PIDFILE=/usr/src/app/tmp/pids/server.pid
+      - RAILS_ENV=development
