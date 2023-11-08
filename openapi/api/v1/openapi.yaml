@@ -78,6 +78,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Readme'
+  /archives/changelog:
+    get:
+      summary: get changelog from a package archive
+      operationId: changelog
+      parameters:
+        - name: url
+          in: query
+          description: url to package archive
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changelog'
 components:
   schemas:
     Content:
@@ -108,3 +126,18 @@ components:
           type: array
           items:
             type: string
+    Changelog:
+      type: object
+      properties:
+        name:
+          type: string
+        raw:
+          type: string
+        html:
+          type: string
+        plain:
+          type: string
+        extension:
+          type: string
+        language:
+          type: string

@@ -26,4 +26,15 @@ class Api::V1::ArchivesController < Api::V1::ApplicationController
       render json: readme
     end
   end
+
+  def changelog
+    expires_in(60.days, public: true, "s-maxage" => 60.days) # TODO this needs to be more dynamic to take into account headers from where the file was loaded
+    @archive = Archive.new(params[:url])
+    changelog = @archive.changelog
+    if changelog.nil?
+      render json: {:error => "path not found"}, :status => 404
+    else
+      render json: changelog
+    end
+  end
 end

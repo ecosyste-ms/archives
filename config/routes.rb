@@ -9,6 +9,7 @@ Rails.application.routes.draw do
           get :list
           get :contents
           get :readme
+          get :changelog
         end
       end
     end

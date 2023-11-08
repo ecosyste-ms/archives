@@ -164,4 +164,21 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     assert_equal actual_response['language'], "Markdown"
     assert_equal actual_response['other_readme_files'], []
   end
+
+  test 'changelog' do
+    stub_request(:get, "https://github.com/splitrb/split/archive/refs/heads/main.zip")
+      .to_return({ status: 200, body: File.open(File.join(Rails.root, 'test', 'fixtures', 'files','main.zip')).read })
+
+    get changelog_api_v1_archives_path(url: 'https://github.com/splitrb/split/archive/refs/heads/main.zip')
+    assert_response :success
+    actual_response = JSON.parse(@response.body)
+
+    assert_equal actual_response['name'], 'CHANGELOG.md'
+    assert_equal actual_response['raw'][0..20], "# 4.0.2 (December 2nd"
+    assert_equal actual_response['html'][0..30], "<h1>4.0.2 (December 2nd, 2022)<"
+    assert_equal actual_response['plain'][0..8], "4.0.2 (De"
+    
+    assert_equal actual_response['extension'], '.md'
+    assert_equal actual_response['language'], "Markdown"
+  end
 end

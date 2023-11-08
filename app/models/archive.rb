@@ -159,4 +159,33 @@ class Archive
       }
     end
   end
+
+  def changelog
+    Dir.mktmpdir do |dir|
+      download_file(dir)
+      base_path = extract(dir)
+
+      return nil if base_path.nil?
+      all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
+
+      changelog_files = all_files.select{|path| path.match(/^changelog/i) }
+
+      return nil if changelog_files.empty?
+
+      changelog_file = changelog_files.first
+
+      raw = File.read(File.join(base_path, changelog_file))
+      html = GitHub::Markup.render(changelog_file, raw.force_encoding("UTF-8"))
+      language = GitHub::Markup.language(changelog_file, raw.force_encoding("UTF-8")).try(:name)
+
+      return {
+        name: changelog_file,
+        raw: raw,
+        html: html,
+        plain: Nokogiri::HTML(html).try(:text),
+        extension: File.extname(changelog_file),
+        language: language
+      }
+    end
+  end
 end
