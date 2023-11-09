@@ -168,8 +168,9 @@ class Archive
       return nil if base_path.nil?
       all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
 
-      changelog_files = all_files.select{|path| path.match(/^changelog/i) }
+      changelog_files = all_files.select{|path| path.match(/^CHANGE|^HISTORY/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
 
+      changelog_files = changelog_files.sort_by(&:length)
       return nil if changelog_files.empty?
 
       changelog_file = changelog_files.first
@@ -185,7 +186,8 @@ class Archive
         plain: Nokogiri::HTML(html).try(:text),
         parsed: Vandamme::Parser.new(changelog: raw).parse,
         extension: File.extname(changelog_file),
-        language: language
+        language: language,
+        other_readme_files: changelog_files - [changelog_file]
       }
     end
   end
