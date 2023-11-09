@@ -183,6 +183,7 @@ class Archive
         raw: raw,
         html: html,
         plain: Nokogiri::HTML(html).try(:text),
+        parsed: Vandamme::Parser.new(changelog: raw).parse,
         extension: File.extname(changelog_file),
         language: language
       }

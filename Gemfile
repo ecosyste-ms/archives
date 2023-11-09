@@ -32,6 +32,7 @@ gem "asciidoctor"
 gem "github-linguist"
 gem 'rexml'
 gem 'appsignal'
+gem 'vandamme', github: 'ecosyste-ms/vandamme'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]

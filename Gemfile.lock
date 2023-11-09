@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/ecosyste-ms/vandamme.git
+  revision: 27c8682ca8aeb32369d74fd7357b553848df0b92
+  specs:
+    vandamme (0.0.13)
+      commonmarker
+      github-markup
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -330,6 +338,7 @@ DEPENDENCIES
   twitter-text
   typhoeus
   tzinfo-data
+  vandamme!
   web-console
   webmock
   wikicloth
