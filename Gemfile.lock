@@ -84,9 +84,9 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    addressable (2.8.5)
+    addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    appsignal (3.4.16)
+    appsignal (3.5.0)
       rack
     asciidoctor (2.0.20)
     autoprefixer-rails (10.4.16.0)
@@ -110,9 +110,9 @@ GEM
     crass (1.0.6)
     creole (0.5.0)
     date (3.3.4)
-    debug (1.8.0)
-      irb (>= 1.5.0)
-      reline (>= 0.3.1)
+    debug (1.9.0)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     drb (2.2.0)
       ruby2_keywords
     erubi (1.12.0)
@@ -156,7 +156,7 @@ GEM
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.2.0)
-    net-imap (0.4.7)
+    net-imap (0.4.8)
       date
       net-protocol
     net-pop (0.1.2)
