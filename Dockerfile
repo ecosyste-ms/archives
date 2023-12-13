@@ -33,7 +33,7 @@ RUN apk add --update \
  && bundle config --global frozen 1 \
  && bundle config set without 'test' \
  && bundle install --jobs 2 \
-&& pip install docutils
+&& pip install docutils --break-system-packages
 
 
 # ========================================================
