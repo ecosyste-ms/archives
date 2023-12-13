@@ -92,7 +92,7 @@ GEM
     autoprefixer-rails (10.4.16.0)
       execjs (~> 2)
     base64 (0.2.0)
-    bigdecimal (3.1.4)
+    bigdecimal (3.1.5)
     bindex (0.8.1)
     bootsnap (1.17.0)
       msgpack (~> 1.2)
@@ -121,7 +121,7 @@ GEM
     execjs (2.9.1)
     expression_parser (0.9.0)
     ffi (1.16.3)
-    github-linguist (7.27.0)
+    github-linguist (7.28.0)
       cgi
       charlock_holmes (~> 0.7.7)
       mini_mime (~> 1.0)
@@ -134,7 +134,7 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     idn-ruby (0.1.5)
-    io-console (0.6.0)
+    io-console (0.7.0)
     irb (1.10.1)
       rdoc
       reline (>= 0.3.8)
