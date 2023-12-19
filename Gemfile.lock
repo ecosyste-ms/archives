@@ -177,7 +177,7 @@ GEM
     org-ruby (0.9.12)
       rubypants (~> 0.2)
     popper_js (2.11.8)
-    psych (5.1.1.1)
+    psych (5.1.2)
       stringio
     public_suffix (5.0.4)
     puma (6.4.0)
