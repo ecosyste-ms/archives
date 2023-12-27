@@ -86,7 +86,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    appsignal (3.5.0)
+    appsignal (3.5.2)
       rack
     asciidoctor (2.0.20)
     autoprefixer-rails (10.4.16.0)
@@ -102,7 +102,10 @@ GEM
     builder (3.2.4)
     cgi (0.4.1)
     charlock_holmes (0.7.7)
-    commonmarker (0.23.10)
+    commonmarker (1.0.0-aarch64-linux)
+    commonmarker (1.0.0-arm64-darwin)
+    commonmarker (1.0.0-x86_64-darwin)
+    commonmarker (1.0.0-x86_64-linux)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     crack (0.4.5)
@@ -156,7 +159,7 @@ GEM
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.2.0)
-    net-imap (0.4.8)
+    net-imap (0.4.9)
       date
       net-protocol
     net-pop (0.1.2)
@@ -349,4 +352,4 @@ RUBY VERSION
    ruby 3.2.2p0
 
 BUNDLED WITH
-   2.5.2
+   2.5.3
