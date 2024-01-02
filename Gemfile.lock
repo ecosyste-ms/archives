@@ -102,10 +102,7 @@ GEM
     builder (3.2.4)
     cgi (0.4.1)
     charlock_holmes (0.7.7)
-    commonmarker (1.0.0-aarch64-linux)
-    commonmarker (1.0.0-arm64-darwin)
-    commonmarker (1.0.0-x86_64-darwin)
-    commonmarker (1.0.0-x86_64-linux)
+    commonmarker (0.23.10)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     crack (0.4.5)
@@ -169,13 +166,13 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     nio4r (2.7.0)
-    nokogiri (1.15.5-aarch64-linux)
+    nokogiri (1.16.0-aarch64-linux)
       racc (~> 1.4)
-    nokogiri (1.15.5-arm64-darwin)
+    nokogiri (1.16.0-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.5-x86_64-darwin)
+    nokogiri (1.16.0-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.5-x86_64-linux)
+    nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
     org-ruby (0.9.12)
       rubypants (~> 0.2)
@@ -317,7 +314,7 @@ DEPENDENCIES
   asciidoctor
   bootsnap
   bootstrap
-  commonmarker
+  commonmarker (= 0.23.10)
   creole
   debug
   github-linguist
