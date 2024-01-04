@@ -102,7 +102,10 @@ GEM
     builder (3.2.4)
     cgi (0.4.1)
     charlock_holmes (0.7.7)
-    commonmarker (0.23.10)
+    commonmarker (1.0.4-aarch64-linux)
+    commonmarker (1.0.4-arm64-darwin)
+    commonmarker (1.0.4-x86_64-darwin)
+    commonmarker (1.0.4-x86_64-linux)
     concurrent-ruby (1.2.2)
     connection_pool (2.4.1)
     crack (0.4.5)
@@ -314,7 +317,7 @@ DEPENDENCIES
   asciidoctor
   bootsnap
   bootstrap
-  commonmarker (= 0.23.10)
+  commonmarker (= 1.0.4)
   creole
   debug
   github-linguist
