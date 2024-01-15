@@ -86,7 +86,7 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    appsignal (3.5.3)
+    appsignal (3.5.4)
       rack
     asciidoctor (2.0.20)
     autoprefixer-rails (10.4.16.0)
