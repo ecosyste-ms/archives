@@ -26,7 +26,7 @@ gem "commonmarker", '0.23.10'
 gem "rdoc"
 gem "org-ruby"
 gem "creole"
-gem "wikicloth"
+gem "wikicloth", github: 'nricciar/wikicloth'
 gem "twitter-text"
 gem "asciidoctor"
 gem "github-linguist"
