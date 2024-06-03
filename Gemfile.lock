@@ -131,7 +131,10 @@ GEM
       ffi (>= 1.15.0)
     execjs (2.9.1)
     expression_parser (0.9.0)
-    ffi (1.16.3)
+    ffi (1.17.0-aarch64-linux-musl)
+    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0-x86_64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
     github-linguist (7.29.0)
       cgi
       charlock_holmes (~> 0.7.7)
@@ -167,7 +170,7 @@ GEM
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.2.0)
-    net-imap (0.4.11)
+    net-imap (0.4.12)
       date
       net-protocol
     net-pop (0.1.2)
