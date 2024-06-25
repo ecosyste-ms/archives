@@ -188,7 +188,7 @@ class Archive
       return nil if base_path.nil?
       all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
 
-      changelog_files = all_files.select{|path| path.match(/^CHANGE|^HISTORY/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
+      changelog_files = all_files.select{|path| path.match(/^CHANGE|^HISTORY|^NEWS/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
 
       changelog_files = changelog_files.sort_by(&:length)
       return nil if changelog_files.empty?
