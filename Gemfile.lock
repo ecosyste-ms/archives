@@ -17,13 +17,6 @@ GIT
       nokogiri
       twitter-text (>= 2.1)
 
-GIT
-  remote: https://github.com/ruby/net-pop.git
-  revision: e8d0afe2773b9eb6a23c39e9e437f6fc0fc7c733
-  specs:
-    net-pop (0.1.2)
-      net-protocol
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -174,12 +167,14 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     minitest (5.24.1)
-    mocha (2.4.0)
+    mocha (2.4.1)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.2.0)
     net-imap (0.4.14)
       date
+      net-protocol
+    net-pop (0.1.2)
       net-protocol
     net-protocol (0.2.2)
       timeout
@@ -339,7 +334,6 @@ DEPENDENCIES
   github-markup
   jbuilder
   mocha
-  net-pop!
   nokogiri
   org-ruby
   puma (~> 6.4)
@@ -365,7 +359,7 @@ DEPENDENCIES
   wikicloth!
 
 RUBY VERSION
-   ruby 3.3.3p0
+   ruby 3.3.4p0
 
 BUNDLED WITH
    2.5.15
