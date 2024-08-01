@@ -100,7 +100,7 @@ GEM
     appsignal (3.12.3)
       rack
     asciidoctor (2.0.23)
-    autoprefixer-rails (10.4.16.0)
+    autoprefixer-rails (10.4.19.0)
       execjs (~> 2)
     base64 (0.2.0)
     bigdecimal (3.1.8)
