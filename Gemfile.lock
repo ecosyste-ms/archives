@@ -167,7 +167,7 @@ GEM
     mocha (2.4.5)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
-    net-imap (0.4.15)
+    net-imap (0.4.16)
       date
       net-protocol
     net-pop (0.1.2)
