@@ -187,6 +187,7 @@ GEM
       racc (~> 1.4)
     org-ruby (0.9.12)
       rubypants (~> 0.2)
+    ostruct (0.6.0)
     popper_js (2.11.8)
     psych (5.1.2)
       stringio
@@ -332,6 +333,7 @@ DEPENDENCIES
   mocha
   nokogiri
   org-ruby
+  ostruct
   puma (~> 6.4)
   rack-attack
   rack-attack-rate-limit
@@ -355,7 +357,7 @@ DEPENDENCIES
   wikicloth!
 
 RUBY VERSION
-   ruby 3.3.4p0
+   ruby 3.3.5p0
 
 BUNDLED WITH
    2.5.18
