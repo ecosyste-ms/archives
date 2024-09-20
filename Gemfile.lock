@@ -93,7 +93,8 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    appsignal (4.0.8)
+    appsignal (4.0.9)
+      logger
       rack
     asciidoctor (2.0.23)
     autoprefixer-rails (10.4.19.0)
@@ -132,7 +133,7 @@ GEM
     ffi (1.17.0-x86_64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
     ffi (1.17.0-x86_64-linux-musl)
-    github-linguist (8.0.0)
+    github-linguist (8.0.1)
       cgi
       charlock_holmes (~> 0.7.7)
       mini_mime (~> 1.0)
@@ -192,7 +193,7 @@ GEM
     psych (5.1.2)
       stringio
     public_suffix (6.0.1)
-    puma (6.4.2)
+    puma (6.4.3)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.1.7)
@@ -360,4 +361,4 @@ RUBY VERSION
    ruby 3.3.5p0
 
 BUNDLED WITH
-   2.5.18
+   2.5.19
