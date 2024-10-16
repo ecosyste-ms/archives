@@ -3,7 +3,10 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.3.5"
 
-gem "rails", "~> 7.2.1"
+gem 'railties'
+gem 'actionview'
+gem 'actionpack'
+gem 'activesupport'
 gem "sprockets-rails"
 gem "puma", "~> 6.4"
 gem "jbuilder"

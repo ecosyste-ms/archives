@@ -1,8 +1,8 @@
 FROM ruby:3.3.5-alpine3.19
 
-ENV APP_ROOT /usr/src/app
-ENV DATABASE_PORT 5432
-ENV PIP_BREAK_SYSTEM_PACKAGES 1
+ENV APP_ROOT=/usr/src/app
+ENV DATABASE_PORT=5432
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 WORKDIR $APP_ROOT
 
 # =============================================
@@ -32,8 +32,8 @@ RUN apk add --update \
  && gem update --system \
  && gem install bundler foreman \
  && bundle config --global frozen 1 \
- && bundle config set without 'test' \
- && bundle install --jobs 2 \
+ && bundle config set without 'test development' \
+ && bundle install --jobs 8 \
 && pip install docutils
 
 
