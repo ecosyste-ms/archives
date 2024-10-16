@@ -8,7 +8,7 @@ gem 'actionview'
 gem 'actionpack'
 gem 'activesupport'
 gem "sprockets-rails"
-gem "puma", "~> 6.4"
+gem "puma"
 gem "jbuilder"
 gem 'typhoeus'
 gem "rack-attack"
@@ -34,13 +34,6 @@ gem 'appsignal'
 gem 'vandamme', github: 'ecosyste-ms/vandamme'
 gem 'ostruct'
 
-group :development, :test do
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
-end
-
-group :development do
-  gem "web-console"
-end
 
 group :test do
   gem "shoulda"

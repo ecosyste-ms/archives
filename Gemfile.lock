@@ -38,8 +38,6 @@ GEM
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
-    activemodel (7.2.1.1)
-      activesupport (= 7.2.1.1)
     activesupport (7.2.1.1)
       base64
       bigdecimal
@@ -59,7 +57,6 @@ GEM
     asciidoctor (2.0.23)
     base64 (0.2.0)
     bigdecimal (3.1.8)
-    bindex (0.8.1)
     builder (3.3.0)
     cgi (0.4.1)
     charlock_holmes (0.7.9)
@@ -71,9 +68,6 @@ GEM
       rexml
     crass (1.0.6)
     creole (0.5.0)
-    debug (1.9.2)
-      irb (~> 1.10)
-      reline (>= 0.3.8)
     drb (2.2.1)
     erubi (1.13.0)
     ethon (0.16.0)
@@ -204,11 +198,6 @@ GEM
       unf_ext
     unf_ext (0.0.9.1)
     useragent (0.16.10)
-    web-console (4.2.1)
-      actionview (>= 6.0.0)
-      activemodel (>= 6.0.0)
-      bindex (>= 0.4.0)
-      railties (>= 6.0.0)
     webmock (3.24.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -233,7 +222,6 @@ DEPENDENCIES
   asciidoctor
   commonmarker (= 0.23.10)
   creole
-  debug
   github-linguist
   github-markup
   jbuilder
@@ -241,7 +229,7 @@ DEPENDENCIES
   nokogiri
   org-ruby
   ostruct
-  puma (~> 6.4)
+  puma
   rack-attack
   rack-attack-rate-limit
   rack-cors
@@ -257,7 +245,6 @@ DEPENDENCIES
   twitter-text
   typhoeus
   vandamme!
-  web-console
   webmock
   wikicloth!
 
