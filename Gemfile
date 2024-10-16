@@ -10,16 +10,12 @@ gem 'activesupport'
 gem "sprockets-rails"
 gem "puma", "~> 6.4"
 gem "jbuilder"
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
-gem "bootsnap", require: false
-gem "sassc-rails"
 gem 'typhoeus'
 gem "rack-attack"
 gem "rack-attack-rate-limit", require: "rack/attack/rate-limit"
 gem 'rack-cors'
 gem 'rswag-api'
 gem 'rswag-ui'
-gem 'bootstrap'
 gem "nokogiri"
 
 gem "github-markup", require: "github/markup"
