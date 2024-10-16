@@ -13,7 +13,7 @@ COPY Gemfile Gemfile.lock $APP_ROOT/
 
 # * Setup system
 # * Install Ruby dependencies
-RUN apk add --update \
+RUN apk add --no-cache \
     build-base \
     netcat-openbsd \
     git \
@@ -27,10 +27,8 @@ RUN apk add --update \
     perl \
     libidn-dev \
     py-pip \
- && rm -rf /var/cache/apk/* \
  && gem update --system \
  && gem install bundler foreman \
- && bundle config --global frozen 1 \
  && bundle config set without 'test development' \
  && bundle install --jobs 8 \
  && pip install docutils
