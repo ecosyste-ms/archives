@@ -5,14 +5,8 @@ ENV DATABASE_PORT=5432
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 WORKDIR $APP_ROOT
 
-# =============================================
-# System layer
-
-# Will invalidate cache as soon as the Gemfile changes
 COPY Gemfile Gemfile.lock $APP_ROOT/
 
-# * Setup system
-# * Install Ruby dependencies
 RUN apk add --no-cache \
     build-base \
     netcat-openbsd \
@@ -33,15 +27,8 @@ RUN apk add --no-cache \
  && bundle install --jobs 8 \
  && pip install docutils
 
-# ========================================================
-# Application layer
-
-# Copy application code
 COPY . $APP_ROOT
 
-# Precompile assets for a production environment.
-# This is done to include assets in production images on Dockerhub.
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
-# Startup
 CMD ["bin/docker-start"]
