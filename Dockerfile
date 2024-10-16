@@ -17,7 +17,6 @@ RUN apk add --update \
     build-base \
     netcat-openbsd \
     git \
-    nodejs \
     tzdata \
     curl-dev \
     libc6-compat \
@@ -34,8 +33,7 @@ RUN apk add --update \
  && bundle config --global frozen 1 \
  && bundle config set without 'test development' \
  && bundle install --jobs 8 \
-&& pip install docutils
-
+ && pip install docutils
 
 # ========================================================
 # Application layer
