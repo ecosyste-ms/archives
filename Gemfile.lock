@@ -203,7 +203,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.2)
-    zeitwerk (2.7.0)
+    zeitwerk (2.7.1)
 
 PLATFORMS
   aarch64-linux-musl
@@ -252,4 +252,4 @@ RUBY VERSION
    ruby 3.3.5p0
 
 BUNDLED WITH
-   2.5.21
+   2.5.22
