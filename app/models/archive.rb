@@ -211,4 +211,19 @@ class Archive
       }
     end
   end
+  
+  def repopack
+    Dir.mktmpdir do |dir|
+      download_file(dir)
+      base_path = extract(dir)
+
+      return nil if base_path.nil?
+      `cd #{base_path} && repopack .`
+      repopack_output = File.read(File.join(base_path, 'repopack-output.txt'))
+
+      return {
+        output: repopack_output
+      }
+    end
+  end
 end

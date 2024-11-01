@@ -10,6 +10,7 @@ Rails.application.routes.draw do
           get :contents
           get :readme
           get :changelog
+          get :repopack
         end
       end
     end

@@ -21,11 +21,14 @@ RUN apk add --no-cache \
     perl \
     libidn-dev \
     py-pip \
+    nodejs \
+    npm \
  && gem update --system \
  && gem install bundler foreman \
  && bundle config set without 'test development' \
  && bundle install --jobs 8 \
- && pip install docutils
+ && pip install docutils \
+ && npm install -g repopack
 
 COPY . $APP_ROOT
 
