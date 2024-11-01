@@ -18,12 +18,12 @@ servers:
 paths:
   /archives/list:
     get:
-      summary: list files in a package archive
+      summary: list files in an archive
       operationId: list
       parameters:
         - name: url
           in: query
-          description: url to package archive
+          description: url to archive
           required: true
           schema:
             type: string
@@ -38,18 +38,18 @@ paths:
                   type: string
   /archives/contents:
     get:
-      summary: get contents of a path from a package archive
+      summary: get contents of a path from an archive
       operationId: contents
       parameters:
         - name: url
           in: query
-          description: url to package archive
+          description: url to archive
           required: true
           schema:
             type: string
         - name: path
           in: query
-          description: path to file or folder in package archive
+          description: path to file or folder in archive
           required: true
           schema:
             type: string
@@ -62,12 +62,12 @@ paths:
                 $ref: '#/components/schemas/Content'
   /archives/readme:
     get:
-      summary: get readme from a package archive
+      summary: get readme from an archive
       operationId: readme
       parameters:
         - name: url
           in: query
-          description: url to package archive
+          description: url to archive
           required: true
           schema:
             type: string
@@ -80,12 +80,12 @@ paths:
                 $ref: '#/components/schemas/Readme'
   /archives/changelog:
     get:
-      summary: get changelog from a package archive
+      summary: get changelog from an archive
       operationId: changelog
       parameters:
         - name: url
           in: query
-          description: url to package archive
+          description: url to archive
           required: true
           schema:
             type: string
@@ -96,6 +96,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Changelog'
+  /archives/repopack:
+    get:
+      summary: get repopack from an archive
+      operationId: repopack
+      parameters:
+        - name: url
+          in: query
+          description: url to archive
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepoPack'
 components:
   schemas:
     Content:
@@ -140,4 +158,9 @@ components:
         extension:
           type: string
         language:
+          type: string
+    RepoPack:
+      type: object
+      properties:
+        output:
           type: string
