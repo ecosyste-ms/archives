@@ -21,7 +21,7 @@ gem "nokogiri"
 gem "github-markup", require: "github/markup"
 gem "redcarpet", :platforms => :ruby
 gem "RedCloth"
-gem "commonmarker", '0.23.10'
+gem "commonmarker", '2.0.1'
 gem "rdoc"
 gem "org-ruby"
 gem "creole"
