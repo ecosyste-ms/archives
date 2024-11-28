@@ -80,7 +80,7 @@ GEM
     ffi (1.17.0-x86_64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
     ffi (1.17.0-x86_64-linux-musl)
-    github-linguist (8.0.1)
+    github-linguist (9.0.0)
       cgi
       charlock_holmes (~> 0.7.7)
       mini_mime (~> 1.0)
