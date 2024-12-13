@@ -218,8 +218,8 @@ class Archive
       base_path = extract(dir)
 
       return nil if base_path.nil?
-      `cd #{base_path} && repopack .`
-      repopack_output = File.read(File.join(base_path, 'repopack-output.txt'))
+      `cd #{base_path} && repomix .`
+      repopack_output = File.read(File.join(base_path, 'repomix-output.txt'))
 
       return {
         output: repopack_output

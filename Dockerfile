@@ -28,7 +28,7 @@ RUN apk add --no-cache \
  && bundle config set without 'test development' \
  && bundle install --jobs 8 \
  && pip install docutils \
- && npm install -g repopack
+ && npm install -g repomix
 
 COPY . $APP_ROOT
 
