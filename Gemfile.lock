@@ -175,7 +175,7 @@ GEM
       railties (>= 5.2, < 8.1)
     ruby2_keywords (0.0.5)
     rubypants (0.7.1)
-    rugged (1.7.2)
+    rugged (1.9.0)
     securerandom (0.4.1)
     shoulda (4.0.0)
       shoulda-context (~> 2.0)
