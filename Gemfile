@@ -33,7 +33,8 @@ gem 'rexml'
 gem 'appsignal'
 gem 'vandamme', github: 'ecosyste-ms/vandamme'
 gem 'ostruct'
-
+gem "sassc-rails"
+gem 'bootstrap'
 
 group :test do
   gem "shoulda"
@@ -41,3 +42,5 @@ group :test do
   gem "mocha"
   gem "rails-controller-testing"
 end
+
+gem "bootstrap-icons-helper", "~> 2.0"
