@@ -23,6 +23,8 @@ RUN apk add --no-cache \
     py-pip \
     nodejs \
     npm \
+    yaml-dev \
+    libffi-dev \
  && gem update --system \
  && gem install bundler foreman \
  && bundle config set without 'test development' \
