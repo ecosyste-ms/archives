@@ -3,6 +3,10 @@ class Archive
 
   def initialize(url)
     @url = url
+    uri = URI.parse(url)
+    unless ["http", "https"].include?(uri.scheme)
+      raise ArgumentError, "Only HTTP/HTTPS URLs are allowed"
+    end
   end
 
   def download_file(dir)
@@ -23,6 +27,7 @@ class Archive
   end
 
   require 'timeout'
+  require 'fileutils'
 
   def extract(dir)
     path = working_directory(dir)
@@ -38,26 +43,35 @@ class Archive
         case mime_type(path)
         when "application/zip", "application/java-archive"
           destination = File.join(dir, 'zip')
-          `mkdir #{destination} && bsdtar --strip-components=1 -xvf #{path} -C #{destination} > /dev/null 2>&1 `
+          FileUtils.mkdir_p(destination)
+          system("bsdtar", "--strip-components=1", "-xvf", path, "-C", destination, out: File::NULL, err: File::NULL)
         when "application/gzip"
           destination = File.join(dir, 'tar')
-          `mkdir #{destination} && tar xzf #{path} -C #{destination} --strip-components 1`
+          FileUtils.mkdir_p(destination)
+          system("tar", "xzf", path, "-C", destination, "--strip-components", "1")
         when "application/x-tar"
           if extension == '.gem' # rubygems
             destination = File.join(dir, 'tar')
             data_destination = File.join(dir, 'data')
             data_path = File.join(destination, 'data.tar.gz')
-            `mkdir #{destination} && tar xf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
+            FileUtils.mkdir_p(destination)
+            system("tar", "xf", path, "-C", destination)
+            FileUtils.mkdir_p(data_destination)
+            system("tar", "xzf", data_path, "-C", data_destination)
             destination = data_destination
           elsif domain == 'repo.hex.pm' # elixir
             destination = File.join(dir, 'tar')
             data_destination = File.join(dir, 'data')
             data_path = File.join(destination, 'contents.tar.gz')
-            `mkdir #{destination} && tar xf #{path} -C #{destination} && mkdir #{data_destination} && tar xzf #{data_path} -C #{data_destination}`
+            FileUtils.mkdir_p(destination)
+            system("tar", "xf", path, "-C", destination)
+            FileUtils.mkdir_p(data_destination)
+            system("tar", "xzf", data_path, "-C", data_destination)
             destination = data_destination
           else
             destination = File.join(dir, 'tar')
-            `mkdir #{destination} && tar xf #{path} -C #{destination}`
+            FileUtils.mkdir_p(destination)
+            system("tar", "xf", path, "-C", destination)
           end
         else
           # not supported
@@ -218,7 +232,7 @@ class Archive
       base_path = extract(dir)
 
       return nil if base_path.nil?
-      `cd #{base_path} && repomix .`
+      system("cd", base_path, "&&", "repomix", ".")
       repopack_output = File.read(File.join(base_path, 'repomix-output.txt'))
 
       return {
