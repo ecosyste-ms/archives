@@ -1,3 +1,6 @@
+require 'timeout'
+require 'fileutils'
+
 class RemoteArchive
   attr_accessor :url
 
@@ -25,9 +28,6 @@ class RemoteArchive
     request.on_complete { downloaded_file.close }
     request.run
   end
-
-  require 'timeout'
-  require 'fileutils'
 
   def extract(dir)
     path = working_directory(dir)
