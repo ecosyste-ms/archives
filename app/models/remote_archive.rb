@@ -1,4 +1,4 @@
-class Archive
+class RemoteArchive
   attr_accessor :url
 
   def initialize(url)
@@ -16,7 +16,7 @@ class Archive
     request = Typhoeus::Request.new(url, followlocation: true)
     request.on_headers do |response|
       if response.headers && response.headers['Content-Length'] && response.headers['Content-Length'].to_i > 100 * 1024 * 1024
-        puts "File is larger than 100MB, aborting download."
+        Rails.logger.info("File is larger than 100MB, skipping extraction.")
         return false
       end
       return nil unless [200,301,302].include? response.code
@@ -34,7 +34,7 @@ class Archive
     destination = nil
 
     if File.size(path) > 100 * 1024 * 1024
-      puts "File is larger than 100MB, skipping extraction."
+      Rails.logger.info("File is larger than 100MB, skipping extraction.")
       return nil
     end
 
