@@ -17,6 +17,9 @@ gem 'rack-cors'
 gem 'rswag-api'
 gem 'rswag-ui'
 gem "nokogiri"
+gem 'rubyzip'
+gem 'zlib'
+gem 'archive-tar-minitar'
 
 gem "github-markup", require: "github/markup"
 gem "redcarpet", :platforms => :ruby

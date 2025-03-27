@@ -88,4 +88,24 @@ class ArchiveTest < ActiveSupport::TestCase
       assert_nil archive.extract(dir), "Expected nil for unsupported mime types"
     end
   end
+
+  test "blocks archive paths escaping destination" do
+    archive = RemoteArchive.new("http://example.com/evil.tar.gz")
+
+    Dir.mktmpdir do |dir|
+      dest = archive.working_directory(dir)
+      Zlib::GzipWriter.open(dest) do |gz|
+        Archive::Tar::Minitar::Writer.open(gz) do |tar|
+          tar.add_file_simple("../../evil.txt", :mode => 0644, :size => 5) do |io|
+            io.write("oops!")
+          end
+        end
+      end
+
+      archive.stubs(:download_file).returns(dest)
+      assert_raises(RuntimeError, "Blocked extraction outside target dir") do
+        archive.extract(dir)
+      end
+    end
+  end
 end

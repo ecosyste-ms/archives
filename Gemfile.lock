@@ -97,6 +97,9 @@ GEM
     appsignal (4.5.7)
       logger
       rack (>= 2.0.0)
+    archive-tar-minitar (0.12)
+      minitar (~> 0.12)
+      minitar-cli (~> 0.12)
     asciidoctor (2.0.23)
     autoprefixer-rails (10.4.19.0)
       execjs (~> 2)
@@ -146,6 +149,7 @@ GEM
     globalid (1.2.1)
       activesupport (>= 6.1)
     hashdiff (1.1.2)
+    hashie (5.0.0)
     htmlentities (4.3.4)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
@@ -169,6 +173,10 @@ GEM
       net-smtp
     marcel (1.0.4)
     mini_mime (1.1.5)
+    minitar (0.12.1)
+    minitar-cli (0.12)
+      minitar (~> 0.12.0)
+      powerbar (~> 1.0)
     minitest (5.25.5)
     mocha (2.7.1)
       ruby2_keywords (>= 0.0.5)
@@ -202,6 +210,8 @@ GEM
       rubypants (~> 0.2)
     ostruct (0.6.1)
     popper_js (2.11.8)
+    powerbar (1.0.18)
+      hashie (>= 1.1.0)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -274,6 +284,7 @@ GEM
       railties (>= 5.2, < 8.1)
     ruby2_keywords (0.0.5)
     rubypants (0.7.1)
+    rubyzip (2.4.1)
     rugged (1.9.0)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -322,6 +333,7 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     zeitwerk (2.7.2)
+    zlib (3.2.1)
 
 PLATFORMS
   aarch64-linux-gnu
@@ -340,6 +352,7 @@ DEPENDENCIES
   actionview
   activesupport
   appsignal
+  archive-tar-minitar
   asciidoctor
   bootstrap
   bootstrap-icons-helper (~> 2.0)
@@ -363,6 +376,7 @@ DEPENDENCIES
   rexml
   rswag-api
   rswag-ui
+  rubyzip
   sassc-rails
   shoulda
   sprockets-rails
@@ -371,6 +385,7 @@ DEPENDENCIES
   vandamme!
   webmock
   wikicloth!
+  zlib
 
 CHECKSUMS
   RedCloth (4.3.4) sha256=5231b2fdd91a933915cba330e5fd1a74025e77b56f57b7404c7191ebf2812297
@@ -387,6 +402,7 @@ CHECKSUMS
   activesupport (8.0.2) sha256=8565cddba31b900cdc17682fd66ecd020441e3eef320a9930285394e8c07a45e
   addressable (2.8.7) sha256=462986537cf3735ab5f3c0f557f14155d778f4b43ea4f485a9deb9c8f7c58232
   appsignal (4.5.7) sha256=f45147e8b700e0c77c685e4cf62ed36c90aa6877a1e9db218132d6168e64ca97
+  archive-tar-minitar (0.12) sha256=bfdbbf5b5af12eb4eadfe70238214b3de224204c4caa5259fe020fb87bd8dcb2
   asciidoctor (2.0.23) sha256=52208807f237dfa0ca29882f8b13d60b820496116ad191cf197ca56f2b7fddf3
   autoprefixer-rails (10.4.19.0) sha256=ccd21f47e5a07a581c7d239025e0d8d06a005825e96e06f72382d818fe665f4e
   base64 (0.2.0) sha256=0f25e9b21a02a0cc0cea8ef92b2041035d39350946e8789c562b2d1a3da01507
@@ -422,6 +438,7 @@ CHECKSUMS
   github-markup (5.0.1) sha256=b6e9f8538cb8566935321433190615cbc747550e1705a7af5ba24048d0ddc472
   globalid (1.2.1) sha256=70bf76711871f843dbba72beb8613229a49429d1866828476f9c9d6ccc327ce9
   hashdiff (1.1.2) sha256=2c30eeded6ed3dce8401d2b5b99e6963fe5f14ed85e60dd9e33c545a44b71a77
+  hashie (5.0.0) sha256=9d6c4e51f2a36d4616cbc8a322d619a162d8f42815a792596039fc95595603da
   htmlentities (4.3.4) sha256=125a73c6c9f2d1b62100b7c3c401e3624441b663762afa7fe428476435a673da
   i18n (1.14.7) sha256=ceba573f8138ff2c0915427f1fc5bdf4aa3ab8ae88c8ce255eb3ecf0a11a5d0f
   idn-ruby (0.1.5) sha256=3076fa1aac170e92310d02822badf6b11e74e17915a045c8f9ad053bba24c037
@@ -433,6 +450,8 @@ CHECKSUMS
   mail (2.8.1) sha256=ec3b9fadcf2b3755c78785cb17bc9a0ca9ee9857108a64b6f5cfc9c0b5bfc9ad
   marcel (1.0.4) sha256=0d5649feb64b8f19f3d3468b96c680bae9746335d02194270287868a661516a4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
+  minitar (0.12.1) sha256=3a1dbbae8c4c8e67ab8e3951ba36cb93b844c225b29f83e3b90f48226f3d6038
+  minitar-cli (0.12) sha256=667e17bff71baf3d0c4c4998d4e51c21fcdccf6c8a4c945efade6fede2559bb5
   minitest (5.25.5) sha256=391b6c6cb43a4802bfb7c93af1ebe2ac66a210293f4a3fb7db36f2fc7dc2c756
   mocha (2.7.1) sha256=8f7d538d5d3ebc75fc788b3d92fbab913a93a78462d2a3ce99d1bdde7af7f851
   net-imap (0.5.6) sha256=1ede8048ee688a14206060bf37a716d18cb6ea00855f6c9b15daee97ee51fbe5
@@ -451,6 +470,7 @@ CHECKSUMS
   org-ruby (0.9.12) sha256=93cbec3a4470cb9dca6a4a98dc276a6434ea9d9e7bc2d42ea33c3aedd5d1c974
   ostruct (0.6.1) sha256=09a3fb7ecc1fa4039f25418cc05ae9c82bd520472c5c6a6f515f03e4988cb817
   popper_js (2.11.8) sha256=f4b0be717fc0d50bdb3dbbc55788525a9e0e8f640b76c9971fc34ee609eadbd2
+  powerbar (1.0.18) sha256=e64e54eb659c4fb5210fa19dc121d8629cd90346dbdd6bb0797746e68d600f1f
   pp (0.6.2) sha256=947ec3120c6f92195f8ee8aa25a7b2c5297bb106d83b41baa02983686577b6ff
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   psych (5.2.3) sha256=84a54bb952d14604fea22d99938348814678782f58b12648fcdfa4d2fce859ee
@@ -478,6 +498,7 @@ CHECKSUMS
   rswag-ui (2.16.0) sha256=a1f49e927dceda92e6e6e7c1000f1e217ee66c565f69e28131dc98b33cd3a04f
   ruby2_keywords (0.0.5) sha256=ffd13740c573b7301cf7a2e61fc857b2a8e3d3aff32545d6f8300d8bae10e3ef
   rubypants (0.7.1) sha256=30eb674add457dd05232c6357f7ee674536606f79d9f55e0f84db442bce2624f
+  rubyzip (2.4.1) sha256=8577c88edc1fde8935eb91064c5cb1aef9ad5494b940cf19c775ee833e075615
   rugged (1.9.0) sha256=7faaa912c5888d6e348d20fa31209b6409f1574346b1b80e309dbc7e8d63efac
   sassc (2.4.0) sha256=4c60a2b0a3b36685c83b80d5789401c2f678c1652e3288315a1551d811d9f83e
   sassc-rails (2.1.2) sha256=5f4fdf3881fc9bdc8e856ffbd9850d70a2878866feae8114aa45996179952db5
@@ -504,6 +525,7 @@ CHECKSUMS
   websocket-extensions (0.1.5) sha256=1c6ba63092cda343eb53fc657110c71c754c56484aad42578495227d717a8241
   wikicloth (0.8.3)
   zeitwerk (2.7.2) sha256=842e067cb11eb923d747249badfb5fcdc9652d6f20a1f06453317920fdcd4673
+  zlib (3.2.1) sha256=6301546b5f108c358304c3095d20e45ddebb31d5079341f95e08e9049770aa6a
 
 RUBY VERSION
    ruby 3.4.2p28
