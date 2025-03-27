@@ -44,18 +44,48 @@ class ArchiveTest < ActiveSupport::TestCase
   # These would normally use fixtures or VCR to avoid actual downloads.
   # Here’s a placeholder test to show intent:
 
-  test "download_file returns false for large files" do
-    archive = RemoteArchive.new("http://example.com/large.zip")
-  
-    stub_request(:get, "http://example.com/large.zip")
-      .to_return(
-        status: 200,
-        headers: { "Content-Length" => "#{101 * 1024 * 1024}" }
-      )
-  
+  test "extracts tar.gz file correctly" do
+    fixture_path = Rails.root.join("test/fixtures/files/base62-2.0.1.tgz")
+    archive = RemoteArchive.new("http://example.com/base62.tgz")
+
     Dir.mktmpdir do |dir|
-      result = archive.download_file(dir)
-      assert_equal false, result
+      dest = archive.working_directory(dir)
+      FileUtils.cp(fixture_path, dest)
+
+      archive.stubs(:download_file).returns(dest)
+
+      destination = archive.extract(dir)
+      assert destination.present?, "Expected extract to return a destination"
+      files = Dir.glob("**/*", base: destination)
+      assert files.any?, "Expected some files to be extracted"
+    end
+  end
+
+  test "returns nil for files larger than 100MB" do
+    archive = RemoteArchive.new("http://example.com/base62.tgz")
+
+    Dir.mktmpdir do |dir|
+      dest = archive.working_directory(dir)
+      File.open(dest, "wb") { |f| f.write("0" * 101 * 1024 * 1024) }
+
+      archive.stubs(:download_file).returns(dest)
+
+      assert_nil archive.extract(dir), "Expected nil for files larger than 100MB"
+    end
+  end
+
+  test "handles unsupported mime type" do
+    fixture_path = Rails.root.join("test/fixtures/files/base62-2.0.1.tgz")
+    archive = RemoteArchive.new("http://example.com/base62.tgz")
+
+    Dir.mktmpdir do |dir|
+      dest = archive.working_directory(dir)
+      FileUtils.cp(fixture_path, dest)
+
+      archive.stubs(:download_file).returns(dest)
+      archive.stubs(:mime_type).returns("application/unknown")
+
+      assert_nil archive.extract(dir), "Expected nil for unsupported mime types"
     end
   end
 end
