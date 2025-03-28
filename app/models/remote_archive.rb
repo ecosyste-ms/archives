@@ -1,5 +1,8 @@
 require 'timeout'
 require 'fileutils'
+require 'zip'
+require 'zlib'
+require 'archive/tar/minitar'
 
 class RemoteArchive
   attr_accessor :url
@@ -44,34 +47,45 @@ class RemoteArchive
         when "application/zip", "application/java-archive"
           destination = File.join(dir, 'zip')
           FileUtils.mkdir_p(destination)
-          system("bsdtar", "--strip-components=1", "-xvf", path, "-C", destination, out: File::NULL, err: File::NULL)
+          Zip::File.open(path) do |zip_file|
+            file_count = 0
+            zip_file.each do |entry|
+              next if entry.respond_to?(:symlink?) && entry.symlink?
+              components = entry.name.split(File::SEPARATOR)
+              next if components.empty?
+              stripped_path = File.join(components.drop(1)) # remove top-level folder
+              next if stripped_path.empty?
+              entry_path = File.join(destination, stripped_path)
+              entry_path = File.expand_path(entry_path)
+              raise "Blocked extraction outside target dir" unless entry_path.start_with?(File.expand_path(destination))
+              raise "Too many files in archive" if (file_count += 1) > 10_000
+              FileUtils.mkdir_p(File.dirname(entry_path))
+              zip_file.extract(entry, entry_path) unless File.exist?(entry_path)
+            end
+          end
         when "application/gzip"
           destination = File.join(dir, 'tar')
           FileUtils.mkdir_p(destination)
-          system("tar", "xzf", path, "-C", destination, "--strip-components", "1")
+          Zlib::GzipReader.open(path) do |gz|
+            Archive::Tar::Minitar::Reader.open(gz) do |reader|
+              extract_tar(reader, destination)
+            end
+          end
         when "application/x-tar"
-          if extension == '.gem' # rubygems
-            destination = File.join(dir, 'tar')
-            data_destination = File.join(dir, 'data')
-            data_path = File.join(destination, 'data.tar.gz')
-            FileUtils.mkdir_p(destination)
-            system("tar", "xf", path, "-C", destination)
-            FileUtils.mkdir_p(data_destination)
-            system("tar", "xzf", data_path, "-C", data_destination)
-            destination = data_destination
-          elsif domain == 'repo.hex.pm' # elixir
-            destination = File.join(dir, 'tar')
-            data_destination = File.join(dir, 'data')
-            data_path = File.join(destination, 'contents.tar.gz')
-            FileUtils.mkdir_p(destination)
-            system("tar", "xf", path, "-C", destination)
-            FileUtils.mkdir_p(data_destination)
-            system("tar", "xzf", data_path, "-C", data_destination)
-            destination = data_destination
-          else
-            destination = File.join(dir, 'tar')
-            FileUtils.mkdir_p(destination)
-            system("tar", "xf", path, "-C", destination)
+          destination = File.join(dir, 'tar')
+          FileUtils.mkdir_p(destination)
+          File.open(path, "rb") do |file|
+            Archive::Tar::Minitar::Reader.open(file) do |reader|
+              extract_tar(reader, destination)
+            end
+          end
+          data_destination = File.join(dir, 'data')
+          data_path = File.join(destination, 'data.tar.gz')
+          FileUtils.mkdir_p(data_destination)
+          Zlib::GzipReader.open(data_path) do |gz|
+            Archive::Tar::Minitar::Reader.open(gz) do |reader|
+              extract_tar(reader, data_destination)
+            end
           end
         else
           # not supported
@@ -238,6 +252,33 @@ class RemoteArchive
       return {
         output: repopack_output
       }
+    end
+  end
+
+  private
+
+  def extract_tar(reader, destination)
+    file_count = 0
+    reader.each_entry do |entry|
+      next if entry.respond_to?(:symlink?) && entry.symlink?
+      components = entry.name.split(File::SEPARATOR)
+      next if components.empty?
+      stripped_path = File.join(components.drop(1))
+      next if stripped_path.empty?
+      dest_path = File.join(destination, stripped_path)
+      dest_path = File.expand_path(dest_path)
+      raise "Blocked extraction outside target dir" unless dest_path.start_with?(File.expand_path(destination))
+      raise "Too many files in archive" if (file_count += 1) > 10_000
+      if entry.directory?
+        FileUtils.mkdir_p(dest_path)
+      else
+        FileUtils.mkdir_p(File.dirname(dest_path))
+        File.open(dest_path, "wb") do |f|
+          while (chunk = entry.read(4096))
+            f.write(chunk)
+          end
+        end
+      end
     end
   end
 end
