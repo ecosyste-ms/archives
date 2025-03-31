@@ -24,7 +24,7 @@ gem 'archive-tar-minitar'
 gem "github-markup", require: "github/markup"
 gem "redcarpet", :platforms => :ruby
 gem "RedCloth"
-gem "commonmarker", '0.23.10'
+gem "commonmarker", '2.2.0'
 gem "rdoc"
 gem "org-ruby"
 gem "creole"
