@@ -117,7 +117,14 @@ GEM
     builder (3.3.0)
     cgi (0.4.2)
     charlock_holmes (0.7.9)
-    commonmarker (0.23.10)
+    commonmarker (2.3.0)
+      rb_sys (~> 0.9)
+    commonmarker (2.3.0-aarch64-linux)
+    commonmarker (2.3.0-aarch64-linux-musl)
+    commonmarker (2.3.0-arm64-darwin)
+    commonmarker (2.3.0-x86_64-darwin)
+    commonmarker (2.3.0-x86_64-linux)
+    commonmarker (2.3.0-x86_64-linux-musl)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
     crack (1.0.0)
@@ -270,6 +277,9 @@ GEM
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
     rake (13.2.1)
+    rake-compiler-dock (1.9.1)
+    rb_sys (0.9.111)
+      rake-compiler-dock (= 1.9.1)
     rdoc (6.13.1)
       psych (>= 4.0.0)
     redcarpet (3.6.1)
@@ -356,7 +366,7 @@ DEPENDENCIES
   asciidoctor
   bootstrap
   bootstrap-icons-helper (~> 2.0)
-  commonmarker (= 0.23.10)
+  commonmarker (= 2.3.0)
   creole
   github-linguist
   github-markup
@@ -414,7 +424,13 @@ CHECKSUMS
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
   cgi (0.4.2) sha256=a3cb190d46a820ca01a3e28bd5b64e67003ff99d7884b70512448566f35347e6
   charlock_holmes (0.7.9) sha256=b49e8a11ce1921e2c5b65511bb864ae51720ce9bd1c336ccf0e89e6c8ae62db0
-  commonmarker (0.23.10) sha256=fdd312ae2bb4071b2f3085d4d7533cb9f8d9057a2eaa0760228a65bc3ed565d1
+  commonmarker (2.3.0) sha256=74fb85e4ae59a9fc166dd1813ad791805d09dec1a4e79c81a7be0a6a8dc5dc63
+  commonmarker (2.3.0-aarch64-linux) sha256=63e6c599ed2b1a01c012e5524ed25f60ab1132c6b582bcef0aa542770d3087ee
+  commonmarker (2.3.0-aarch64-linux-musl) sha256=2be68fc9106fe5b0a92928cf2903c0924ee2ef862fefd2b5c7943292902e79ab
+  commonmarker (2.3.0-arm64-darwin) sha256=fb5a6416395cbac63bb7741887c74e17141be75f407a292ab98cd6c8ab4894a2
+  commonmarker (2.3.0-x86_64-darwin) sha256=65919fe63bc1e01319d958351ae611cc913bd2a8aa3f1a4f3fb3d12e82fbc568
+  commonmarker (2.3.0-x86_64-linux) sha256=a6f2b523be0c3e4752aaf55cc5026239080b81f91bd2f72226b6e71919d204d0
+  commonmarker (2.3.0-x86_64-linux-musl) sha256=af895be1dfe723a1ae2671fd147d082e1be107be732b7a52e2e0d5daa1ae687a
   concurrent-ruby (1.3.5) sha256=813b3e37aca6df2a21a3b9f1d497f8cbab24a2b94cab325bffe65ee0f6cbebc6
   connection_pool (2.5.0) sha256=233b92f8d38e038c1349ccea65dd3772727d669d6d2e71f9897c8bf5cd53ebfc
   crack (1.0.0) sha256=c83aefdb428cdc7b66c7f287e488c796f055c0839e6e545fec2c7047743c4a49
@@ -490,6 +506,8 @@ CHECKSUMS
   rails-html-sanitizer (1.6.2) sha256=35fce2ca8242da8775c83b6ba9c1bcaad6751d9eb73c1abaa8403475ab89a560
   railties (8.0.2) sha256=0d7c3f40c49ba74980f1bac1d4bb153a9331c5ee8a9631d89c7bf79db82e5cf9
   rake (13.2.1) sha256=46cb38dae65d7d74b6020a4ac9d48afed8eb8149c040eccf0523bec91907059d
+  rake-compiler-dock (1.9.1) sha256=e73720a29aba9c114728ce39cc0d8eef69ba61d88e7978c57bac171724cd4d53
+  rb_sys (0.9.111) sha256=65822fd8d57c248cd893db0efe01bc6edc15fcbea3ba6666091e35430c1cbaf0
   rdoc (6.13.1) sha256=62a0dac99493c94e8eb7a3fb44e55aefcb4cecb119f7991f25bddc5ed8d472f7
   redcarpet (3.6.1) sha256=d444910e6aa55480c6bcdc0cdb057626e8a32c054c29e793fa642ba2f155f445
   reline (0.6.1) sha256=1afcc9d7cb1029cdbe780d72f2f09251ce46d3780050f3ec39c3ccc6b60675fb
