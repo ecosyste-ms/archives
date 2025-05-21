@@ -97,9 +97,6 @@ GEM
     appsignal (4.5.13)
       logger
       rack (>= 2.0.0)
-    archive-tar-minitar (0.12)
-      minitar (~> 0.12)
-      minitar-cli (~> 0.12)
     asciidoctor (2.0.23)
     base64 (0.2.0)
     benchmark (0.4.0)
@@ -352,7 +349,6 @@ DEPENDENCIES
   actionview
   activesupport
   appsignal
-  archive-tar-minitar
   asciidoctor
   bootstrap
   bootstrap-icons-helper (~> 2.0)
@@ -361,6 +357,8 @@ DEPENDENCIES
   github-linguist
   github-markup
   jbuilder
+  minitar
+  minitar-cli
   mocha
   nokogiri
   org-ruby
@@ -402,7 +400,6 @@ CHECKSUMS
   activesupport (8.0.2) sha256=8565cddba31b900cdc17682fd66ecd020441e3eef320a9930285394e8c07a45e
   addressable (2.8.7) sha256=462986537cf3735ab5f3c0f557f14155d778f4b43ea4f485a9deb9c8f7c58232
   appsignal (4.5.13) sha256=846ff617a18d297c54b7350352a1dcd67f1763c90972db65fff936a04d04574e
-  archive-tar-minitar (0.12) sha256=bfdbbf5b5af12eb4eadfe70238214b3de224204c4caa5259fe020fb87bd8dcb2
   asciidoctor (2.0.23) sha256=52208807f237dfa0ca29882f8b13d60b820496116ad191cf197ca56f2b7fddf3
   base64 (0.2.0) sha256=0f25e9b21a02a0cc0cea8ef92b2041035d39350946e8789c562b2d1a3da01507
   benchmark (0.4.0) sha256=0f12f8c495545e3710c3e4f0480f63f06b4c842cc94cec7f33a956f5180e874a
