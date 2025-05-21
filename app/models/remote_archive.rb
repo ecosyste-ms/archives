@@ -246,7 +246,8 @@ class RemoteArchive
       base_path = extract(dir)
 
       return nil if base_path.nil?
-      system("cd", base_path, "&&", "repomix", ".")
+      cmd = "cd #{Shellwords.escape(base_path)} && repomix . --output repomix-output.txt --verbose"
+      system(cmd)
       repopack_output = File.read(File.join(base_path, 'repomix-output.txt'))
 
       return {
