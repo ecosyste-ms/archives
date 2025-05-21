@@ -167,9 +167,9 @@ GEM
       net-smtp
     marcel (1.0.4)
     mini_mime (1.1.5)
-    minitar (0.12.1)
-    minitar-cli (0.12)
-      minitar (~> 0.12.0)
+    minitar (1.0.2)
+    minitar-cli (1.0.0)
+      minitar (~> 1.0.0)
       powerbar (~> 1.0)
     minitest (5.25.5)
     mocha (2.7.1)
@@ -446,8 +446,8 @@ CHECKSUMS
   mail (2.8.1) sha256=ec3b9fadcf2b3755c78785cb17bc9a0ca9ee9857108a64b6f5cfc9c0b5bfc9ad
   marcel (1.0.4) sha256=0d5649feb64b8f19f3d3468b96c680bae9746335d02194270287868a661516a4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
-  minitar (0.12.1) sha256=3a1dbbae8c4c8e67ab8e3951ba36cb93b844c225b29f83e3b90f48226f3d6038
-  minitar-cli (0.12) sha256=667e17bff71baf3d0c4c4998d4e51c21fcdccf6c8a4c945efade6fede2559bb5
+  minitar (1.0.2) sha256=b192eb2ba7672906ed53853d2188130a849f1c2451e5b2dac688d9f5f7634672
+  minitar-cli (1.0.0) sha256=c467cb2598503efef400b6143b001c3bd3815268666a297806a83fe065c99460
   minitest (5.25.5) sha256=391b6c6cb43a4802bfb7c93af1ebe2ac66a210293f4a3fb7db36f2fc7dc2c756
   mocha (2.7.1) sha256=8f7d538d5d3ebc75fc788b3d92fbab913a93a78462d2a3ce99d1bdde7af7f851
   net-imap (0.5.8) sha256=52aa5fdfc1a8a3df1f793b20a327e95b5a9dfe1d733e1f0d53075d2dbcfcf593
