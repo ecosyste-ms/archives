@@ -67,7 +67,7 @@ class RemoteArchive
           destination = File.join(dir, 'tar')
           FileUtils.mkdir_p(destination)
           Zlib::GzipReader.open(path) do |gz|
-            Archive::Tar::Minitar::Reader.open(gz) do |reader|
+            Minitar::Reader.open(gz) do |reader|
               extract_tar(reader, destination)
             end
           end
@@ -75,7 +75,7 @@ class RemoteArchive
           destination = File.join(dir, 'tar')
           FileUtils.mkdir_p(destination)
           File.open(path, "rb") do |file|
-            Archive::Tar::Minitar::Reader.open(file) do |reader|
+            Minitar::Reader.open(file) do |reader|
               extract_tar(reader, destination)
             end
           end
@@ -83,7 +83,7 @@ class RemoteArchive
           data_path = File.join(destination, 'data.tar.gz')
           FileUtils.mkdir_p(data_destination)
           Zlib::GzipReader.open(data_path) do |gz|
-            Archive::Tar::Minitar::Reader.open(gz) do |reader|
+            Minitar::Reader.open(gz) do |reader|
               extract_tar(reader, data_destination)
             end
           end
