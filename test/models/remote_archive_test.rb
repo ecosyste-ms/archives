@@ -95,7 +95,7 @@ class ArchiveTest < ActiveSupport::TestCase
     Dir.mktmpdir do |dir|
       dest = archive.working_directory(dir)
       Zlib::GzipWriter.open(dest) do |gz|
-        Archive::Tar::Minitar::Writer.open(gz) do |tar|
+        Minitar::Writer.open(gz) do |tar|
           tar.add_file_simple("../../evil.txt", :mode => 0644, :size => 5) do |io|
             io.write("oops!")
           end

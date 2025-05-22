@@ -2,7 +2,7 @@ require 'timeout'
 require 'fileutils'
 require 'zip'
 require 'zlib'
-require 'archive/tar/minitar'
+require 'minitar'
 
 class RemoteArchive
   attr_accessor :url
