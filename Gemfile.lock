@@ -202,7 +202,7 @@ GEM
       racc (~> 1.4)
     org-ruby (0.9.12)
       rubypants (~> 0.2)
-    ostruct (0.6.1)
+    ostruct (0.6.2)
     popper_js (2.11.8)
     powerbar (1.0.18)
       hashie (>= 1.1.0)
@@ -464,7 +464,7 @@ CHECKSUMS
   nokogiri (1.18.8-x86_64-linux-gnu) sha256=4a747875db873d18a2985ee2c320a6070c4a414ad629da625fbc58d1a20e5ecc
   nokogiri (1.18.8-x86_64-linux-musl) sha256=ddd735fba49475a395b9ea793bb6474e3a3125b89960339604d08a5397de1165
   org-ruby (0.9.12) sha256=93cbec3a4470cb9dca6a4a98dc276a6434ea9d9e7bc2d42ea33c3aedd5d1c974
-  ostruct (0.6.1) sha256=09a3fb7ecc1fa4039f25418cc05ae9c82bd520472c5c6a6f515f03e4988cb817
+  ostruct (0.6.2) sha256=6d7302a299e400a2c248d6ce0dad18fc3a5714e8096facc25ffd0c54ee57cfc0
   popper_js (2.11.8) sha256=f4b0be717fc0d50bdb3dbbc55788525a9e0e8f640b76c9971fc34ee609eadbd2
   powerbar (1.0.18) sha256=e64e54eb659c4fb5210fa19dc121d8629cd90346dbdd6bb0797746e68d600f1f
   pp (0.6.2) sha256=947ec3120c6f92195f8ee8aa25a7b2c5297bb106d83b41baa02983686577b6ff
