@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: "Ecosyste.ms: Archives"
-  description: "An open API service for inspecting package archives and files from many open source software ecosystems. "
+  description: "An open API service for inspecting package archives and files from many open source software ecosystems. Archives acts as a caching proxy that allows you to explore package contents (tarballs, zips, etc.) without downloading them locally."
   contact:
     name: Ecosyste.ms
     email: support@ecosyste.ms
@@ -23,10 +23,11 @@ paths:
       parameters:
         - name: url
           in: query
-          description: url to archive
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/express/-/express-4.18.2.tgz)
           required: true
           schema:
             type: string
+            example: "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
       responses:
         200:
           description: OK
@@ -36,6 +37,7 @@ paths:
                 type: array
                 items:
                   type: string
+                example: ["package.json", "README.md", "lib/express.js", "lib/application.js"]
   /archives/contents:
     get:
       summary: get contents of a path from an archive
@@ -43,16 +45,18 @@ paths:
       parameters:
         - name: url
           in: query
-          description: url to archive
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/express/-/express-4.18.2.tgz)
           required: true
           schema:
             type: string
+            example: "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
         - name: path
           in: query
-          description: path to file or folder in archive
+          description: Path to a specific file or folder within the archive (e.g., 'package.json' or 'lib/')
           required: true
           schema:
             type: string
+            example: "package.json"
       responses:
         200:
           description: OK
@@ -67,10 +71,11 @@ paths:
       parameters:
         - name: url
           in: query
-          description: url to archive
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/express/-/express-4.18.2.tgz)
           required: true
           schema:
             type: string
+            example: "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
       responses:
         200:
           description: OK
@@ -85,10 +90,11 @@ paths:
       parameters:
         - name: url
           in: query
-          description: url to archive
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/express/-/express-4.18.2.tgz)
           required: true
           schema:
             type: string
+            example: "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
       responses:
         200:
           description: OK
@@ -103,10 +109,11 @@ paths:
       parameters:
         - name: url
           in: query
-          description: url to archive
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/express/-/express-4.18.2.tgz)
           required: true
           schema:
             type: string
+            example: "https://registry.npmjs.org/express/-/express-4.18.2.tgz"
       responses:
         200:
           description: OK
@@ -121,10 +128,16 @@ components:
       properties:
         name:
           type: string
+          description: Name of the file or directory
+          example: "package.json"
         directory:
           type: boolean
+          description: Whether this path is a directory
+          example: false
         contents:
           type: string
+          description: File contents (only present for files, not directories)
+          example: "{\n  \"name\": \"express\",\n  \"version\": \"4.18.2\",\n  \"description\": \"Fast, unopinionated, minimalist web framework\"\n}"
     Readme:
       type: object
       properties:

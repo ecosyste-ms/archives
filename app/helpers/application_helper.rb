@@ -12,6 +12,6 @@ module ApplicationHelper
   end
 
   def app_description
-    'An open API service for inspecting package archives and files from many open source software ecosystems.'
+    'An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.'
   end
 end

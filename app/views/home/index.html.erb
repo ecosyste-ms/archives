@@ -1,36 +1,175 @@
-<div class="col-lg-4 container-sm text-center">
-  <form class="row g-2 justify-content-center" action='<%= list_api_v1_archives_path %>' method="get">
-    <div class="col-auto">
-      <label for="repo_name" class="visually-hidden">Tarball URL</label>
-      <input name='url' type="text" class="form-control" id="url" placeholder="URL: eg https://registry.npmjs.org/google-playstore-stats-viewer/-/google-playstore-stats-viewer-1.0.32.tgz" size="50">
-    </div>
-    <div class="col-auto">
-      <button type="submit" class="btn btn-primary mb-3">View</button>
-    </div>
-  </form>
-</div>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 text-center">
 
-<div class="container-sm col-lg-6 mt-4">
-  <h4 class='mb-3'>Supported ecosystems and file formats:</h4>
-  <% @formats.each do |format| %>
-    <div class="card mb-3 registry d-flex">
-      <div class="card-body pb-1">
-        <div class="d-flex">
-          
-          <div class="flex-grow-1 ms-3 text-break">
-            <h5 class='card-title'>
-              <%= format[:name] %>
-            </h5>
-          
-            <p class="card-subtitle mb-2 text-muted">
-              Ecosystems: <%= format[:ecosystems].join(', ') %>
-            </p>
-          </div>
-          <div class="flex-shrink-0">
-           
-          </div>  
+      <h1 class="display-5 mb-3">Inspect package archives via API</h1>
+      <p class="lead text-muted mb-5">
+        List files and extract contents from package archives without downloading them
+      </p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body p-4">
+          <form action='<%= list_api_v1_archives_path %>' method="get">
+            <div class="row g-2">
+              <div class="col">
+                <input name='url' type="text" class="form-control form-control-lg" 
+                       placeholder="Enter package archive URL (e.g., https://registry.npmjs.org/react/-/react-18.2.0.tgz)" 
+                       aria-label="Package archive URL">
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-lg">Inspect</button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  <% end %>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="mb-5">
+        <div class="row align-items-start">
+          <div class="col-md-2 text-center mb-3 mb-md-0">
+            <%= image_tag 'indexes.svg', alt: 'Archives icon', style: 'width: 80px; height: 80px;' %>
+          </div>
+          <div class="col-md-10">
+            <h2 class="h3 mb-3">Archives API</h2>
+            <p class="text-muted mb-4">
+              A simple REST API to list files and read contents from package archives across multiple ecosystems.
+              No need to download and extract archives locally.
+            </p>
+            
+            <div class="row g-4">
+              <div class="col-md-6">
+                <h4 class="h5 mb-2">
+                  <%= link_to "List Archive Contents", "/docs#list", class: "text-decoration-none" %>
+                </h4>
+                <p class="small text-muted">
+                  Get a complete file listing from any supported package archive format
+                </p>
+              </div>
+              
+              <div class="col-md-6">
+                <h4 class="h5 mb-2">
+                  <%= link_to "Extract File Contents", "/docs#contents", class: "text-decoration-none" %>
+                </h4>
+                <p class="small text-muted">
+                  Retrieve specific files from archives without full download
+                </p>
+              </div>
+              
+              <div class="col-md-6">
+                <h4 class="h5 mb-2">
+                  <%= link_to "README Extraction", "/docs#readme", class: "text-decoration-none" %>
+                </h4>
+                <p class="small text-muted">
+                  Automatically find and extract README files in multiple formats
+                </p>
+              </div>
+              
+              <div class="col-md-6">
+                <h4 class="h5 mb-2">
+                  <%= link_to "Changelog Detection", "/docs#changelog", class: "text-decoration-none" %>
+                </h4>
+                <p class="small text-muted">
+                  Locate and retrieve changelog information from packages
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-5">
+
+      <div class="mb-5">
+        <h3 class="h4 mb-4">Core Features</h3>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="d-flex">
+              <div class="me-3">
+                <%= bootstrap_icon 'speedometer2', width: 24, height: 24, class: 'text-primary' %>
+              </div>
+              <div>
+                <h5 class="h6 mb-2">High Performance</h5>
+                <p class="small text-muted mb-0">
+                  Cached responses and optimized extraction for fast access to package data
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="d-flex">
+              <div class="me-3">
+                <%= bootstrap_icon 'shield-check', width: 24, height: 24, class: 'text-success' %>
+              </div>
+              <div>
+                <h5 class="h6 mb-2">Simple API</h5>
+                <p class="small text-muted mb-0">
+                  RESTful endpoints with JSON responses for easy integration
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="d-flex">
+              <div class="me-3">
+                <%= bootstrap_icon 'diagram-3', width: 24, height: 24, class: 'text-info' %>
+              </div>
+              <div>
+                <h5 class="h6 mb-2">Multi-Ecosystem</h5>
+                <p class="small text-muted mb-0">
+                  Unified API supporting npm, PyPI, RubyGems, Maven, NuGet, and more
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-5">
+
+      <div class="mb-5">
+        <h3 class="h4 mb-4">Supported Formats</h3>
+        <div class="row g-3">
+          <% @formats.each do |format| %>
+            <div class="col-md-4">
+              <div class="border rounded p-3">
+                <h6 class="mb-1"><%= format[:name] %></h6>
+                <p class="small text-muted mb-0">
+                  <%= format[:ecosystems].join(', ') %>
+                </p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <hr class="my-5">
+
+      <div class="text-center mb-5">
+        <h3 class="h4 mb-3">Get Started</h3>
+        <p class="text-muted mb-4">
+          Free API with 5,000 requests per hour. No registration required.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="/docs" class="btn btn-primary">
+            <%= bootstrap_icon 'book', width: 16, height: 16, class: 'me-2' %>
+            API Documentation
+          </a>
+          <a href="https://github.com/ecosyste-ms/archives" class="btn btn-outline-secondary">
+            <%= bootstrap_icon 'github', width: 16, height: 16, class: 'me-2' %>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
