@@ -121,7 +121,7 @@ class ArchiveTest < ActiveSupport::TestCase
     
     Typhoeus::Request.expects(:new).with(
       "https://example.com/test.zip",
-      { followlocation: true }
+      followlocation: true
     ).returns(request)
     
     # Verify the global user agent is set
