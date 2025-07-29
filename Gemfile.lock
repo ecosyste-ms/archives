@@ -94,7 +94,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    appsignal (4.5.17)
+    appsignal (4.6.0)
       logger
       rack (>= 2.0.0)
     asciidoctor (2.0.23)
@@ -290,7 +290,7 @@ GEM
       railties (>= 5.2, < 8.1)
     ruby2_keywords (0.0.5)
     rubypants (0.7.1)
-    rubyzip (2.4.1)
+    rubyzip (3.0.0)
     rugged (1.9.0)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -409,7 +409,7 @@ CHECKSUMS
   activestorage (8.0.2) sha256=f83d221e0f06ae38f2200e55490bd155c76d0add330f6e300e8646048d672977
   activesupport (8.0.2) sha256=8565cddba31b900cdc17682fd66ecd020441e3eef320a9930285394e8c07a45e
   addressable (2.8.7) sha256=462986537cf3735ab5f3c0f557f14155d778f4b43ea4f485a9deb9c8f7c58232
-  appsignal (4.5.17) sha256=1a1f8ed4e74ce8831365b5a6710b9c0313d249eb148b31325b291ccc9d6d9143
+  appsignal (4.6.0) sha256=22e1c9612423da2de316c67f32aaf3cc4853b01c0c5105e20b59e1e08dcad6e7
   asciidoctor (2.0.23) sha256=52208807f237dfa0ca29882f8b13d60b820496116ad191cf197ca56f2b7fddf3
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   benchmark (0.4.1) sha256=d4ef40037bba27f03b28013e219b950b82bace296549ec15a78016552f8d2cce
@@ -512,7 +512,7 @@ CHECKSUMS
   rswag-ui (2.16.0) sha256=a1f49e927dceda92e6e6e7c1000f1e217ee66c565f69e28131dc98b33cd3a04f
   ruby2_keywords (0.0.5) sha256=ffd13740c573b7301cf7a2e61fc857b2a8e3d3aff32545d6f8300d8bae10e3ef
   rubypants (0.7.1) sha256=30eb674add457dd05232c6357f7ee674536606f79d9f55e0f84db442bce2624f
-  rubyzip (2.4.1) sha256=8577c88edc1fde8935eb91064c5cb1aef9ad5494b940cf19c775ee833e075615
+  rubyzip (3.0.0) sha256=dd71a1024812210e08c327231e796387dd00c775314872750e75b9bd092c5cc2
   rugged (1.9.0) sha256=7faaa912c5888d6e348d20fa31209b6409f1574346b1b80e309dbc7e8d63efac
   sassc (2.4.0) sha256=4c60a2b0a3b36685c83b80d5789401c2f678c1652e3288315a1551d811d9f83e
   sassc-rails (2.1.2) sha256=5f4fdf3881fc9bdc8e856ffbd9850d70a2878866feae8114aa45996179952db5
