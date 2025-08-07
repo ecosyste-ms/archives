@@ -7,6 +7,7 @@ gem 'railties'
 gem 'actionview'
 gem 'actionpack'
 gem 'activesupport'
+gem "secure_headers"
 gem "sprockets-rails"
 gem "puma"
 gem "jbuilder"
