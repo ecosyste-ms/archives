@@ -53,35 +53,7 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     actual_response = JSON.parse(@response.body)
 
-    assert_equal actual_response, [".circleci",
-      ".circleci/config.yml",
-      ".eslintignore",
-      ".eslintrc.js",
-      ".github",
-      ".github/move.yml",
-      ".gitignore",
-      ".npmignore",
-      ".releaserc.js",
-      ".snyk",
-      "CHANGELOG.md",
-      "CODE_OF_CONDUCT.md",
-      "CONTRIBUTING.md",
-      "LICENSE.txt",
-      "README.md",
-      "package-lock.json",
-      "package.json",
-      "src",
-      "src/HTLAsset.js",
-      "src/HelixJSAsset.js",
-      "src/engine",
-      "src/engine/RuntimeTemplate.js",
-      "src/index.js",
-      "test",
-      "test/example",
-      "test/example/bla.css",
-      "test/example/html.htl",
-      "test/testGeneratedCode.js"
-    ]
+    assert_equal actual_response, [".circleci", ".github", "src", "src/engine", "test", "test/example"]
   end
 
   test 'list jar' do

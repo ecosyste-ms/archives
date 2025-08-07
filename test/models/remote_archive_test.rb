@@ -131,4 +131,39 @@ class ArchiveTest < ActiveSupport::TestCase
       archive.download_file(dir)
     end
   end
+
+  test "handles file extraction errors gracefully" do
+    archive = RemoteArchive.new("http://example.com/test.zip")
+
+    Dir.mktmpdir do |dir|
+      dest = archive.working_directory(dir)
+      
+      # Create an empty file to simulate a zip file
+      File.write(dest, "fake zip content")
+
+      # Mock a zip entry that will cause an ENOENT error during extraction
+      zip_file = mock()
+      entry = mock()
+      entry.stubs(:respond_to?).with(:symlink?).returns(false)
+      entry.stubs(:name).returns("problematic_file.txt")
+      entry.stubs(:directory?).returns(false)
+      
+      zip_file.stubs(:entries).returns([entry])
+      zip_file.stubs(:each).yields(entry)
+      zip_file.expects(:extract).with(entry, anything).raises(Errno::ENOENT.new("No such file"))
+
+      # Mock the mime_type and file opening
+      archive.stubs(:mime_type).returns("application/zip")
+      Zip::File.expects(:open).with(dest).yields(zip_file)
+
+      # Mock Rails.logger to capture the warning
+      Rails.logger.expects(:warn).with(regexp_matches(/Failed to extract problematic_file.txt/))
+
+      archive.stubs(:download_file).returns(dest)
+      
+      # Should not raise an error and should return a path
+      result = archive.extract(dir)
+      assert_not_nil result, "Extract should still return a destination even with file errors"
+    end
+  end
 end

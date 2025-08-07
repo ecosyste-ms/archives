@@ -3,6 +3,10 @@ class Api::V1::ArchivesController < Api::V1::ApplicationController
     expires_in(60.days, public: true, "s-maxage" => 60.days) # TODO this needs to be more dynamic to take into account headers from where the file was loaded
     @archive = RemoteArchive.new(params[:url])
     render json: @archive.list_files
+  rescue => e
+    Rails.logger.error("Error in list: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    render json: {:error => e.message}, :status => 500
   end
 
   def contents
@@ -36,6 +40,10 @@ class Api::V1::ArchivesController < Api::V1::ApplicationController
     else
       render json: changelog
     end
+  rescue => e
+    Rails.logger.error("Error in changelog: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    render json: {:error => e.message}, :status => 500
   end
 
   def repopack

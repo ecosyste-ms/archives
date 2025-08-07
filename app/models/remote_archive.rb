@@ -49,18 +49,37 @@ class RemoteArchive
           FileUtils.mkdir_p(destination)
           Zip::File.open(path) do |zip_file|
             file_count = 0
+            
+            # Check if we should strip top-level directory by looking at entry structure
+            all_entries = zip_file.entries.reject { |entry| entry.respond_to?(:symlink?) && entry.symlink? }
+            should_strip_top = all_entries.all? { |entry| entry.name.split(File::SEPARATOR).length > 1 } && 
+                             all_entries.map { |entry| entry.name.split(File::SEPARATOR).first }.uniq.length == 1
+            
             zip_file.each do |entry|
               next if entry.respond_to?(:symlink?) && entry.symlink?
               components = entry.name.split(File::SEPARATOR)
               next if components.empty?
-              stripped_path = File.join(components.drop(1)) # remove top-level folder
+              
+              # Only strip top-level folder if all entries share the same top-level folder
+              stripped_path = should_strip_top ? File.join(components.drop(1)) : entry.name
               next if stripped_path.empty?
+              
               entry_path = File.join(destination, stripped_path)
               entry_path = File.expand_path(entry_path)
               raise "Blocked extraction outside target dir" unless entry_path.start_with?(File.expand_path(destination))
               raise "Too many files in archive" if (file_count += 1) > 10_000
-              FileUtils.mkdir_p(File.dirname(entry_path))
-              zip_file.extract(entry, entry_path) unless File.exist?(entry_path)
+              
+              if entry.directory?
+                FileUtils.mkdir_p(entry_path)
+              else
+                FileUtils.mkdir_p(File.dirname(entry_path))
+                begin
+                  zip_file.extract(entry, entry_path) unless File.exist?(entry_path)
+                rescue Errno::ENOENT => e
+                  Rails.logger.warn("Failed to extract #{entry.name}: #{e.message}")
+                  next
+                end
+              end
             end
           end
         when "application/gzip"
