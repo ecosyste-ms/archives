@@ -52,8 +52,10 @@ class RemoteArchive
             
             # Check if we should strip top-level directory by looking at entry structure
             all_entries = zip_file.entries.reject { |entry| entry.respond_to?(:symlink?) && entry.symlink? }
-            should_strip_top = all_entries.all? { |entry| entry.name.split(File::SEPARATOR).length > 1 } && 
-                             all_entries.map { |entry| entry.name.split(File::SEPARATOR).first }.uniq.length == 1
+            non_root_entries = all_entries.reject { |entry| entry.name.split(File::SEPARATOR).length == 1 && entry.directory? }
+            should_strip_top = non_root_entries.all? { |entry| entry.name.split(File::SEPARATOR).length > 1 } && 
+                             all_entries.map { |entry| entry.name.split(File::SEPARATOR).first }.uniq.length == 1 &&
+                             non_root_entries.any?
             
             zip_file.each do |entry|
               next if entry.respond_to?(:symlink?) && entry.symlink?
@@ -74,8 +76,11 @@ class RemoteArchive
               else
                 FileUtils.mkdir_p(File.dirname(entry_path))
                 begin
-                  zip_file.extract(entry, entry_path) unless File.exist?(entry_path)
-                rescue Errno::ENOENT => e
+                  # Extract manually to avoid issues with zip_file.extract
+                  File.open(entry_path, 'wb') do |file|
+                    file.write(entry.get_input_stream.read)
+                  end
+                rescue => e
                   Rails.logger.warn("Failed to extract #{entry.name}: #{e.message}")
                   next
                 end

@@ -53,7 +53,7 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     actual_response = JSON.parse(@response.body)
 
-    assert_equal actual_response, [".circleci", ".github", "src", "src/engine", "test", "test/example"]
+    assert_equal actual_response, [".circleci", ".circleci/config.yml", ".eslintignore", ".eslintrc.js", ".github", ".github/move.yml", ".gitignore", ".npmignore", ".releaserc.js", ".snyk", "CHANGELOG.md", "CODE_OF_CONDUCT.md", "CONTRIBUTING.md", "LICENSE.txt", "README.md", "package-lock.json", "package.json", "src", "src/HTLAsset.js", "src/HelixJSAsset.js", "src/engine", "src/engine/RuntimeTemplate.js", "src/index.js", "test", "test/example", "test/example/bla.css", "test/example/html.htl", "test/testGeneratedCode.js"]
   end
 
   test 'list jar' do
@@ -64,18 +64,20 @@ class ApiV1ArchivesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     actual_response = JSON.parse(@response.body)
 
-    assert_equal actual_response, ["MANIFEST.MF",
-      "core.clj",
-      "leiningen",
-      "leiningen/org.clojars.majorcluster",
-      "leiningen/org.clojars.majorcluster/clj-data-adapter",
-      "leiningen/org.clojars.majorcluster/clj-data-adapter/README.md",
-      "leiningen/org.clojars.majorcluster/clj-data-adapter/project.clj",
-      "maven",
-      "maven/org.clojars.majorcluster",
-      "maven/org.clojars.majorcluster/clj-data-adapter",
-      "maven/org.clojars.majorcluster/clj-data-adapter/pom.properties",
-      "maven/org.clojars.majorcluster/clj-data-adapter/pom.xml"
+    assert_equal actual_response, ["META-INF",
+      "META-INF/MANIFEST.MF",
+      "META-INF/leiningen",
+      "META-INF/leiningen/org.clojars.majorcluster",
+      "META-INF/leiningen/org.clojars.majorcluster/clj-data-adapter",
+      "META-INF/leiningen/org.clojars.majorcluster/clj-data-adapter/README.md",
+      "META-INF/leiningen/org.clojars.majorcluster/clj-data-adapter/project.clj",
+      "META-INF/maven",
+      "META-INF/maven/org.clojars.majorcluster",
+      "META-INF/maven/org.clojars.majorcluster/clj-data-adapter",
+      "META-INF/maven/org.clojars.majorcluster/clj-data-adapter/pom.properties",
+      "META-INF/maven/org.clojars.majorcluster/clj-data-adapter/pom.xml",
+      "clj_data_adapter",
+      "clj_data_adapter/core.clj"
     ]
   end
 

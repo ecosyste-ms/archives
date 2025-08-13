@@ -148,9 +148,13 @@ class ArchiveTest < ActiveSupport::TestCase
       entry.stubs(:name).returns("problematic_file.txt")
       entry.stubs(:directory?).returns(false)
       
+      # Mock get_input_stream to raise an error
+      input_stream = mock()
+      input_stream.expects(:read).raises(Errno::ENOENT.new("No such file"))
+      entry.expects(:get_input_stream).returns(input_stream)
+      
       zip_file.stubs(:entries).returns([entry])
       zip_file.stubs(:each).yields(entry)
-      zip_file.expects(:extract).with(entry, anything).raises(Errno::ENOENT.new("No such file"))
 
       # Mock the mime_type and file opening
       archive.stubs(:mime_type).returns("application/zip")
