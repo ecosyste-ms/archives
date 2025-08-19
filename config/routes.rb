@@ -11,6 +11,7 @@ Rails.application.routes.draw do
           get :readme
           get :changelog
           get :repopack
+          get :repomix, action: :repopack
         end
       end
     end
