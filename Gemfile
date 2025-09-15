@@ -26,7 +26,7 @@ gem 'minitar-cli'
 gem "github-markup", require: "github/markup"
 gem "redcarpet", :platforms => :ruby
 gem "RedCloth"
-gem "commonmarker", '~> 2.3.1'
+gem "commonmarker", '~> 2.4.0'
 gem "rdoc"
 gem "org-ruby"
 gem "creole"
