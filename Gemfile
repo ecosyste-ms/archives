@@ -12,8 +12,6 @@ gem "sprockets-rails"
 gem "puma"
 gem "jbuilder"
 gem 'typhoeus'
-gem "rack-attack"
-gem "rack-attack-rate-limit", require: "rack/attack/rate-limit"
 gem 'rack-cors'
 gem 'rswag-api'
 gem 'rswag-ui'
