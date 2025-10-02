@@ -25,12 +25,16 @@ RUN apk add --no-cache \
     npm \
     yaml-dev \
     libffi-dev \
+    jemalloc \
  && gem update --system \
  && gem install bundler foreman \
  && bundle config set without 'test development' \
  && bundle install --jobs 8 \
  && pip install docutils \
  && npm install -g repomix
+
+ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
+ENV RUBY_YJIT_ENABLE=1
 
 COPY . $APP_ROOT
 
