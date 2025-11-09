@@ -178,10 +178,11 @@ class RemoteArchive
       full_path = File.join(base_path, file_path)
       return nil if base_path.nil?
       begin
+        raw_contents = File.read(full_path)
         return {
           name: file_path,
           directory: false,
-          contents: File.read(full_path)
+          contents: raw_contents.force_encoding('UTF-8').scrub('�')
         }
       rescue Errno::EISDIR
         return {
