@@ -3,4 +3,4 @@ set -e
 
 rm -rf tmp/pids
 
-exec bundle exec falcon host
+exec bundle exec falcon serve --port ${PORT:-5000} --bind http://0.0.0.0
