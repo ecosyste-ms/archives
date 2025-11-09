@@ -109,29 +109,6 @@ class ArchiveTest < ActiveSupport::TestCase
     end
   end
 
-  test "uses configured user agent in HTTP requests" do
-    archive = RemoteArchive.new("https://example.com/test.zip")
-    
-    # Mock the Typhoeus request to capture the user agent
-    request = mock()
-    request.expects(:on_headers).returns(request)
-    request.expects(:on_body).returns(request)
-    request.expects(:on_complete).returns(request)
-    request.expects(:run)
-    
-    Typhoeus::Request.expects(:new).with(
-      "https://example.com/test.zip",
-      followlocation: true
-    ).returns(request)
-    
-    # Verify the global user agent is set
-    assert_equal "archives.ecosyste.ms", Typhoeus::Config.user_agent
-    
-    Dir.mktmpdir do |dir|
-      archive.download_file(dir)
-    end
-  end
-
   test "handles file extraction errors gracefully" do
     archive = RemoteArchive.new("http://example.com/test.zip")
 

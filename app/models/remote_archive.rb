@@ -17,19 +17,20 @@ class RemoteArchive
 
   def download_file(dir)
     path = working_directory(dir)
-    downloaded_file = File.open(path, "wb")
 
-    request = Typhoeus::Request.new(url, followlocation: true)
-    request.on_headers do |response|
-      if response.headers && response.headers['Content-Length'] && response.headers['Content-Length'].to_i > 100 * 1024 * 1024
-        Rails.logger.info("File is larger than 100MB, skipping extraction.")
-        return false
-      end
-      return nil unless [200,301,302].include? response.code
+    response = Typhoeus.get(url, followlocation: true)
+
+    unless [200, 301, 302].include?(response.code)
+      Rails.logger.info("Download failed: HTTP #{response.code}")
+      return nil
     end
-    request.on_body { |chunk| downloaded_file.write(chunk) }
-    request.on_complete { downloaded_file.close }
-    request.run
+
+    if response.body.bytesize > 100 * 1024 * 1024
+      Rails.logger.info("File is larger than 100MB, skipping extraction.")
+      return false
+    end
+
+    File.binwrite(path, response.body)
   end
 
   def extract(dir)
@@ -40,6 +41,18 @@ class RemoteArchive
       Rails.logger.info("File is larger than 100MB, skipping extraction.")
       return nil
     end
+
+    # Disable fiber yielding during extraction to prevent corruption
+    # of C extension state (zlib, zip)
+    if Fiber.respond_to?(:scheduler) && Fiber.scheduler
+      Fiber.scheduler.blocking { extract_blocking(dir, path) }
+    else
+      extract_blocking(dir, path)
+    end
+  end
+
+  def extract_blocking(dir, path)
+    destination = nil
 
     begin
       Timeout::timeout(30) do
@@ -123,6 +136,8 @@ class RemoteArchive
 
     return destination
   end
+
+  public
 
   def mime_type(path)
     IO.popen(
@@ -210,7 +225,11 @@ class RemoteArchive
       return nil if base_path.nil?
       all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
 
-      readme_files = all_files.select{|path| path.match(/^readme/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
+      readme_files = all_files.select do |path|
+        full_path = File.join(base_path, path)
+        path.match(/^readme/i) && File.file?(full_path)
+      end
+      readme_files = readme_files.sort{|path| supported_readme_format?(path) ? 0 : 1 }
       readme_files = readme_files.sort_by(&:length)
       readme_file = readme_files.first
 
@@ -240,8 +259,11 @@ class RemoteArchive
       return nil if base_path.nil?
       all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
 
-      changelog_files = all_files.select{|path| path.match(/^CHANGE|^HISTORY|^NEWS/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
-
+      changelog_files = all_files.select do |path|
+        full_path = File.join(base_path, path)
+        path.match(/^CHANGE|^HISTORY|^NEWS/i) && File.file?(full_path)
+      end
+      changelog_files = changelog_files.sort{|path| supported_readme_format?(path) ? 0 : 1 }
       changelog_files = changelog_files.sort_by(&:length)
       return nil if changelog_files.empty?
 
