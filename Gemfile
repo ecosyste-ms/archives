@@ -9,7 +9,7 @@ gem 'actionpack'
 gem 'activesupport'
 gem "secure_headers"
 gem "sprockets-rails"
-gem "puma"
+gem "falcon-rails"
 gem "jbuilder"
 gem 'typhoeus'
 gem 'rack-cors'

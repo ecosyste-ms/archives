@@ -3,5 +3,4 @@ set -e
 
 rm -rf tmp/pids
 
-# exec foreman start -d .
-exec bundle exec rails s -b 0.0.0.0
+exec bundle exec falcon host -b http://0.0.0.0:${PORT:-5000}

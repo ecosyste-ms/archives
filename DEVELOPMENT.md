@@ -15,10 +15,12 @@ Once you've got all of those installed, from the root directory of the project r
 
 ```
 bundle install
-rails server
+bundle exec falcon serve -b http://localhost:3000
 ```
 
 You can then load up [http://localhost:3000](http://localhost:3000) to access the service.
+
+**Note**: This app uses [Falcon](https://github.com/socketry/falcon) web server with fiber-based concurrency for handling burst traffic efficiently.
 
 ### Docker
 
