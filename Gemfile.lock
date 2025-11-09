@@ -489,7 +489,6 @@ DEPENDENCIES
   activesupport
   appsignal
   asciidoctor
-  async-http
   bootstrap
   bootstrap-icons
   commonmarker (~> 2.5.0)
