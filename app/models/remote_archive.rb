@@ -225,17 +225,18 @@ class RemoteArchive
       return nil if base_path.nil?
       all_files = Dir.glob("**/*", File::FNM_DOTMATCH, base: base_path).tap{|a| a.delete(".")}
 
-      readme_files = all_files.select do |path|
-        full_path = File.join(base_path, path)
-        path.match(/^readme/i) && File.file?(full_path)
-      end
-      readme_files = readme_files.sort{|path| supported_readme_format?(path) ? 0 : 1 }
+      readme_files = all_files.select{|path| path.match(/^readme/i) }.sort{|path| supported_readme_format?(path) ? 0 : 1 }
       readme_files = readme_files.sort_by(&:length)
       readme_file = readme_files.first
 
       return nil if readme_file.nil?
 
-      raw = File.read(File.join(base_path, readme_file))
+      begin
+        raw = File.read(File.join(base_path, readme_file))
+      rescue Errno::EISDIR
+        Rails.logger.info("Skipping readme directory: #{readme_file}")
+        return nil
+      end
       html = GitHub::Markup.render(readme_file, raw.force_encoding("UTF-8"))
       language = GitHub::Markup.language(readme_file, raw.force_encoding("UTF-8")).try(:name)
 
@@ -269,7 +270,12 @@ class RemoteArchive
 
       changelog_file = changelog_files.first
 
-      raw = File.read(File.join(base_path, changelog_file))
+      begin
+        raw = File.read(File.join(base_path, changelog_file))
+      rescue Errno::EISDIR
+        Rails.logger.info("Skipping changelog directory: #{changelog_file}")
+        return nil
+      end
       html = GitHub::Markup.render(changelog_file, raw.force_encoding("UTF-8"))
       language = GitHub::Markup.language(changelog_file, raw.force_encoding("UTF-8")).try(:name)
 
