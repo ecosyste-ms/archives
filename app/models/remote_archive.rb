@@ -42,18 +42,6 @@ class RemoteArchive
       return nil
     end
 
-    # Disable fiber yielding during extraction to prevent corruption
-    # of C extension state (zlib, zip)
-    if Fiber.respond_to?(:scheduler) && Fiber.scheduler
-      Fiber.scheduler.blocking { extract_blocking(dir, path) }
-    else
-      extract_blocking(dir, path)
-    end
-  end
-
-  def extract_blocking(dir, path)
-    destination = nil
-
     begin
       Timeout::timeout(30) do
         case mime_type(path)
