@@ -9,9 +9,13 @@ class RemoteArchive
 
   def initialize(url)
     @url = url
-    uri = URI.parse(url)
-    unless ["http", "https"].include?(uri.scheme)
-      raise ArgumentError, "Only HTTP/HTTPS URLs are allowed"
+    begin
+      uri = URI.parse(url)
+      unless ["http", "https"].include?(uri.scheme)
+        raise ArgumentError, "Only HTTP/HTTPS URLs are allowed"
+      end
+    rescue URI::InvalidURIError => e
+      raise ArgumentError, "Invalid URL: #{e.message}"
     end
   end
 
@@ -36,6 +40,11 @@ class RemoteArchive
   def extract(dir)
     path = working_directory(dir)
     destination = nil
+
+    unless File.exist?(path)
+      Rails.logger.info("File does not exist at #{path}")
+      return nil
+    end
 
     if File.size(path) > 100 * 1024 * 1024
       Rails.logger.info("File is larger than 100MB, skipping extraction.")
@@ -118,8 +127,15 @@ class RemoteArchive
         end
       end
     rescue Timeout::Error
-      puts "The operation timed out after 30 seconds"
+      Rails.logger.info("The operation timed out after 30 seconds")
       destination = nil
+    rescue RuntimeError => e
+      if e.message.include?("Too many files")
+        Rails.logger.info("Archive has too many files (>10,000), skipping extraction")
+        destination = nil
+      else
+        raise
+      end
     end
 
     return destination
@@ -163,9 +179,34 @@ class RemoteArchive
     Dir.mktmpdir do |dir|
       download_file(dir)
       base_path = extract(dir)
-      full_path = File.join(base_path, file_path)
       return nil if base_path.nil?
+      full_path = File.join(base_path, file_path)
       begin
+        # Check if file/directory exists
+        return nil unless File.exist?(full_path)
+
+        # Check if it's a directory first
+        if File.directory?(full_path)
+          return {
+            name: file_path,
+            directory: true,
+            contents: Dir.glob("**/*", File::FNM_DOTMATCH, base: full_path).tap{|a| a.delete(".")}
+          }
+        end
+
+        mime = mime_type(full_path)
+
+        # Check if it's a binary file that can't be encoded as UTF-8
+        unless mime.start_with?('text/') || mime.include?('json') || mime.include?('xml') || mime.include?('javascript') || mime == 'application/octet-stream'
+          return {
+            name: file_path,
+            directory: false,
+            binary: true,
+            mime_type: mime,
+            error: "Binary file detected. Cannot display contents as text."
+          }
+        end
+
         raw_contents = File.read(full_path)
         return {
           name: file_path,
@@ -173,6 +214,7 @@ class RemoteArchive
           contents: raw_contents.force_encoding('UTF-8').scrub('�')
         }
       rescue Errno::EISDIR
+        # Fallback in case File.directory? didn't catch it
         return {
           name: file_path,
           directory: true,
