@@ -239,7 +239,7 @@ GEM
       activesupport (>= 6.1)
     hashdiff (1.2.1)
     hashie (5.0.0)
-    htmlentities (4.4.1)
+    htmlentities (4.4.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     idn-ruby (0.1.5)
@@ -323,7 +323,7 @@ GEM
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
-    process-metrics (0.7.0)
+    process-metrics (0.8.0)
       console (~> 1.8)
       json (~> 2)
       samovar (~> 2.1)
@@ -334,7 +334,7 @@ GEM
     protocol-http2 (0.23.0)
       protocol-hpack (~> 1.4)
       protocol-http (~> 0.47)
-    protocol-rack (0.16.0)
+    protocol-rack (0.17.0)
       io-stream (>= 0.10)
       protocol-http (~> 0.43)
       rack (>= 1.0)
@@ -596,7 +596,7 @@ CHECKSUMS
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
   hashie (5.0.0) sha256=9d6c4e51f2a36d4616cbc8a322d619a162d8f42815a792596039fc95595603da
-  htmlentities (4.4.1) sha256=ebd67678e2271dda7353e9ef7320e1f6ef419826bf12db1c01273e1fbf294100
+  htmlentities (4.4.2) sha256=bbafbdf69f2eca9262be4efef7e43e6a1de54c95eb600f26984f71d2fe96c5c3
   i18n (1.14.7) sha256=ceba573f8138ff2c0915427f1fc5bdf4aa3ab8ae88c8ce255eb3ecf0a11a5d0f
   idn-ruby (0.1.5) sha256=3076fa1aac170e92310d02822badf6b11e74e17915a045c8f9ad053bba24c037
   io-console (0.8.1) sha256=1e15440a6b2f67b6ea496df7c474ed62c860ad11237f29b3bd187f054b925fcb
@@ -642,12 +642,12 @@ CHECKSUMS
   powerbar (1.0.18) sha256=e64e54eb659c4fb5210fa19dc121d8629cd90346dbdd6bb0797746e68d600f1f
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
-  process-metrics (0.7.0) sha256=a0e2107bd628ba6af3940303d4a479ce6ec78a5e6635b22ea15e2718b0cccb60
+  process-metrics (0.8.0) sha256=6cc1fc239a674a43708366edb171218ebdf8710b4de5918653ac9a699c666340
   protocol-hpack (1.5.1) sha256=6feca238b8078da1cd295677d6f306c6001af92d75fe0643d33e6956cbc3ad91
   protocol-http (0.55.0) sha256=ab3f97386e0d6311f60e437c853c58e7b0ba4e1b16aff351f5ea2f75520126cb
   protocol-http1 (0.35.2) sha256=b47aded38cd08dc37e9ed9ac7a54dc7bfaffa6d088dfaf3b178e2ef42fc614e6
   protocol-http2 (0.23.0) sha256=bb7a782bb24a386cf475bc8cd6190bd28b392fcef943e06c8d8fce06cc3b2ba8
-  protocol-rack (0.16.0) sha256=773e8d40dc1f01f81a0f44d5352727561c8f21b20d6e015fdc275aa944333bbe
+  protocol-rack (0.17.0) sha256=6ddbfac79178890d7d8d943b5140bbe8c9a15bb5dd9e4e954f99afa503dc4777
   protocol-url (0.4.0) sha256=64d4c03b6b51ad815ac6fdaf77a1d91e5baf9220d26becb846c5459dacdea9e1
   protocol-websocket (0.20.2) sha256=c41d93c35fba5dae85375c597f76975f3dbd75d8c5b2f21b33dab4dc22a5a511
   psych (5.2.6) sha256=814328aa5dcb6d604d32126a20bc1cbcf05521a5b49dbb1a8b30a07e580f316e
@@ -710,7 +710,7 @@ CHECKSUMS
   zlib (3.2.2) sha256=908e61263f99c1371b5422581e2d6663bd37c6b04ae13b5f8cb10b0d09379f40
 
 RUBY VERSION
-   ruby 3.4.7p58
+  ruby 3.4.7p58
 
 BUNDLED WITH
-   2.7.2
+  4.0.0.beta1
