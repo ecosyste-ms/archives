@@ -146,7 +146,7 @@ GEM
       async-service (~> 0.12)
     async-pool (0.11.1)
       async (>= 2.0)
-    async-service (0.15.1)
+    async-service (0.16.0)
       async
       async-container (~> 0.16)
       string-format (~> 0.2)
@@ -256,7 +256,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (2.17.1)
+    json (2.18.0)
     live (0.18.0)
       async-websocket (~> 0.27)
       protocol-websocket (~> 0.19)
@@ -552,7 +552,7 @@ CHECKSUMS
   async-job (0.11.1) sha256=6a43c732597d490dd0dabc4fa390faed0b0fde9226a3a33f25979ff356a096a1
   async-job-adapter-active_job (0.18.3) sha256=b1a8a0348e371436eee7732b7135c017570d58ceb36c6890ee820dccd3e51d67
   async-pool (0.11.1) sha256=98e1583e199a75f7dc70f8e65fc8d0d3b28636c3f256595d43e206642ad8fbda
-  async-service (0.15.1) sha256=6a962e66c2133469c276b2a38038e7a4b18b13df965a9a4ef300fee31534b405
+  async-service (0.16.0) sha256=49ee3dff495e997b3c2c40e799d474ff78d862b271bf72fefbfb1ca326d44815
   async-websocket (0.30.0) sha256=55739954528ad8f87f7792d0452e1268d1ef2aa5b3719f79400a05a1a6202cdf
   bake (0.24.1) sha256=8bfac7e61514b17720e3b13cf6a5e122243f43123c6802707b150904bec5f4c7
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
@@ -609,7 +609,7 @@ CHECKSUMS
   io-stream (0.11.1) sha256=fa5f551fcff99581c1757b9d1cee2c37b124f07d2ca4f40b756a05ab9bd21b87
   irb (1.15.3) sha256=4349edff1efa7ff7bfd34cb9df74a133a588ba88c2718098b3b4468b81184aaa
   jbuilder (2.14.1) sha256=4eb26376ff60ef100cb4fd6fd7533cd271f9998327e86adf20fd8c0e69fabb42
-  json (2.17.1) sha256=e0e4824541336a44915436f53e7ea74c687314fb8f88080fa1456f6a34ead92e
+  json (2.18.0) sha256=b10506aee4183f5cf49e0efc48073d7b75843ce3782c68dbeb763351c08fd505
   live (0.18.0) sha256=0ee51e74a4c83b7b6ebc62faaa2ed36ae20d99e32d846671a269716cb9a37aa4
   localhost (1.6.0) sha256=d99697c6344283d39d8ae8572c22fcd556c95347a30d361594c36846b112fa17
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
