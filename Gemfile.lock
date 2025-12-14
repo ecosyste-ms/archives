@@ -197,13 +197,13 @@ GEM
     ethon (0.15.0)
       ffi (>= 1.15.0)
     expression_parser (0.9.0)
-    falcon (0.52.4)
+    falcon (0.53.0)
       async
       async-container (~> 0.20)
       async-container-supervisor (~> 0.6)
       async-http (~> 0.75)
       async-http-cache (~> 0.4)
-      async-service (~> 0.10)
+      async-service (~> 0.16)
       bundler
       localhost (~> 1.1)
       openssl (~> 3.0)
@@ -582,7 +582,7 @@ CHECKSUMS
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   ethon (0.15.0) sha256=0809805a035bc10f54162ca99f15ded49e428e0488bcfe1c08c821e18261a74d
   expression_parser (0.9.0) sha256=2b56db3cffc48c3337f4f29f5bc2374c86e7ba29acb40269c74bb55af9f868a4
-  falcon (0.52.4) sha256=20de77eb2d2b6142ff66e0f728ffe4b0cfd1ffab047a3be5b2d2b4ea4f8308f4
+  falcon (0.53.0) sha256=4c3184772dc47d815b42664423de96c724242bd9ba1e90903f4e08f1370066a3
   falcon-rails (0.2.4) sha256=bb91976541f4003a0a8dfe33b055bc6b4d4f52964c7743d7b4047468bdc5888e
   ffi (1.17.2-aarch64-linux-gnu) sha256=c910bd3cae70b76690418cce4572b7f6c208d271f323d692a067d59116211a1a
   ffi (1.17.2-aarch64-linux-musl) sha256=69e6556b091d45df83e6c3b19d3c54177c206910965155a6ec98de5e893c7b7c
