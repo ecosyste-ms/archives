@@ -107,7 +107,7 @@ GEM
       logger
       rack (>= 2.0.0)
     asciidoctor (2.0.26)
-    async (2.35.0)
+    async (2.35.1)
       console (~> 1.29)
       fiber-annotation
       io-event (~> 1.11)
@@ -546,7 +546,7 @@ CHECKSUMS
   addressable (2.8.8) sha256=7c13b8f9536cf6364c03b9d417c19986019e28f7c00ac8132da4eb0fe393b057
   appsignal (4.8.1) sha256=69e1db8019ce216aff36a716a0dc9317d4ccebfe5be27db11dbd85de1273cb1e
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
-  async (2.35.0) sha256=0f792ce968023677669fb8608d0b16585332247181ed5417b4ff45900201e834
+  async (2.35.1) sha256=5232b76ed07db1b071eab1dc9e61a7db617034f37c42a5f4b59b3c5068b14145
   async-cable (0.3.0) sha256=ee757355b2838ed6613e995df6dd65d2579de5c7401082a3cadfd5ed2abaff92
   async-container (0.27.7) sha256=fe9c835168562d5126f8c90c727e5494aa93258d50e997d353be72fce6f4b85c
   async-container-supervisor (0.9.2) sha256=dcdbced388ca6e27e20ade3465066e6f6a7c31ca122cd14f8da63616eae17ad9
