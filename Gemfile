@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.4.8'
+ruby '4.0.0'
 
 gem 'railties'
 gem 'actionview'
@@ -44,6 +44,7 @@ group :test do
   gem "webmock"
   gem "mocha"
   gem "rails-controller-testing"
+  gem "minitest", "~> 5"
 end
 
 gem "bootstrap-icons", require: "bootstrap_icons"
