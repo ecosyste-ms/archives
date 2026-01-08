@@ -125,14 +125,14 @@ GEM
       memory (~> 0.7)
       memory-leak (~> 0.5)
       process-metrics
-    async-http (0.92.1)
+    async-http (0.93.0)
       async (>= 2.10.2)
       async-pool (~> 0.11)
       io-endpoint (~> 0.14)
       io-stream (~> 0.6)
       metrics (~> 0.12)
-      protocol-http (~> 0.49)
-      protocol-http1 (~> 0.30)
+      protocol-http (~> 0.58)
+      protocol-http1 (~> 0.36)
       protocol-http2 (~> 0.22)
       protocol-url (~> 0.2)
       traces (~> 0.10)
@@ -330,9 +330,9 @@ GEM
       json (~> 2)
       samovar (~> 2.1)
     protocol-hpack (1.5.1)
-    protocol-http (0.57.0)
-    protocol-http1 (0.35.2)
-      protocol-http (~> 0.22)
+    protocol-http (0.58.0)
+    protocol-http1 (0.36.0)
+      protocol-http (~> 0.58)
     protocol-http2 (0.23.0)
       protocol-hpack (~> 1.4)
       protocol-http (~> 0.47)
@@ -544,7 +544,7 @@ CHECKSUMS
   async-cable (0.3.0) sha256=ee757355b2838ed6613e995df6dd65d2579de5c7401082a3cadfd5ed2abaff92
   async-container (0.27.7) sha256=fe9c835168562d5126f8c90c727e5494aa93258d50e997d353be72fce6f4b85c
   async-container-supervisor (0.9.2) sha256=dcdbced388ca6e27e20ade3465066e6f6a7c31ca122cd14f8da63616eae17ad9
-  async-http (0.92.1) sha256=66db56854cd9173b2f4e3b55f6ba48e15021e316425f0275e310a1d9ab173d59
+  async-http (0.93.0) sha256=04ff9aee39d981ebccf33b70dc6c69e39f60ea4a9199d1e6378afa09eacd53ec
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
   async-job (0.11.1) sha256=6a43c732597d490dd0dabc4fa390faed0b0fde9226a3a33f25979ff356a096a1
   async-job-adapter-active_job (0.18.3) sha256=b1a8a0348e371436eee7732b7135c017570d58ceb36c6890ee820dccd3e51d67
@@ -644,8 +644,8 @@ CHECKSUMS
   prism (1.7.0) sha256=10062f734bf7985c8424c44fac382ac04a58124ea3d220ec3ba9fe4f2da65103
   process-metrics (0.8.0) sha256=6cc1fc239a674a43708366edb171218ebdf8710b4de5918653ac9a699c666340
   protocol-hpack (1.5.1) sha256=6feca238b8078da1cd295677d6f306c6001af92d75fe0643d33e6956cbc3ad91
-  protocol-http (0.57.0) sha256=3f110e72e42030a8221c0ad65c5e1a7209d6cc78793a458e820a22670d9384b5
-  protocol-http1 (0.35.2) sha256=b47aded38cd08dc37e9ed9ac7a54dc7bfaffa6d088dfaf3b178e2ef42fc614e6
+  protocol-http (0.58.0) sha256=b77c5799e7a7acd31afaa9fed5c3714fe91ab7746925d66e9e4d92a5c74555fa
+  protocol-http1 (0.36.0) sha256=057344d2509a59338d0b4bc8f092a52126bb9ed51b76adbb4365f132bbd4ef09
   protocol-http2 (0.23.0) sha256=bb7a782bb24a386cf475bc8cd6190bd28b392fcef943e06c8d8fce06cc3b2ba8
   protocol-rack (0.20.0) sha256=03057011692975af502fcb488a6270558fe30acda321fd8edafa41c6094529de
   protocol-url (0.4.0) sha256=64d4c03b6b51ad815ac6fdaf77a1d91e5baf9220d26becb846c5459dacdea9e1
