@@ -146,9 +146,9 @@ GEM
       async-service (~> 0.12)
     async-pool (0.11.1)
       async (>= 2.0)
-    async-service (0.16.0)
+    async-service (0.17.0)
       async
-      async-container (~> 0.16)
+      async-container (~> 0.28)
       string-format (~> 0.2)
     async-websocket (0.30.0)
       async-http (~> 0.76)
@@ -550,7 +550,7 @@ CHECKSUMS
   async-job (0.11.1) sha256=6a43c732597d490dd0dabc4fa390faed0b0fde9226a3a33f25979ff356a096a1
   async-job-adapter-active_job (0.18.3) sha256=b1a8a0348e371436eee7732b7135c017570d58ceb36c6890ee820dccd3e51d67
   async-pool (0.11.1) sha256=98e1583e199a75f7dc70f8e65fc8d0d3b28636c3f256595d43e206642ad8fbda
-  async-service (0.16.0) sha256=49ee3dff495e997b3c2c40e799d474ff78d862b271bf72fefbfb1ca326d44815
+  async-service (0.17.0) sha256=654983ba1c98b7e2fc4871507fc5262fb22a841a368ed3b1215856b49648c28b
   async-websocket (0.30.0) sha256=55739954528ad8f87f7792d0452e1268d1ef2aa5b3719f79400a05a1a6202cdf
   bake (0.24.1) sha256=8bfac7e61514b17720e3b13cf6a5e122243f43123c6802707b150904bec5f4c7
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
