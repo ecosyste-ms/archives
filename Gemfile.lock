@@ -107,7 +107,7 @@ GEM
       logger
       rack (>= 2.0.0)
     asciidoctor (2.0.26)
-    async (2.35.3)
+    async (2.36.0)
       console (~> 1.29)
       fiber-annotation
       io-event (~> 1.11)
@@ -125,7 +125,7 @@ GEM
       memory (~> 0.7)
       memory-leak (~> 0.5)
       process-metrics
-    async-http (0.94.0)
+    async-http (0.94.2)
       async (>= 2.10.2)
       async-pool (~> 0.11)
       io-endpoint (~> 0.14)
@@ -541,11 +541,11 @@ CHECKSUMS
   addressable (2.8.8) sha256=7c13b8f9536cf6364c03b9d417c19986019e28f7c00ac8132da4eb0fe393b057
   appsignal (4.8.1) sha256=69e1db8019ce216aff36a716a0dc9317d4ccebfe5be27db11dbd85de1273cb1e
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
-  async (2.35.3) sha256=6bfc75ac10182d0485b1394a50803b827f65e73f9e3ebe0aeaa4ecd770238271
+  async (2.36.0) sha256=090623f4c65706664355c9efa6c7bfb86771a513e65cd681c51cb27747530550
   async-cable (0.3.0) sha256=ee757355b2838ed6613e995df6dd65d2579de5c7401082a3cadfd5ed2abaff92
   async-container (0.29.0) sha256=ead7503109a8dd764ee13bcdece9b50da91d201562b9e2f04f2436e64860f5d4
   async-container-supervisor (0.9.2) sha256=dcdbced388ca6e27e20ade3465066e6f6a7c31ca122cd14f8da63616eae17ad9
-  async-http (0.94.0) sha256=479dc4a11c078aff7e054a729fc79fef7d0c28ca26bfe81a4d125672b28759ea
+  async-http (0.94.2) sha256=c5ca94b337976578904a373833abe5b8dfb466a2946af75c4ae38c409c5c78b2
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
   async-job (0.11.1) sha256=6a43c732597d490dd0dabc4fa390faed0b0fde9226a3a33f25979ff356a096a1
   async-job-adapter-active_job (0.18.3) sha256=b1a8a0348e371436eee7732b7135c017570d58ceb36c6890ee820dccd3e51d67
