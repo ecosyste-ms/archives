@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '4.0.0'
+ruby '4.0.1'
 
 gem 'railties'
 gem 'actionview'
@@ -28,6 +28,7 @@ gem "commonmarker", '~> 2.6.1'
 gem "rdoc"
 gem "org-ruby"
 gem "creole"
+gem "htmlentities"
 gem "wikicloth", github: 'nricciar/wikicloth'
 gem "twitter-text"
 gem "asciidoctor"
