@@ -117,7 +117,7 @@ GEM
       actioncable-next
       async (~> 2.9)
       async-websocket
-    async-container (0.29.1)
+    async-container (0.30.0)
       async (~> 2.22)
     async-container-supervisor (0.9.3)
       async-service
@@ -543,7 +543,7 @@ CHECKSUMS
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
   async (2.36.0) sha256=090623f4c65706664355c9efa6c7bfb86771a513e65cd681c51cb27747530550
   async-cable (0.3.0) sha256=ee757355b2838ed6613e995df6dd65d2579de5c7401082a3cadfd5ed2abaff92
-  async-container (0.29.1) sha256=518ae1e18fb470a9b3cbcbb08f0fa32242ba9fd3c6b0696d9969f64492dd8c61
+  async-container (0.30.0) sha256=36bf679b38f8704f949d18812cd650b95be84b8c87bb65e83c6e89decf478cf6
   async-container-supervisor (0.9.3) sha256=7bccbba92d84f6f19cbcea058a7f124511e828b39387b4bd257a0d12104f4a6d
   async-http (0.94.2) sha256=c5ca94b337976578904a373833abe5b8dfb466a2946af75c4ae38c409c5c78b2
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
