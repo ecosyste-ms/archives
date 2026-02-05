@@ -329,7 +329,7 @@ GEM
       json (~> 2)
       samovar (~> 2.1)
     protocol-hpack (1.5.1)
-    protocol-http (0.58.1)
+    protocol-http (0.59.0)
     protocol-http1 (0.37.0)
       protocol-http (~> 0.58)
     protocol-http2 (0.24.0)
@@ -645,7 +645,7 @@ CHECKSUMS
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   process-metrics (0.8.0) sha256=6cc1fc239a674a43708366edb171218ebdf8710b4de5918653ac9a699c666340
   protocol-hpack (1.5.1) sha256=6feca238b8078da1cd295677d6f306c6001af92d75fe0643d33e6956cbc3ad91
-  protocol-http (0.58.1) sha256=6d0694aa07cd51ff589c6219f9613c6827aebd5ffdf8fb8a0169254feb0f13fd
+  protocol-http (0.59.0) sha256=90e20ad817cb3ffe947d4fd6194fe0651f385625dcce055386d1c356ee32547b
   protocol-http1 (0.37.0) sha256=5bdd739e28792b341134596f6f5ab21a9d4b395f67bae69e153743eb0e69d123
   protocol-http2 (0.24.0) sha256=65327a019b7e36d2774e94050bf57a43bb60212775d2fcf02ae1d2ed4f01ef28
   protocol-rack (0.21.0) sha256=bffbb63110aa1aee15aeb0c764f50c95219338ef3efae017d91c6e2f6ee71561
