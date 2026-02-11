@@ -146,7 +146,7 @@ GEM
       async-service (~> 0.12)
     async-pool (0.11.1)
       async (>= 2.0)
-    async-service (0.18.1)
+    async-service (0.19.0)
       async
       async-container (~> 0.29)
       string-format (~> 0.2)
@@ -195,13 +195,13 @@ GEM
     ethon (0.15.0)
       ffi (>= 1.15.0)
     expression_parser (0.9.0)
-    falcon (0.54.1)
+    falcon (0.54.2)
       async
       async-container (~> 0.20)
       async-container-supervisor (~> 0.6)
       async-http (~> 0.75)
       async-http-cache (~> 0.4)
-      async-service (~> 0.16)
+      async-service (~> 0.19)
       bundler
       localhost (~> 1.1)
       openssl (>= 3.0)
@@ -552,7 +552,7 @@ CHECKSUMS
   async-job (0.11.1) sha256=6a43c732597d490dd0dabc4fa390faed0b0fde9226a3a33f25979ff356a096a1
   async-job-adapter-active_job (0.18.3) sha256=b1a8a0348e371436eee7732b7135c017570d58ceb36c6890ee820dccd3e51d67
   async-pool (0.11.1) sha256=98e1583e199a75f7dc70f8e65fc8d0d3b28636c3f256595d43e206642ad8fbda
-  async-service (0.18.1) sha256=a74fd686c2f290179e273ceb61cc002528ecb80a16b93492be2e8160fa2a2f7d
+  async-service (0.19.0) sha256=bd18a9ea96d6b54f87c571ec91da908575ebfb41d86f2f7b6789628ce951b508
   async-websocket (0.30.0) sha256=55739954528ad8f87f7792d0452e1268d1ef2aa5b3719f79400a05a1a6202cdf
   bake (0.24.1) sha256=8bfac7e61514b17720e3b13cf6a5e122243f43123c6802707b150904bec5f4c7
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
@@ -581,7 +581,7 @@ CHECKSUMS
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   ethon (0.15.0) sha256=0809805a035bc10f54162ca99f15ded49e428e0488bcfe1c08c821e18261a74d
   expression_parser (0.9.0) sha256=2b56db3cffc48c3337f4f29f5bc2374c86e7ba29acb40269c74bb55af9f868a4
-  falcon (0.54.1) sha256=a59a91ff9c95a21c568c670ecd52101c9aaa906eecad67d4080647c5aa570c24
+  falcon (0.54.2) sha256=ab35a702466f318d6b3189e638e4aee53290261a5404c9f681115f4a8aca153e
   falcon-rails (0.2.4) sha256=bb91976541f4003a0a8dfe33b055bc6b4d4f52964c7743d7b4047468bdc5888e
   ffi (1.17.3-aarch64-linux-gnu) sha256=28ad573df26560f0aedd8a90c3371279a0b2bd0b4e834b16a2baa10bd7a97068
   ffi (1.17.3-aarch64-linux-musl) sha256=020b33b76775b1abacc3b7d86b287cef3251f66d747092deec592c7f5df764b2
