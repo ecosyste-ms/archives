@@ -35,13 +35,12 @@ gem "asciidoctor"
 gem "github-linguist"
 gem 'rexml'
 gem 'appsignal'
-gem 'vandamme', github: 'ecosyste-ms/vandamme'
+gem 'changelog-parser'
 gem 'ostruct'
 gem "sassc-rails"
 gem 'bootstrap'
 
 group :test do
-  gem "shoulda"
   gem "webmock"
   gem "mocha"
   gem "rails-controller-testing"

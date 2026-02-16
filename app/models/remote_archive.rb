@@ -315,7 +315,7 @@ class RemoteArchive
         raw: raw,
         html: html,
         plain: Nokogiri::HTML(html).try(:text),
-        parsed: Vandamme::Parser.new(changelog: raw).parse,
+        parsed: Changelog::Parser.parse(raw).transform_values { |entry| entry[:content] },
         extension: File.extname(changelog_file),
         language: language,
         other_readme_files: changelog_files - [changelog_file]
