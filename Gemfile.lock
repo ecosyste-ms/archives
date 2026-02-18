@@ -44,7 +44,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
-    appsignal (4.8.2)
+    appsignal (4.8.3)
       logger
       rack (>= 2.0.0)
     asciidoctor (2.0.26)
@@ -54,7 +54,7 @@ GEM
       io-event (~> 1.11)
       metrics (~> 0.12)
       traces (~> 0.18)
-    async-container (0.34.1)
+    async-container (0.34.2)
       async (~> 2.22)
     async-container-supervisor (0.9.3)
       async-service
@@ -179,7 +179,8 @@ GEM
       bake (~> 0.15)
       console
       msgpack
-    memory-leak (0.7.0)
+    memory-leak (0.9.0)
+      process-metrics (~> 0.9)
     metrics (0.15.0)
     mini_mime (1.1.5)
     minitar (1.0.2)
@@ -217,7 +218,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.9.0)
-    process-metrics (0.8.0)
+    process-metrics (0.9.0)
       console (~> 1.8)
       json (~> 2)
       samovar (~> 2.1)
@@ -393,10 +394,10 @@ CHECKSUMS
   actionview (8.1.2) sha256=80455b2588911c9b72cec22d240edacb7c150e800ef2234821269b2b2c3e2e5b
   activesupport (8.1.2) sha256=88842578ccd0d40f658289b0e8c842acfe9af751afee2e0744a7873f50b6fdae
   addressable (2.8.8) sha256=7c13b8f9536cf6364c03b9d417c19986019e28f7c00ac8132da4eb0fe393b057
-  appsignal (4.8.2) sha256=88cf3229a451a6501da55e221367991788f5621d319823b471f271e07cc92ca5
+  appsignal (4.8.3) sha256=aa0ea5ffd39fe7530c56a6eb6efda60825ab061ef31376126cae93b009844dd7
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
   async (2.36.0) sha256=090623f4c65706664355c9efa6c7bfb86771a513e65cd681c51cb27747530550
-  async-container (0.34.1) sha256=00e5a6974cf77395c192f9e92e98a35959fbd3d083c51b03c97b3bac7a3e901c
+  async-container (0.34.2) sha256=83ac767e74a832c42e156110c14e10b1fb3fd7583fa1beb3dfe45269e3554746
   async-container-supervisor (0.9.3) sha256=7bccbba92d84f6f19cbcea058a7f124511e828b39387b4bd257a0d12104f4a6d
   async-http (0.94.2) sha256=c5ca94b337976578904a373833abe5b8dfb466a2946af75c4ae38c409c5c78b2
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
@@ -460,7 +461,7 @@ CHECKSUMS
   loofah (2.25.0) sha256=df5ed7ac3bac6a4ec802df3877ee5cc86d027299f8952e6243b3dac446b060e6
   mapping (1.1.3) sha256=2274931d20ecd46eaafdd1e00c58cc7472133b213bcac335cc7733d3c75f4da2
   memory (0.12.0) sha256=786a14d84cec8e5667a491da02ebbf492b9ec3d19d35161131ac9d47abb684b4
-  memory-leak (0.7.0) sha256=3eca5f0447e9250eb6d9dc5d567345b9dc7f2f05289d0691aa8ed24ca4dece20
+  memory-leak (0.9.0) sha256=16b0898c5518f587a24acd67c5f1bc8db7b640f56e25f014592d3294be15380f
   metrics (0.15.0) sha256=61ded5bac95118e995b1bc9ed4a5f19bc9814928a312a85b200abbdac9039072
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitar (1.0.2) sha256=b192eb2ba7672906ed53853d2188130a849f1c2451e5b2dac688d9f5f7634672
@@ -484,7 +485,7 @@ CHECKSUMS
   pp (0.6.3) sha256=2951d514450b93ccfeb1df7d021cae0da16e0a7f95ee1e2273719669d0ab9df6
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
-  process-metrics (0.8.0) sha256=6cc1fc239a674a43708366edb171218ebdf8710b4de5918653ac9a699c666340
+  process-metrics (0.9.0) sha256=7d34508369e9f795a59f23a990203de2866b57662b6977b4ca13eb36f0a41292
   protocol-hpack (1.5.1) sha256=6feca238b8078da1cd295677d6f306c6001af92d75fe0643d33e6956cbc3ad91
   protocol-http (0.59.0) sha256=90e20ad817cb3ffe947d4fd6194fe0651f385625dcce055386d1c356ee32547b
   protocol-http1 (0.37.0) sha256=5bdd739e28792b341134596f6f5ab21a9d4b395f67bae69e153743eb0e69d123
