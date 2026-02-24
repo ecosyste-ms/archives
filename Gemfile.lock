@@ -187,7 +187,9 @@ GEM
     minitar-cli (1.0.0)
       minitar (~> 1.0.0)
       powerbar (~> 1.0)
-    minitest (5.27.0)
+    minitest (6.0.2)
+      drb (~> 2.0)
+      prism (~> 1.5)
     mocha (3.0.2)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.8.0)
@@ -365,7 +367,7 @@ DEPENDENCIES
   jbuilder
   minitar
   minitar-cli
-  minitest (~> 5)
+  minitest (~> 6)
   mocha
   nokogiri
   org-ruby
@@ -466,7 +468,7 @@ CHECKSUMS
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitar (1.0.2) sha256=b192eb2ba7672906ed53853d2188130a849f1c2451e5b2dac688d9f5f7634672
   minitar-cli (1.0.0) sha256=c467cb2598503efef400b6143b001c3bd3815268666a297806a83fe065c99460
-  minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
+  minitest (6.0.2) sha256=db6e57956f6ecc6134683b4c87467d6dd792323c7f0eea7b93f66bd284adbc3d
   mocha (3.0.2) sha256=3d8029531d8b71bff5ae07040758f77fdf578174189ffda1bef7749a59e92df8
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
   nokogiri (1.19.1-aarch64-linux-gnu) sha256=cfdb0eafd9a554a88f12ebcc688d2b9005f9fce42b00b970e3dc199587b27f32
