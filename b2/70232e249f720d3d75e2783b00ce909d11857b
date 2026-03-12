@@ -1,0 +1,25 @@
+test/integration/openapi_test.rb
+  55333870290bfa15 8-15
+config/initializers/rswag_api.rb
+  55333870290bfa15 4-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "b270232e249f720d3d75e2783b00ce909d11857b",
+  "prompts": {
+    "55333870290bfa15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d06e8c56-78da-4a0a-957c-5abed5b54fd4",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 17,
+      "total_deletions": 11,
+      "accepted_lines": 17,
+      "overriden_lines": 0
+    }
+  }
+}
