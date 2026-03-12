@@ -1,0 +1,23 @@
+Gemfile
+  55333870290bfa15 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.10",
+  "base_commit_sha": "7b2dda59bf3764e3125a33c568d955dc2bed7490",
+  "prompts": {
+    "55333870290bfa15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d06e8c56-78da-4a0a-957c-5abed5b54fd4",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 5,
+      "total_deletions": 3,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
