@@ -109,6 +109,24 @@ class ArchiveTest < ActiveSupport::TestCase
     end
   end
 
+  test "extracts apk file correctly" do
+    fixture_path = Rails.root.join("test/fixtures/files/sample.apk")
+    archive = RemoteArchive.new("http://example.com/sample.apk")
+
+    Dir.mktmpdir do |dir|
+      dest = archive.working_directory(dir)
+      FileUtils.cp(fixture_path, dest)
+
+      archive.stubs(:download_file).returns(dest)
+
+      destination = archive.extract(dir)
+      assert destination.present?, "Expected extract to return a destination"
+      files = Dir.glob("**/*", base: destination)
+      assert_includes files, "AndroidManifest.xml"
+      assert_includes files, "classes.dex"
+    end
+  end
+
   test "handles file extraction errors gracefully" do
     archive = RemoteArchive.new("http://example.com/test.zip")
 
