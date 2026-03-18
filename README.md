@@ -31,6 +31,7 @@ The API accepts URLs to package archives as parameters. These URLs typically poi
 - npm package tarballs (e.g., from registry.npmjs.org)
 - PyPI package wheels/tarballs (e.g., from files.pythonhosted.org)
 - RubyGems .gem files (e.g., from rubygems.org)
+- Android APK files
 - Other package archive formats (zip, tar.gz, etc.)
 
 ### Example API Calls
