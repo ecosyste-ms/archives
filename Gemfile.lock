@@ -44,7 +44,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
-    appsignal (4.8.3)
+    appsignal (4.8.4)
       logger
       rack (>= 2.0.0)
     asciidoctor (2.0.26)
@@ -381,7 +381,7 @@ CHECKSUMS
   actionview (8.1.2) sha256=80455b2588911c9b72cec22d240edacb7c150e800ef2234821269b2b2c3e2e5b
   activesupport (8.1.2) sha256=88842578ccd0d40f658289b0e8c842acfe9af751afee2e0744a7873f50b6fdae
   addressable (2.8.9) sha256=cc154fcbe689711808a43601dee7b980238ce54368d23e127421753e46895485
-  appsignal (4.8.3) sha256=aa0ea5ffd39fe7530c56a6eb6efda60825ab061ef31376126cae93b009844dd7
+  appsignal (4.8.4) sha256=5c708a41c2913383d19ae581140da1904dbf642b974220d6c1bc4c7fdb1cf667
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
   async (2.38.1) sha256=72ba6b7de04d852355458bfe891221226bb7d29f055f5cb043ae3345497f8cec
   async-container (0.34.4) sha256=0d705d485802a01c9dba070e7288257b4d8032f7f052d4e8753d76f74673ff66
