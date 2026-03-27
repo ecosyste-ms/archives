@@ -1,43 +1,31 @@
-FROM ruby:4.0.2-alpine
+FROM golang:1.26-alpine AS builder
 
-ENV APP_ROOT=/usr/src/app
-ENV DATABASE_PORT=5432
-ENV PIP_BREAK_SYSTEM_PACKAGES=1
-WORKDIR $APP_ROOT
+RUN apk add --no-cache git build-base oniguruma-dev
 
-COPY Gemfile Gemfile.lock $APP_ROOT/
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=1 go build -o /archives ./cmd/server/
+
+FROM alpine:3.21
 
 RUN apk add --no-cache \
-    build-base \
-    netcat-openbsd \
-    git \
-    tzdata \
-    curl-dev \
-    libc6-compat \
-    tar \
-    libarchive-tools \
-    icu-dev \
-    cmake \
-    perl \
-    libidn-dev \
-    py-pip \
+    ca-certificates \
+    file \
     nodejs \
     npm \
-    yaml-dev \
-    libffi-dev \
-    jemalloc \
- && gem update --system \
- && gem install bundler foreman \
- && bundle config set without 'test development' \
- && bundle install --jobs 8 \
- && pip install docutils \
+    oniguruma \
  && npm install -g repomix
 
-ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
-ENV RUBY_YJIT_ENABLE=1
+WORKDIR /app
+COPY --from=builder /archives /app/archives
+COPY templates/ /app/templates/
+COPY static/ /app/static/
+COPY openapi/ /app/openapi/
 
-COPY . $APP_ROOT
+EXPOSE 5000
+ENV PORT=5000
 
-RUN RAILS_ENV=production bundle exec rake assets:precompile
-
-CMD ["bin/docker-start"]
+CMD ["/app/archives"]

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.MetaTitle}}</title>
+    <meta name="description" content="{{.MetaDescription}}">
+    <link rel="stylesheet" href="/static/css/application.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__global">
+        <div class="container">
+          <div class="row mb-4">
+            <div class="col-md-6 header__global__site-logo-wrapper mb-3 mb-lg-0">
+              <h1>
+                <a class="site-logo" href="/">ecosyste.ms</a>
+              </h1>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <a class="header__global__menu-link" role="button" aria-expanded="false" aria-controls="header__global__menu" data-bs-toggle="collapse" href="#header__global__menu">All services <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg></a>
+            </div>
+          </div>
+          <div id="header__global__menu" class="collapse header__global__menu">
+            {{range serviceCategories}}
+            {{$cat := .}}
+            <div class="header__global__menu__category">
+              <h2 class="header__global__menu__category-title">{{$cat}}</h2>
+              <ul class="header__global__menu__category-links">
+                {{range index $.Services $cat}}
+                <li>
+                  <a href="{{.URL}}" target="_blank" {{if eq .URL $.RequestBaseURL}}class="active"{{end}}>{{.Name}}</a>
+                </li>
+                {{end}}
+              </ul>
+            </div>
+            {{end}}
+          </div>
+        </div>
+      </div>
+      <div class="header__local pt-3">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-3 col-md-4">
+              <h1 class="h3 header__local__sitename">
+                <a class="header__local__homelink" href="/">{{.AppName}}</a>
+              </h1>
+            </div>
+            <div class="col-lg-5 col-md-8">
+              <p class="header__local__description">{{.AppDescription}}</p>
+            </div>
+            <div class="col-lg-4 col-md-12">
+              <nav class="header__local__navigation">
+                <ul class="nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="https://opencollective.com/ecosystems" target="_blank">Support</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/ecosyste-ms/{{.GithubRepoName}}" target="_blank">GitHub</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/docs">API</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-10 text-center">
+            <h1 class="display-5 mb-3">Inspect package archives via API</h1>
+            <p class="lead text-muted mb-5">
+              List files and extract contents from package archives without downloading them
+            </p>
+          </div>
+        </div>
+
+        <div class="row justify-content-center mb-5">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-body p-4">
+                <form action="/api/v1/archives/list" method="get">
+                  <div class="row g-2">
+                    <div class="col">
+                      <input name="url" type="text" class="form-control form-control-lg"
+                             placeholder="Enter package archive URL (e.g., https://registry.npmjs.org/react/-/react-18.2.0.tgz)"
+                             aria-label="Package archive URL">
+                    </div>
+                    <div class="col-auto">
+                      <button type="submit" class="btn btn-primary btn-lg">Inspect</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="mb-5">
+              <div class="row align-items-start">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                  <img src="/static/images/indexes.svg" alt="Archives icon" style="width: 80px; height: 80px;">
+                </div>
+                <div class="col-md-10">
+                  <h2 class="h3 mb-3">Archives API</h2>
+                  <p class="text-muted mb-4">
+                    A simple REST API to list files and read contents from package archives across multiple ecosystems.
+                    No need to download and extract archives locally.
+                  </p>
+                  <div class="row g-4">
+                    <div class="col-md-6">
+                      <h4 class="h5 mb-2">
+                        <a href="/docs#list" class="text-decoration-none">List Archive Contents</a>
+                      </h4>
+                      <p class="small text-muted">
+                        Get a complete file listing from any supported package archive format
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <h4 class="h5 mb-2">
+                        <a href="/docs#contents" class="text-decoration-none">Extract File Contents</a>
+                      </h4>
+                      <p class="small text-muted">
+                        Retrieve specific files from archives without full download
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <h4 class="h5 mb-2">
+                        <a href="/docs#readme" class="text-decoration-none">README Extraction</a>
+                      </h4>
+                      <p class="small text-muted">
+                        Automatically find and extract README files in multiple formats
+                      </p>
+                    </div>
+                    <div class="col-md-6">
+                      <h4 class="h5 mb-2">
+                        <a href="/docs#changelog" class="text-decoration-none">Changelog Detection</a>
+                      </h4>
+                      <p class="small text-muted">
+                        Locate and retrieve changelog information from packages
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="mb-5">
+              <h3 class="h4 mb-4">Core Features</h3>
+              <div class="row g-4">
+                <div class="col-md-4">
+                  <div class="d-flex">
+                    <div class="me-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-speedometer2 text-primary" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5V6a.5.5 0 0 1-1 0V4.5A.5.5 0 0 1 8 4M3.732 5.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 10a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 10m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 9.31a1 1 0 1 0 1.378 1.378l3.578-4.18a.39.39 0 0 0-.02-.527M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1"/></svg>
+                    </div>
+                    <div>
+                      <h5 class="h6 mb-2">High Performance</h5>
+                      <p class="small text-muted mb-0">
+                        Cached responses and optimized extraction for fast access to package data
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex">
+                    <div class="me-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-shield-check text-success" viewBox="0 0 16 16"><path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/><path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/></svg>
+                    </div>
+                    <div>
+                      <h5 class="h6 mb-2">Simple API</h5>
+                      <p class="small text-muted mb-0">
+                        RESTful endpoints with JSON responses for easy integration
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="d-flex">
+                    <div class="me-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-diagram-3 text-info" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5zM8.5 5a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5zM0 11.5A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm4.5.5a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5zm1.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/></svg>
+                    </div>
+                    <div>
+                      <h5 class="h6 mb-2">Multi-Ecosystem</h5>
+                      <p class="small text-muted mb-0">
+                        Unified API supporting npm, PyPI, RubyGems, Maven, NuGet, and more
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="mb-5">
+              <h3 class="h4 mb-4">Supported Formats</h3>
+              <div class="row g-3">
+                {{range .Formats}}
+                <div class="col-md-4">
+                  <div class="border rounded p-3">
+                    <h6 class="mb-1">{{.Name}}</h6>
+                    <p class="small text-muted mb-0">{{join .Ecosystems ", "}}</p>
+                  </div>
+                </div>
+                {{end}}
+              </div>
+            </div>
+
+            <hr class="my-5">
+
+            <div class="text-center mb-5">
+              <h3 class="h4 mb-3">Get Started</h3>
+              <p class="text-muted mb-4">
+                Free API with 5,000 requests per hour. No registration required.
+              </p>
+              <div class="d-flex justify-content-center gap-3">
+                <a href="/docs" class="btn btn-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book me-2" viewBox="0 0 16 16"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/></svg>
+                  API Documentation
+                </a>
+                <a href="https://github.com/ecosyste-ms/archives" class="btn btn-outline-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github me-2" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>
+                  View on GitHub
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer dark-section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8">
+            <a class="site-logo site-logo--white" href="/">Ecosyste.ms</a>
+            <p class="small">Tools and open datasets to support, sustain, and secure critical digital infrastructure.</p>
+            <p class="small">
+              Code: <a href="https://github.com/ecosyste-ms/documentation/blob/main/LICENSE">AGPL-3</a> &mdash;
+              Data: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>
+            </p>
+            <p class="footer-icons">
+              <a href="https://github.com/ecosyste-ms" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/></svg>
+              </a>
+              <a href="https://mastodon.social/@ecosystems" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-mastodon" viewBox="0 0 16 16"><path d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765 2.79.765.504 1.783.504 5.253c-.005.76-.01 1.666.01 2.625.07 3.204.52 6.36 3.145 7.14 1.21.36 2.248.436 3.083.384 1.514-.093 2.364-.6 2.364-.6l-.05-1.1s-1.082.34-2.297.3c-1.205-.04-2.476-.125-2.67-1.548a3 3 0 0 1-.028-.488s1.18.288 2.675.356c.916.042 1.773-.053 2.644-.156zm1.874-2.442V5.304c0-.897-.228-1.608-.686-2.133-.473-.527-1.09-.796-1.856-.796-1.202 0-2.118.61-2.725 1.83L8 4.752l-.198-.546C7.196 2.918 6.28 2.375 5.08 2.375c-.766 0-1.383.27-1.856.796-.458.525-.686 1.236-.686 2.133v4.449h1.864V5.45c0-.9.378-1.357 1.133-1.357.835 0 1.253.542 1.253 1.614v2.363h1.854V5.706c0-1.072.418-1.614 1.253-1.614.754 0 1.132.458 1.132 1.357v4.304z"/></svg>
+              </a>
+              <a href="https://opencollective.com/ecosystems" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 40 40"><path d="M32.8 21.7c0-.6.2-1.2.2-1.7s0-1.2-.2-1.7l3.1-3.1c-1.4-3.3-3.6-6.1-6.4-8.3l-3.8 2.1c-.9-.6-1.8-1.1-2.8-1.4L22 3.8c-1.3-.2-2.7-.2-4 0l-.9 3.8c-1 .4-1.9.8-2.8 1.4L10.5 7C7.7 9.2 5.5 12 4.1 15.3l3.1 3.1c-.2.5-.2 1.1-.2 1.7s0 1.2.2 1.7l-3.1 3.1c1.4 3.3 3.6 6.1 6.4 8.3l3.8-2.1c.9.6 1.8 1.1 2.8 1.4l.9 3.8c1.3.2 2.7.2 4 0l.9-3.8c1-.4 1.9-.8 2.8-1.4l3.8 2.1c2.8-2.2 5-5 6.4-8.3l-3.1-3.2zM20 27.2c-4 0-7.2-3.2-7.2-7.2s3.2-7.2 7.2-7.2 7.2 3.2 7.2 7.2-3.2 7.2-7.2 7.2z"/></svg>
+              </a>
+            </p>
+            <div>
+              <h3 class="mt-5 h6">Supported by</h3>
+              <div class="row justify-content-start align-items-center g-4 mb-4 mb-lg-0">
+                <div class="col-auto">
+                  <a href="https://www.schmidtfutures.org">
+                    <img src="/static/images/logo-schmidt-white.svg" alt="Schmidt Futures" class="img-fluid p3" width="267" height="20">
+                  </a>
+                </div>
+                <div class="col-auto">
+                  <a href="https://oscollective.org">
+                    <img src="/static/images/logo-osc-white.png" alt="Open Source Collective" class="img-fluid p3" width="210" height="56">
+                  </a>
+                </div>
+              </div>
+              <p class="mt-3"><a href="https://opencollective.com/ecosystems" class="small">Become a sponsor</a></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-unstyled footer-links mt-3 small">
+              <li><strong><a href="https://ecosyste.ms">About</a></strong></li>
+              <li><strong><a href="https://blog.ecosyste.ms">Blog</a></strong></li>
+              <li><strong><a href="https://mastodon.social/@ecosystems">Contact</a></strong></li>
+              <li><strong><a href="https://ecosyste.ms/privacy">Privacy</a></strong></li>
+              <li><strong><a href="https://ecosyste.ms/terms">Terms</a></strong></li>
+              <li><strong><a href="https://ecosystems.appsignal-status.com/">Status</a></strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

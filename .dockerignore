@@ -4,14 +4,23 @@
 README.md
 
 log
-test
 vendor
 openshift/
 coverage/
-.bundle
+
+# Ruby app files (not needed for Go build)
+app/
+config/
+db/
+lib/
+bin/
+tmp/
+Gemfile
+Gemfile.lock
+Rakefile
 .ruby-version
+.bundle
 
 .DS_Store
 .AppleDouble
 .LSOverride
-
