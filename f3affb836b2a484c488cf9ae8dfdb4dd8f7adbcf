@@ -1,0 +1,63 @@
+go.mod
+  f4fef4126d6e193a 1-2,4-10
+.dockerignore
+  f4fef4126d6e193a 10-20,22
+internal/handler/middleware.go
+  f4fef4126d6e193a 1-22
+internal/archive/extract.go
+  f4fef4126d6e193a 1-336
+internal/handler/docs.go
+  f4fef4126d6e193a 1-65
+internal/archive/repopack.go
+  f4fef4126d6e193a 1-46
+internal/archive/changelog.go
+  f4fef4126d6e193a 1-17
+internal/handler/archives.go
+  f4fef4126d6e193a 1-179
+templates/error.html
+  f4fef4126d6e193a 1-51
+internal/archive/readme_test.go
+  f4fef4126d6e193a 1-144
+internal/archive/readme.go
+  f4fef4126d6e193a 1-267
+templates/layout.html
+  f4fef4126d6e193a 1-298
+internal/archive/benchmark_test.go
+  f4fef4126d6e193a 1-144
+internal/handler/benchmark_test.go
+  f4fef4126d6e193a 1-176
+docker-compose.yml
+  f4fef4126d6e193a 8,10
+internal/archive/extract_test.go
+  f4fef4126d6e193a 1-446
+internal/handler/home.go
+  f4fef4126d6e193a 1-226
+internal/archive/archive.go
+  f4fef4126d6e193a 1-255
+internal/archive/archive_test.go
+  f4fef4126d6e193a 1-132
+cmd/server/main.go
+  f4fef4126d6e193a 1-113
+internal/handler/handler_test.go
+  f4fef4126d6e193a 1-447
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "f3affb836b2a484c488cf9ae8dfdb4dd8f7adbcf",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 3449,
+      "total_deletions": 30,
+      "accepted_lines": 3419,
+      "overriden_lines": 1
+    }
+  }
+}
