@@ -1,0 +1,39 @@
+internal/archive/readme_test.go
+  f4fef4126d6e193a 6,9-12,14-15,19-22,26-35
+internal/markup/markdown.go
+  f4fef4126d6e193a 1-24
+internal/markup/external.go
+  f4fef4126d6e193a 1-184
+internal/markup/markup_test.go
+  f4fef4126d6e193a 1-348
+internal/archive/benchmark_test.go
+  f4fef4126d6e193a 99
+internal/markup/markup.go
+  f4fef4126d6e193a 1-160
+DEVELOPMENT.md
+  f4fef4126d6e193a 9,11-12,14,16-21,24,27,37,41,43,45,47,51
+Dockerfile
+  f4fef4126d6e193a 20-24
+internal/archive/readme.go
+  f4fef4126d6e193a 11,106,195,218-223,225-227,258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.20",
+  "base_commit_sha": "361c3ff3cf2c100d20bade2240a91afb1210c31d",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 782,
+      "total_deletions": 66,
+      "accepted_lines": 777,
+      "overriden_lines": 0
+    }
+  }
+}
