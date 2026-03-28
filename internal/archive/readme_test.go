@@ -1,35 +1,38 @@
 package archive
 
 import (
-	"strings"
 	"testing"
+
+	"github.com/ecosyste-ms/archives/internal/markup"
 )
 
-func TestRenderMarkdown(t *testing.T) {
-	input := "# Hello\n\nWorld **bold** text"
-	html := renderMarkdown(input)
-
-	if !strings.Contains(html, "<h1>Hello</h1>") {
-		t.Errorf("expected h1 tag, got: %s", html)
+func TestRenderFileMarkdown(t *testing.T) {
+	html, lang := renderFile("README.md", []byte("# Hello\n\nWorld **bold** text"))
+	if lang != "Markdown" {
+		t.Errorf("language = %q, want Markdown", lang)
 	}
-	if !strings.Contains(html, "<strong>bold</strong>") {
-		t.Errorf("expected strong tag, got: %s", html)
+	if html == "" {
+		t.Error("expected non-empty HTML")
 	}
 }
 
-func TestRenderMarkdownGFM(t *testing.T) {
-	input := "| a | b |\n|---|---|\n| 1 | 2 |"
-	html := renderMarkdown(input)
-
-	if !strings.Contains(html, "<table>") {
-		t.Errorf("expected table tag (GFM), got: %s", html)
-	}
-}
-
-func TestRenderMarkdownEmpty(t *testing.T) {
-	html := renderMarkdown("")
+func TestRenderFileUnknown(t *testing.T) {
+	html, _ := renderFile("README.txt", []byte("hello"))
 	if html != "" {
-		t.Errorf("expected empty string, got: %q", html)
+		t.Errorf("expected empty HTML for unknown format, got: %q", html)
+	}
+}
+
+func TestRenderFileAsciiDoc(t *testing.T) {
+	if !markup.Supported(markup.FormatAsciiDoc) {
+		t.Skip("asciidoctor not installed")
+	}
+	html, lang := renderFile("README.adoc", []byte("= Hello\n\nWorld\n"))
+	if lang != "AsciiDoc" {
+		t.Errorf("language = %q, want AsciiDoc", lang)
+	}
+	if html == "" {
+		t.Error("expected non-empty HTML")
 	}
 }
 

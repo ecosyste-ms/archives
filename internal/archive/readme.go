@@ -1,7 +1,6 @@
 package archive
 
 import (
-	"bytes"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -9,10 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ecosyste-ms/archives/internal/markup"
 	"github.com/go-enry/go-enry/v2"
-	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/renderer/html"
 )
 
 var supportedReadmeFormats = regexp.MustCompile(
@@ -106,9 +103,8 @@ func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
 	}
 
 	rawStr := scrubUTF8(raw)
-	htmlStr := renderMarkdown(rawStr)
+	htmlStr, language := renderFile(readmeFile, []byte(rawStr))
 	plainStr := stripHTML(htmlStr)
-	language := detectLanguage(readmeFile, raw)
 
 	others := make([]string, 0)
 	for _, f := range readmeFiles {
@@ -196,9 +192,8 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	}
 
 	rawStr := scrubUTF8(raw)
-	htmlStr := renderMarkdown(rawStr)
+	htmlStr, language := renderFile(changelogFile, []byte(rawStr))
 	plainStr := stripHTML(htmlStr)
-	language := detectLanguage(changelogFile, raw)
 	parsed := parseChangelog(rawStr)
 
 	others := make([]string, 0)
@@ -220,18 +215,16 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	}, nil
 }
 
-func renderMarkdown(content string) string {
-	md := goldmark.New(
-		goldmark.WithExtensions(extension.GFM),
-		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
-		),
-	)
-	var buf bytes.Buffer
-	if err := md.Convert([]byte(content), &buf); err != nil {
-		return ""
+// renderFile uses the markup package to render a file to HTML.
+// Falls back to go-enry for language detection if markup doesn't handle the format.
+func renderFile(filename string, content []byte) (html string, language string) {
+	result, ok := markup.Render(filename, content)
+	if ok {
+		return result.HTML, result.Language
 	}
-	return buf.String()
+	// Format not supported by markup package, return empty HTML
+	lang := detectLanguage(filename, content)
+	return "", lang
 }
 
 func stripHTML(htmlStr string) string {
@@ -262,6 +255,5 @@ func detectLanguage(filename string, content []byte) string {
 }
 
 func parseChangelog(content string) map[string]string {
-	parser := parseChangelogContent(content)
-	return parser
+	return parseChangelogContent(content)
 }

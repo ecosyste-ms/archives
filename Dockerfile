@@ -17,6 +17,11 @@ RUN apk add --no-cache \
     nodejs \
     npm \
     oniguruma \
+    ruby \
+    asciidoctor \
+    perl \
+    py3-pip \
+ && pip install --break-system-packages docutils \
  && npm install -g repomix
 
 WORKDIR /app

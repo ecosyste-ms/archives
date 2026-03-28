@@ -94,11 +94,9 @@ func BenchmarkRenderMarkdown(b *testing.B) {
 	if err != nil {
 		b.Skip("Readme.md not found in fixture")
 	}
-	content := string(readmeData)
-
 	b.ResetTimer()
 	for b.Loop() {
-		renderMarkdown(content)
+		renderFile("Readme.md", readmeData)
 	}
 }
 

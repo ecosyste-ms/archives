@@ -6,21 +6,25 @@ First things first, you'll need to fork and clone the repository to your local m
 
 `git clone https://github.com/ecosyste-ms/archives.git`
 
-The project uses ruby on rails which have a number of system dependencies you'll need to install. 
+The project is written in Go and requires:
 
-- [ruby](https://www.ruby-lang.org/en/documentation/installation/)
-- [node.js 16+](https://nodejs.org/en/download/)
+- [Go 1.24+](https://go.dev/dl/)
+- [Node.js 16+](https://nodejs.org/en/download/) (for repomix)
 
-Once you've got all of those installed, from the root directory of the project run the following commands:
+Optional tools for rendering non-Markdown README formats:
+
+- [asciidoctor](https://asciidoctor.org/) for AsciiDoc
+- [docutils](https://docutils.sourceforge.io/) (rst2html) for reStructuredText
+- [pandoc](https://pandoc.org/) for Textile, Org, Creole, MediaWiki
+- [perl](https://www.perl.org/) (pod2html) for Pod
+
+Once you've got Go installed, from the root directory of the project run:
 
 ```
-bundle install
-bundle exec falcon serve -b http://localhost:3000
+go run ./cmd/server/
 ```
 
-You can then load up [http://localhost:3000](http://localhost:3000) to access the service.
-
-**Note**: This app uses [Falcon](https://github.com/socketry/falcon) web server with fiber-based concurrency for handling burst traffic efficiently.
+You can then load up [http://localhost:5000](http://localhost:5000) to access the service.
 
 ### Docker
 
@@ -30,19 +34,17 @@ Run this command from the root directory of the project to start the service.
 
 `docker-compose up --build`
 
-You can then load up [http://localhost:3000](http://localhost:3000) to access the service.
-
-For access the rails console use the following command:
-
-`docker-compose exec app rails console`
+You can then load up [http://localhost:5000](http://localhost:5000) to access the service.
 
 ## Tests
 
-The applications tests can be found in [test](test) and use the testing framework [minitest](https://github.com/minitest/minitest).
+Run all tests with:
 
-You can run all the tests with:
+`go test ./...`
 
-`rails test`
+Run benchmarks with:
+
+`go test ./internal/archive/ -bench=. -benchmem`
 
 ## Deployment
 
