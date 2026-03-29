@@ -1,6 +1,7 @@
 package archive
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -30,9 +31,13 @@ func (a *RemoteArchive) Repopack() (*RepopackResult, error) {
 		return nil, nil
 	}
 
+	var stderr bytes.Buffer
 	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose")
 	cmd.Dir = extractDir
-	cmd.Run()
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("repomix failed: %w: %s", err, stderr.String())
+	}
 
 	outputPath := filepath.Join(extractDir, "repomix-output.txt")
 	data, err := os.ReadFile(outputPath)
