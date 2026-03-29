@@ -3,7 +3,7 @@ package archive
 import (
 	"testing"
 
-	"github.com/ecosyste-ms/archives/internal/markup"
+	"github.com/git-pkgs/markup"
 )
 
 func TestRenderFileMarkdown(t *testing.T) {
@@ -24,7 +24,8 @@ func TestRenderFileUnknown(t *testing.T) {
 }
 
 func TestRenderFileAsciiDoc(t *testing.T) {
-	if !markup.Supported(markup.FormatAsciiDoc) {
+	reg := markup.NewDefaultRegistry()
+	if !reg.Supported("README.adoc") {
 		t.Skip("asciidoctor not installed")
 	}
 	html, lang := renderFile("README.adoc", []byte("= Hello\n\nWorld\n"))

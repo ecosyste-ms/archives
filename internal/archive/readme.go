@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/ecosyste-ms/archives/internal/markup"
+	"github.com/git-pkgs/markup"
 	"github.com/go-enry/go-enry/v2"
 )
 
@@ -215,12 +215,14 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	}, nil
 }
 
+var markupRegistry = markup.NewDefaultRegistry()
+
 // renderFile uses the markup package to render a file to HTML.
 // Falls back to go-enry for language detection if markup doesn't handle the format.
-func renderFile(filename string, content []byte) (html string, language string) {
-	result, ok := markup.Render(filename, content)
-	if ok {
-		return result.HTML, result.Language
+func renderFile(filename string, content []byte) (htmlStr string, language string) {
+	result, err := markupRegistry.Render(filename, content)
+	if err == nil {
+		return result.HTML, result.Format.String()
 	}
 	// Format not supported by markup package, return empty HTML
 	lang := detectLanguage(filename, content)
