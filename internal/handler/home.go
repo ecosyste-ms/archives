@@ -219,7 +219,7 @@ func requestBaseURL(r *http.Request) string {
 	if r.TLS != nil {
 		scheme = "https"
 	}
-	if fwd := r.Header.Get("X-Forwarded-Proto"); fwd != "" {
+	if fwd := r.Header.Get("X-Forwarded-Proto"); fwd == "https" || fwd == "http" {
 		scheme = fwd
 	}
 	return scheme + "://" + r.Host

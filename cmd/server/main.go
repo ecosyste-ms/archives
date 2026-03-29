@@ -55,13 +55,13 @@ func main() {
 	// Home page (must be last to act as catch-all)
 	mux.HandleFunc("GET /", handler.HandleHome)
 
-	// CORS wrapping for API routes
+	// Middleware: CORS for API routes, security headers for all
 	corsHandler := handler.CORSMiddleware()
-	wrappedMux := corsHandler.Handler(mux)
+	wrapped := handler.SecurityHeaders(corsHandler.Handler(mux))
 
 	server := &http.Server{
 		Addr:         ":" + port,
-		Handler:      wrappedMux,
+		Handler:      wrapped,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 120 * time.Second, // long enough for archive download + extraction
 		IdleTimeout:  60 * time.Second,

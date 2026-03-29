@@ -32,7 +32,7 @@ func (a *RemoteArchive) Repopack() (*RepopackResult, error) {
 	}
 
 	var stderr bytes.Buffer
-	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose")
+	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose", "--config", "/dev/null")
 	cmd.Dir = extractDir
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {

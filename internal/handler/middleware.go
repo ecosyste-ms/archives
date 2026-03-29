@@ -9,14 +9,15 @@ import (
 func CORSMiddleware() *cors.Cors {
 	return cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
+		AllowedMethods: []string{"GET", "HEAD", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 	})
 }
 
-func NoSessionMiddleware(next http.Handler) http.Handler {
+func SecurityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", w.Header().Get("Cache-Control"))
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
 		next.ServeHTTP(w, r)
 	})
 }

@@ -141,8 +141,14 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 	fullPath := filepath.Join(extractDir, filePath)
 
 	// Prevent path traversal
-	absExtract, _ := filepath.Abs(extractDir)
-	absFull, _ := filepath.Abs(fullPath)
+	absExtract, err := filepath.Abs(extractDir)
+	if err != nil {
+		return nil, fmt.Errorf("resolving extract path: %w", err)
+	}
+	absFull, err := filepath.Abs(fullPath)
+	if err != nil {
+		return nil, fmt.Errorf("resolving file path: %w", err)
+	}
 	if !strings.HasPrefix(absFull, absExtract) {
 		return nil, fmt.Errorf("path traversal blocked")
 	}
@@ -176,6 +182,18 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 			Binary:    true,
 			MimeType:  mime,
 			Error:     "Binary file detected. Cannot display contents as text.",
+		}, nil
+	}
+
+	// Cap file reads at 10MB to prevent excessive memory use
+	const maxContentSize = 10 * 1024 * 1024
+	if info.Size() > maxContentSize {
+		return &FileContent{
+			Name:      filePath,
+			Directory: false,
+			Binary:    true,
+			MimeType:  mime,
+			Error:     "File too large to display (>10MB).",
 		}, nil
 	}
 
