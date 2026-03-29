@@ -1,0 +1,25 @@
+internal/archive/readme.go
+  f4fef4126d6e193a 11,218-219,222-225
+internal/archive/readme_test.go
+  f4fef4126d6e193a 6,27-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "6b94a783fdbc5ca95bf2ef8cbebc812e3e138b02",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 10,
+      "total_deletions": 7,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  }
+}
