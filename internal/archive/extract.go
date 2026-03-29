@@ -140,6 +140,10 @@ func extractZip(path, dir string) (string, error) {
 	return destination, nil
 }
 
+// maxDecompressedFileSize is the maximum size of a single decompressed file (200MB).
+// This prevents decompression bombs where a small archive expands to fill disk.
+const maxDecompressedFileSize = 200 * 1024 * 1024
+
 func extractZipFile(f *zip.File, dest string) error {
 	rc, err := f.Open()
 	if err != nil {
@@ -153,7 +157,7 @@ func extractZipFile(f *zip.File, dest string) error {
 	}
 	defer out.Close()
 
-	_, err = io.Copy(out, rc)
+	_, err = io.Copy(out, io.LimitReader(rc, maxDecompressedFileSize))
 	return err
 }
 
@@ -280,7 +284,7 @@ func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
 			if err != nil {
 				return err
 			}
-			if _, err := io.Copy(out, tr); err != nil {
+			if _, err := io.Copy(out, io.LimitReader(tr, maxDecompressedFileSize)); err != nil {
 				out.Close()
 				return err
 			}

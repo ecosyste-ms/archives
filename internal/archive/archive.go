@@ -63,7 +63,7 @@ func (a *RemoteArchive) Download(dir string) error {
 	}
 	req.Header.Set("User-Agent", userAgent)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("downloading: %w", err)
 	}

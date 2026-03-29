@@ -8,7 +8,16 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/ecosyste-ms/archives/internal/archive"
 )
+
+func TestMain(m *testing.M) {
+	// Use an unrestricted HTTP client for tests since the fixture
+	// server runs on localhost, which the SSRF protection blocks.
+	archive.SetHTTPClient(http.DefaultClient)
+	os.Exit(m.Run())
+}
 
 func setupFixtureServer(t *testing.T) *httptest.Server {
 	t.Helper()

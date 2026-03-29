@@ -38,14 +38,14 @@ func HandleList(w http.ResponseWriter, r *http.Request) {
 
 	a, err := archive.New(rawURL)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		writeError(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
 	files, err := a.ListFiles()
 	if err != nil {
-		slog.Error("error in list", "error", err)
-		writeError(w, http.StatusInternalServerError, err.Error())
+		slog.Error("error in list", "error", err, "url", rawURL)
+		writeError(w, http.StatusInternalServerError, "failed to list archive contents")
 		return
 	}
 
@@ -69,14 +69,14 @@ func HandleContents(w http.ResponseWriter, r *http.Request) {
 
 	a, err := archive.New(rawURL)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		writeError(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
 	contents, err := a.Contents(filePath)
 	if err != nil {
-		slog.Error("error in contents", "error", err)
-		writeError(w, http.StatusInternalServerError, err.Error())
+		slog.Error("error in contents", "error", err, "url", rawURL, "path", filePath)
+		writeError(w, http.StatusInternalServerError, "failed to read archive contents")
 		return
 	}
 
@@ -99,14 +99,14 @@ func HandleReadme(w http.ResponseWriter, r *http.Request) {
 
 	a, err := archive.New(rawURL)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		writeError(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
 	readme, err := a.Readme()
 	if err != nil {
-		slog.Error("error in readme", "error", err)
-		writeError(w, http.StatusInternalServerError, err.Error())
+		slog.Error("error in readme", "error", err, "url", rawURL)
+		writeError(w, http.StatusInternalServerError, "failed to extract readme")
 		return
 	}
 
@@ -129,14 +129,14 @@ func HandleChangelog(w http.ResponseWriter, r *http.Request) {
 
 	a, err := archive.New(rawURL)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		writeError(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
 	cl, err := a.Changelog()
 	if err != nil {
-		slog.Error("error in changelog", "error", err)
-		writeError(w, http.StatusInternalServerError, err.Error())
+		slog.Error("error in changelog", "error", err, "url", rawURL)
+		writeError(w, http.StatusInternalServerError, "failed to extract changelog")
 		return
 	}
 
@@ -159,14 +159,14 @@ func HandleRepopack(w http.ResponseWriter, r *http.Request) {
 
 	a, err := archive.New(rawURL)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		writeError(w, http.StatusBadRequest, "invalid url")
 		return
 	}
 
 	result, err := a.Repopack()
 	if err != nil {
-		slog.Error("error in repopack", "error", err)
-		writeError(w, http.StatusInternalServerError, err.Error())
+		slog.Error("error in repopack", "error", err, "url", rawURL)
+		writeError(w, http.StatusInternalServerError, "failed to generate repopack output")
 		return
 	}
 

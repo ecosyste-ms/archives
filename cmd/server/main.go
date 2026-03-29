@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/ecosyste-ms/archives/internal/handler"
 )
@@ -58,8 +59,16 @@ func main() {
 	corsHandler := handler.CORSMiddleware()
 	wrappedMux := corsHandler.Handler(mux)
 
+	server := &http.Server{
+		Addr:         ":" + port,
+		Handler:      wrappedMux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 120 * time.Second, // long enough for archive download + extraction
+		IdleTimeout:  60 * time.Second,
+	}
+
 	slog.Info("starting server", "port", port)
-	if err := http.ListenAndServe(":"+port, wrappedMux); err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
 	}
