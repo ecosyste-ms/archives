@@ -1,0 +1,23 @@
+internal/archive/repopack.go
+  f4fef4126d6e193a 4,34,37-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "08188d8234de1ef6d28b481f3c91167085f01d28",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 1,
+      "accepted_lines": 6,
+      "overriden_lines": 0
+    }
+  }
+}
