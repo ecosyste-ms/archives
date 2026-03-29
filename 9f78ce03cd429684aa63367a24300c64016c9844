@@ -1,0 +1,31 @@
+internal/handler/middleware.go
+  f4fef4126d6e193a 12,17,19-20
+internal/archive/repopack.go
+  f4fef4126d6e193a 35
+internal/archive/archive.go
+  f4fef4126d6e193a 144-151,188-199
+internal/handler/home.go
+  f4fef4126d6e193a 222
+cmd/server/main.go
+  f4fef4126d6e193a 58,60,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "9f78ce03cd429684aa63367a24300c64016c9844",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 29,
+      "total_deletions": 10,
+      "accepted_lines": 29,
+      "overriden_lines": 0
+    }
+  }
+}
