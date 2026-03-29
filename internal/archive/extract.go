@@ -194,19 +194,25 @@ func extractTar(path, dir string) (string, error) {
 	}
 	defer f.Close()
 
-	if err := extractTarReader(tar.NewReader(f), destination, true); err != nil {
+	// Extract without stripping top level first, since formats like .gem
+	// have flat entries (data.tar.gz, metadata.gz) with no top-level dir.
+	if err := extractTarReader(tar.NewReader(f), destination, false); err != nil {
 		return "", err
 	}
 
-	// Handle nested data.tar.gz (like .gem files)
-	dataTarGz := filepath.Join(destination, "data.tar.gz")
-	if _, err := os.Stat(dataTarGz); err == nil {
-		dataDestination := filepath.Join(dir, "data")
-		if err := os.MkdirAll(dataDestination, 0755); err != nil {
+	// Handle nested tar.gz inside outer tar (gems use data.tar.gz, hex uses contents.tar.gz)
+	for _, inner := range []string{"data.tar.gz", "contents.tar.gz"} {
+		innerPath := filepath.Join(destination, inner)
+		if _, err := os.Stat(innerPath); err != nil {
+			continue
+		}
+
+		innerDestination := filepath.Join(dir, "inner")
+		if err := os.MkdirAll(innerDestination, 0755); err != nil {
 			return "", err
 		}
 
-		df, err := os.Open(dataTarGz)
+		df, err := os.Open(innerPath)
 		if err != nil {
 			return "", err
 		}
@@ -218,10 +224,10 @@ func extractTar(path, dir string) (string, error) {
 		}
 		defer gz.Close()
 
-		if err := extractTarReader(tar.NewReader(gz), dataDestination, true); err != nil {
+		if err := extractTarReader(tar.NewReader(gz), innerDestination, false); err != nil {
 			return "", err
 		}
-		return dataDestination, nil
+		return innerDestination, nil
 	}
 
 	return destination, nil

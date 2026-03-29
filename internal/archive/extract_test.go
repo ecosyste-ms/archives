@@ -151,6 +151,44 @@ func TestExtractApkFixture(t *testing.T) {
 	}
 }
 
+func TestExtractGemFixture(t *testing.T) {
+	fixture := filepath.Join("testdata", "rake-13.2.1.gem")
+	if _, err := os.Stat(fixture); os.IsNotExist(err) {
+		t.Skip("fixture not found")
+	}
+
+	a, _ := New("http://example.com/rake-13.2.1.gem")
+	dir := t.TempDir()
+
+	data, _ := os.ReadFile(fixture)
+	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+
+	dest, err := a.Extract(dir)
+	if err != nil {
+		t.Fatalf("Extract() error: %v", err)
+	}
+	if dest == "" {
+		t.Fatal("Extract() returned empty destination")
+	}
+
+	files, _ := listAllFiles(dest)
+	fileSet := make(map[string]bool)
+	for _, f := range files {
+		fileSet[f] = true
+	}
+
+	// Gem data.tar.gz should be extracted (flat, no top-level stripping needed)
+	if !fileSet["rake.gemspec"] {
+		t.Errorf("expected rake.gemspec, got: %v", files)
+	}
+	if !fileSet[filepath.Join("lib", "rake.rb")] {
+		t.Errorf("expected lib/rake.rb, got: %v", files)
+	}
+	if !fileSet[filepath.Join("exe", "rake")] {
+		t.Errorf("expected exe/rake, got: %v", files)
+	}
+}
+
 func TestExtractRejectsLargeFile(t *testing.T) {
 	a, _ := New("http://example.com/big.tgz")
 	dir := t.TempDir()
