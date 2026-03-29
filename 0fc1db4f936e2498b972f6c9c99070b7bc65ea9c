@@ -1,0 +1,25 @@
+internal/archive/extract_test.go
+  f4fef4126d6e193a 154-191
+internal/archive/extract.go
+  f4fef4126d6e193a 197-199,203-211,215,227,230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "0fc1db4f936e2498b972f6c9c99070b7bc65ea9c",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 57,
+      "total_deletions": 13,
+      "accepted_lines": 53,
+      "overriden_lines": 0
+    }
+  }
+}
