@@ -1,0 +1,35 @@
+internal/handler/archives.go
+  f4fef4126d6e193a 41,47-48,72,78-79,102,108-109,132,138-139,162,168-169
+internal/handler/handler_test.go
+  f4fef4126d6e193a 11-12,15-20
+internal/archive/extract.go
+  f4fef4126d6e193a 143-146,160,287
+cmd/server/main.go
+  f4fef4126d6e193a 9,62-69,71
+internal/archive/safeclient_test.go
+  f4fef4126d6e193a 1-72
+internal/archive/safeclient.go
+  f4fef4126d6e193a 1-104
+internal/archive/archive.go
+  f4fef4126d6e193a 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.22",
+  "base_commit_sha": "22ffcaccfbeee21c9b589dd8245fb19435266658",
+  "prompts": {
+    "f4fef4126d6e193a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "19f5289d-9b49-49d2-b7c3-12891fb186bb",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Andrew Nesbitt <andrewnez@gmail.com>",
+      "messages": [],
+      "total_additions": 224,
+      "total_deletions": 26,
+      "accepted_lines": 217,
+      "overriden_lines": 0
+    }
+  }
+}
