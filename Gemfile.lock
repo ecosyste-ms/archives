@@ -71,7 +71,7 @@ GEM
       async-http (~> 0.56)
     async-pool (0.11.2)
       async (>= 2.0)
-    async-service (0.21.0)
+    async-service (0.22.0)
       async
       async-container (~> 0.34)
       string-format (~> 0.2)
@@ -388,7 +388,7 @@ CHECKSUMS
   async-http (0.94.2) sha256=c5ca94b337976578904a373833abe5b8dfb466a2946af75c4ae38c409c5c78b2
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
   async-pool (0.11.2) sha256=0a43a17b02b04d9c451b7d12fafa9a50e55dc6dd00d4369aca00433f16a7e3ed
-  async-service (0.21.0) sha256=3bc9e0f8dc293ba8855bc790959db7f981ae22bbb731456d221d93b388e9706f
+  async-service (0.22.0) sha256=84616488145654d42f994c2097eef39811a21548bf0da18d20a7b61813e63b61
   async-utilization (0.3.2) sha256=201a27e0948fe23fc14a01a0ecbe5e420e27cebae3a51f36e56fc45fb31df3b4
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bigdecimal (4.1.0) sha256=6dc07767aa3dc456ccd48e7ae70a07b474e9afd7c5bc576f80bd6da5c8dd6cae
