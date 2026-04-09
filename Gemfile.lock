@@ -54,7 +54,7 @@ GEM
       io-event (~> 1.11)
       metrics (~> 0.12)
       traces (~> 0.18)
-    async-container (0.34.4)
+    async-container (0.34.5)
       async (~> 2.22)
     async-http (0.94.2)
       async (>= 2.10.2)
@@ -384,7 +384,7 @@ CHECKSUMS
   appsignal (4.8.4) sha256=5c708a41c2913383d19ae581140da1904dbf642b974220d6c1bc4c7fdb1cf667
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
   async (2.39.0) sha256=df18730073f2bbb45788077dfa20cb365ecc1b9453969f44de6796b5191a00aa
-  async-container (0.34.4) sha256=0d705d485802a01c9dba070e7288257b4d8032f7f052d4e8753d76f74673ff66
+  async-container (0.34.5) sha256=905d950bb4cc5219238214d3a11ac6c4b74d4affecd930027e929ba0b86234bd
   async-http (0.94.2) sha256=c5ca94b337976578904a373833abe5b8dfb466a2946af75c4ae38c409c5c78b2
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
   async-pool (0.11.2) sha256=0a43a17b02b04d9c451b7d12fafa9a50e55dc6dd00d4369aca00433f16a7e3ed
