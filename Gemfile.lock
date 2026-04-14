@@ -87,13 +87,13 @@ GEM
     cgi (0.5.1)
     changelog-parser (0.2.0)
     charlock_holmes (0.7.9)
-    commonmarker (2.6.2-aarch64-linux)
-    commonmarker (2.6.2-aarch64-linux-musl)
-    commonmarker (2.6.2-arm-linux)
-    commonmarker (2.6.2-arm64-darwin)
-    commonmarker (2.6.2-x86_64-darwin)
-    commonmarker (2.6.2-x86_64-linux)
-    commonmarker (2.6.2-x86_64-linux-musl)
+    commonmarker (2.8.1-aarch64-linux)
+    commonmarker (2.8.1-aarch64-linux-musl)
+    commonmarker (2.8.1-arm-linux)
+    commonmarker (2.8.1-arm64-darwin)
+    commonmarker (2.8.1-x86_64-darwin)
+    commonmarker (2.8.1-x86_64-linux)
+    commonmarker (2.8.1-x86_64-linux-musl)
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     console (1.34.3)
@@ -343,7 +343,7 @@ DEPENDENCIES
   bootstrap
   bootstrap-icons
   changelog-parser
-  commonmarker (= 2.6.2)
+  commonmarker (= 2.8.1)
   creole
   falcon
   github-linguist
@@ -398,13 +398,13 @@ CHECKSUMS
   cgi (0.5.1) sha256=e93fcafc69b8a934fe1e6146121fa35430efa8b4a4047c4893764067036f18e9
   changelog-parser (0.2.0) sha256=a21cb82cd3f6be85a99204bf3d8d15ae510880d7f9657a4b096a7d4c27cf7e39
   charlock_holmes (0.7.9) sha256=b49e8a11ce1921e2c5b65511bb864ae51720ce9bd1c336ccf0e89e6c8ae62db0
-  commonmarker (2.6.2-aarch64-linux) sha256=48debd05c75ce6d7d67beec5ce05e685b11c2b7c00c14bc548d17952f8f78112
-  commonmarker (2.6.2-aarch64-linux-musl) sha256=c0a7836320a7f108cada493d0f342323daaf17a3f7cbf0a8d54b9a78eabcc325
-  commonmarker (2.6.2-arm-linux) sha256=629a6979ae8e34b74243f0ac26b467cac286daf040ce714b8e4f456e6ef8e119
-  commonmarker (2.6.2-arm64-darwin) sha256=a19eba0c774dcee372b7b65f9efa5ef4ad0d4abfceb15ddd768ecc7b406fe6e3
-  commonmarker (2.6.2-x86_64-darwin) sha256=1214c90fe846905bbaa6ee0f3f48fc25730f15a2b0dd5932183bdabfe43d7bcb
-  commonmarker (2.6.2-x86_64-linux) sha256=6cd76cae97221f1dc38c44bc1d2f1e5edd760fce0a2a60d937cc710615f9eaa8
-  commonmarker (2.6.2-x86_64-linux-musl) sha256=2330a19ad6301a1921f6599f5d8b2e0f59a2c03a33746ed2e179f22eb9917dd6
+  commonmarker (2.8.1-aarch64-linux) sha256=f855599cc6855f4137d72dcacae9571451075afe6e6c8522eba353df9b81d0bf
+  commonmarker (2.8.1-aarch64-linux-musl) sha256=bbc2b3d361403431a5aac737dc86997d3b2843276ef395e7499cf17ad48e1b2c
+  commonmarker (2.8.1-arm-linux) sha256=ede48564a9c2e29e003361fd7b0b158b3b85bcbd5a15b963fa2b3c78eef3993f
+  commonmarker (2.8.1-arm64-darwin) sha256=cf75760122d6e1c3f8626b5a6911636d2e0aaa26fa8dd377fea440a49c854b3e
+  commonmarker (2.8.1-x86_64-darwin) sha256=75afa559c1f1cc201afbb81291a2f2fc77b2941347deaa8d564d008ba04ecb18
+  commonmarker (2.8.1-x86_64-linux) sha256=c8f2e903c6ee4e2c7e280aa8b49ef37c53202d388e3a2ee06dfdccc8c6fb634f
+  commonmarker (2.8.1-x86_64-linux-musl) sha256=9b6305ce47e0d444b77dabf1762bf76085c2f7963b63c25c02ec36edcf06c785
   concurrent-ruby (1.3.6) sha256=6b56837e1e7e5292f9864f34b69c5a2cbc75c0cf5338f1ce9903d10fa762d5ab
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   console (1.34.3) sha256=869fbd74697efc4c606f102d2812b0b008e4e7fd738a91c591e8577140ec0dcc
