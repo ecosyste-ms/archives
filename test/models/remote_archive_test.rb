@@ -61,6 +61,32 @@ class ArchiveTest < ActiveSupport::TestCase
     end
   end
 
+  test "extracts tar.xz file correctly" do
+    archive = RemoteArchive.new("http://example.com/archive.tar.xz")
+
+    Dir.mktmpdir do |dir|
+      tar_path = File.join(dir, "archive-input.tar")
+      dest = archive.working_directory(dir)
+
+      File.open(tar_path, "wb") do |file|
+        Minitar::Writer.open(file) do |tar|
+          tar.add_file_simple("package/README.md", mode: 0644, size: 12) do |io|
+            io.write("hello xz tar")
+          end
+        end
+      end
+      system("xz", "-zk", tar_path)
+      FileUtils.mv("#{tar_path}.xz", dest)
+
+      archive.stubs(:download_file).returns(dest)
+      archive.stubs(:mime_type).returns("application/x-xz")
+
+      destination = archive.extract(dir)
+      assert destination.present?, "Expected extract to return a destination"
+      assert_equal "hello xz tar", File.read(File.join(destination, "README.md"))
+    end
+  end
+
   test "returns nil for files larger than 100MB" do
     archive = RemoteArchive.new("http://example.com/base62.tgz")
 

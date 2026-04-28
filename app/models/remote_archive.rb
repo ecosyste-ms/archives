@@ -121,6 +121,14 @@ class RemoteArchive
               extract_tar(reader, data_destination)
             end
           end
+        when "application/x-xz"
+          destination = File.join(dir, 'tar')
+          FileUtils.mkdir_p(destination)
+          IO.popen(["xz", "-dc", path], "rb", err: :close) do |xz|
+            Minitar::Reader.open(xz) do |reader|
+              extract_tar(reader, destination)
+            end
+          end
         else
           # not supported
           destination = nil
