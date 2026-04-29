@@ -3,6 +3,7 @@ require 'fileutils'
 require 'zip'
 require 'zlib'
 require 'minitar'
+require 'open3'
 
 class RemoteArchive
   attr_accessor :url
@@ -121,6 +122,10 @@ class RemoteArchive
               extract_tar(reader, data_destination)
             end
           end
+        when "application/x-xz"
+          destination = File.join(dir, 'tar')
+          FileUtils.mkdir_p(destination)
+          extract_xz_tar(path, destination)
         else
           # not supported
           destination = nil
@@ -340,6 +345,19 @@ class RemoteArchive
   end
 
   private
+
+  def extract_xz_tar(path, destination)
+    Open3.popen3('xz', '-dc', path) do |_stdin, stdout, stderr, wait_thr|
+      Minitar::Reader.open(stdout) do |reader|
+        extract_tar(reader, destination)
+      end
+
+      unless wait_thr.value.success?
+        Rails.logger.warn("Failed to decompress xz archive: #{stderr.read}")
+        raise "Failed to decompress xz archive"
+      end
+    end
+  end
 
   def extract_tar(reader, destination)
     file_count = 0
