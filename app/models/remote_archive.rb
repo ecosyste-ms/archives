@@ -1,3 +1,4 @@
+require 'base64'
 require 'timeout'
 require 'fileutils'
 require 'zip'
@@ -196,21 +197,24 @@ class RemoteArchive
 
         mime = mime_type(full_path)
 
-        # Check if it's a binary file that can't be encoded as UTF-8
-        unless mime.start_with?('text/') || mime.include?('json') || mime.include?('xml') || mime.include?('javascript') || mime == 'application/octet-stream'
+        raw_contents = File.binread(full_path)
+
+        if binary_file?(mime, raw_contents)
           return {
             name: file_path,
             directory: false,
             binary: true,
             mime_type: mime,
-            error: "Binary file detected. Cannot display contents as text."
+            encoding: 'base64',
+            size: raw_contents.bytesize,
+            contents: Base64.strict_encode64(raw_contents)
           }
         end
 
-        raw_contents = File.read(full_path)
         return {
           name: file_path,
           directory: false,
+          mime_type: mime,
           contents: raw_contents.force_encoding('UTF-8').scrub('�')
         }
       rescue Errno::EISDIR
@@ -224,6 +228,12 @@ class RemoteArchive
         return nil
       end
     end   
+  end
+
+  def binary_file?(mime, contents)
+    return false if mime.start_with?('text/') || mime.include?('json') || mime.include?('xml') || mime.include?('javascript')
+
+    contents.force_encoding('UTF-8').invalid_encoding? || contents.include?("\x00")
   end
 
   def supported_readme_format?(path)
