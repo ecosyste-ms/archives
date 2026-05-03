@@ -277,7 +277,7 @@ GEM
       railties (>= 5.2, < 8.2)
     ruby2_keywords (0.0.5)
     rubypants (0.7.1)
-    rubyzip (3.2.2)
+    rubyzip (3.3.0)
     rugged (1.9.0)
     samovar (2.4.1)
       console (~> 1.0)
@@ -502,7 +502,7 @@ CHECKSUMS
   rswag-ui (2.17.0) sha256=5f707b9b5e8171ddf9f519f6e401e79e419bd1d07387508603e76124f2443212
   ruby2_keywords (0.0.5) sha256=ffd13740c573b7301cf7a2e61fc857b2a8e3d3aff32545d6f8300d8bae10e3ef
   rubypants (0.7.1) sha256=30eb674add457dd05232c6357f7ee674536606f79d9f55e0f84db442bce2624f
-  rubyzip (3.2.2) sha256=c0ed99385f0625415c8f05bcae33fe649ed2952894a95ff8b08f26ca57ea5b3c
+  rubyzip (3.3.0) sha256=a372fc67892a4f8c0bc8ec906b720353d8e48807a64b2e63adf99b1e3583a034
   rugged (1.9.0) sha256=7faaa912c5888d6e348d20fa31209b6409f1574346b1b80e309dbc7e8d63efac
   samovar (2.4.1) sha256=c3b91dd0580771e3bc600621c1111f29542529dcffafaac3b6bf068b3f309e80
   sassc (2.4.0) sha256=4c60a2b0a3b36685c83b80d5789401c2f678c1652e3288315a1551d811d9f83e
