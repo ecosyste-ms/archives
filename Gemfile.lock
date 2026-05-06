@@ -56,7 +56,7 @@ GEM
       traces (~> 0.18)
     async-container (0.34.5)
       async (~> 2.22)
-    async-http (0.95.0)
+    async-http (0.95.1)
       async (>= 2.10.2)
       async-pool (~> 0.11)
       io-endpoint (~> 0.14)
@@ -389,7 +389,7 @@ CHECKSUMS
   asciidoctor (2.0.26) sha256=16e3accf1fc206bbd6335848649d7fd65f31d2daa60d85af13d47a8ee4b071c1
   async (2.39.0) sha256=df18730073f2bbb45788077dfa20cb365ecc1b9453969f44de6796b5191a00aa
   async-container (0.34.5) sha256=905d950bb4cc5219238214d3a11ac6c4b74d4affecd930027e929ba0b86234bd
-  async-http (0.95.0) sha256=08128cab255a48e41d1e856bfa9cbda001f1c57c88bafa3fa3a545ad795754aa
+  async-http (0.95.1) sha256=0c3dd458c204c06d5c4b20b01bbec4794a1203db627fb2ce536e1799ec14786c
   async-http-cache (0.4.6) sha256=2038d1f093182f16b50b4db271c25085e3938da10bfcfc2904cadb0530fddfd6
   async-pool (0.11.2) sha256=0a43a17b02b04d9c451b7d12fafa9a50e55dc6dd00d4369aca00433f16a7e3ed
   async-service (0.22.0) sha256=84616488145654d42f994c2097eef39811a21548bf0da18d20a7b61813e63b61
@@ -400,7 +400,6 @@ CHECKSUMS
   bootstrap (5.3.8) sha256=1c23b06df24ec28a0058ad90a0da93e260d2c0a5c453d7087f6bad428464742f
   bootstrap-icons (1.0.15) sha256=4a19c2360f88263c1606235813b8575ff3d6c0773174ed4ceb368628e5541ae9
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
-  bundler (4.0.11) sha256=5bcec0fb78302e48d02ee46f10ee6e6942be647ba5b44a6d1ddfda9a240ce785
   cgi (0.5.1) sha256=e93fcafc69b8a934fe1e6146121fa35430efa8b4a4047c4893764067036f18e9
   changelog-parser (0.2.0) sha256=a21cb82cd3f6be85a99204bf3d8d15ae510880d7f9657a4b096a7d4c27cf7e39
   charlock_holmes (0.7.9) sha256=b49e8a11ce1921e2c5b65511bb864ae51720ce9bd1c336ccf0e89e6c8ae62db0
