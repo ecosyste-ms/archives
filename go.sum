@@ -1,12 +1,12 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/git-pkgs/changelog v0.1.1 h1:hGEraBDgwUUQfwV8y6MVS+QywbpcYNAFVtg25LfCnIM=
-github.com/git-pkgs/changelog v0.1.1/go.mod h1:psv6VJyJKYzDYajKdV9oPw7LUEOIqSiB0L3wcKdX6Ac=
+github.com/git-pkgs/changelog v0.1.3 h1:iaFrl76F9lE3B9bQBZCpm0O+eB6tQ0ajMnrc5l7/EhU=
+github.com/git-pkgs/changelog v0.1.3/go.mod h1:psv6VJyJKYzDYajKdV9oPw7LUEOIqSiB0L3wcKdX6Ac=
 github.com/git-pkgs/markup v0.1.0 h1:y4MB7bWE6Txz68c0WnR0UykV5NxCDXMgrgdIEuukYUU=
 github.com/git-pkgs/markup v0.1.0/go.mod h1:301O9D4beTPZjJMxMfRsLrk2cUzNoPPBj8bmLdhRaZU=
-github.com/go-enry/go-enry/v2 v2.9.2 h1:giOQAtCgBX08kosrX818DCQJTCNtKwoPBGu0qb6nKTY=
-github.com/go-enry/go-enry/v2 v2.9.2/go.mod h1:9yrj4ES1YrbNb1Wb7/PWYr2bpaCXUGRt0uafN0ISyG8=
+github.com/go-enry/go-enry/v2 v2.9.6 h1:np63eOtMV56zfYDHnFVgpEVOk8fr2kmylcMnAZUDbSs=
+github.com/go-enry/go-enry/v2 v2.9.6/go.mod h1:9yrj4ES1YrbNb1Wb7/PWYr2bpaCXUGRt0uafN0ISyG8=
 github.com/go-enry/go-oniguruma v1.2.1 h1:k8aAMuJfMrqm/56SG2lV9Cfti6tC4x8673aHCcBk+eo=
 github.com/go-enry/go-oniguruma v1.2.1/go.mod h1:bWDhYP+S6xZQgiRL7wlTScFYBe023B6ilRZbCAD5Hf4=
 github.com/niklasfasching/go-org v1.9.1 h1:/3s4uTPOF06pImGa2Yvlp24yKXZoTYM+nsIlMzfpg/0=
