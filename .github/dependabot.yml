@@ -1,12 +1,9 @@
 version: 2
 updates:
-  - package-ecosystem: "bundler"
+  - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "daily"
-    allow:
-    - dependency-type: direct
-    - dependency-type: indirect
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

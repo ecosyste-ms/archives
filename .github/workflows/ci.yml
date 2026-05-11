@@ -10,17 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install dependent libraries
-        run: sudo apt-get install libarchive-tools libidn11-dev 
-      - name: Set up Node
-        uses: actions/setup-node@v6.3.0
+        run: sudo apt-get update && sudo apt-get install -y libonig-dev file asciidoctor
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          node-version: 15
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
 
       - name: Run tests
-        env:
-          RAILS_ENV: test
-        run: bundle exec rake test
+        run: go test ./...

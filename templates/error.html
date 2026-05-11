@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.MetaTitle}}</title>
+    <link rel="stylesheet" href="/static/css/application.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__global">
+        <div class="container">
+          <div class="row mb-4">
+            <div class="col-md-6 header__global__site-logo-wrapper mb-3 mb-lg-0">
+              <h1><a class="site-logo" href="/">ecosyste.ms</a></h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="header__local pt-3">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-3 col-md-4">
+              <h1 class="h3 header__local__sitename">
+                <a class="header__local__homelink" href="/">{{.AppName}}</a>
+              </h1>
+            </div>
+            <div class="col-lg-5 col-md-8">
+              <p class="header__local__description">{{.AppDescription}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="main">
+      <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-6 text-center">
+            <h1 class="display-1">{{.StatusCode}}</h1>
+            <p class="lead text-muted">{{.StatusText}}</p>
+            <a href="/" class="btn btn-primary mt-3">Go Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

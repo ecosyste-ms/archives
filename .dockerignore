@@ -2,16 +2,14 @@
 .github
 .gitignore
 README.md
-
-log
-test
-vendor
-openshift/
-coverage/
-.bundle
-.ruby-version
+DEVELOPMENT.md
 
 .DS_Store
 .AppleDouble
 .LSOverride
 
+# Build output
+/archives
+/server
+*.test
+*.out
