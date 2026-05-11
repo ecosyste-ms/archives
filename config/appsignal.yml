@@ -1,6 +1,0 @@
-production:
-  ignore_errors:
-    - ActiveRecord::RecordNotFound
-    - ActionController::RoutingError
-    - Minitar::UnexpectedEOF
-    - Minitar::InvalidTarStream

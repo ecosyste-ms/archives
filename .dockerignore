@@ -2,25 +2,14 @@
 .github
 .gitignore
 README.md
-
-log
-vendor
-openshift/
-coverage/
-
-# Ruby app files (not needed for Go build)
-app/
-config/
-db/
-lib/
-bin/
-tmp/
-Gemfile
-Gemfile.lock
-Rakefile
-.ruby-version
-.bundle
+DEVELOPMENT.md
 
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Build output
+/archives
+/server
+*.test
+*.out
