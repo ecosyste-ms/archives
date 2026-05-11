@@ -61,7 +61,7 @@ func (a *RemoteArchive) doExtract(path, dir string) (string, error) {
 	mime := detectMimeType(path)
 
 	switch mime {
-	case "application/zip", "application/java-archive":
+	case "application/zip", "application/java-archive", "application/vnd.android.package-archive":
 		return extractZip(path, dir)
 	case "application/gzip":
 		return extractTarGz(path, dir)
