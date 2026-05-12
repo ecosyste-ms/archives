@@ -7,6 +7,7 @@ require (
 	github.com/git-pkgs/markup v0.1.0
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
+	github.com/ulikunitz/xz v0.5.15
 )
 
 require (
