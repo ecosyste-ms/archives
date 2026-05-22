@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sort"
 	"testing"
+
+	"github.com/ulikunitz/xz"
 )
 
 func TestExtractTarGzFixture(t *testing.T) {
@@ -48,6 +50,81 @@ func TestExtractTarGzFixture(t *testing.T) {
 	}
 	if !fileSet["Readme.md"] {
 		t.Error("expected Readme.md in extracted files")
+	}
+}
+
+func TestExtractTarXz(t *testing.T) {
+	a, _ := New("http://example.com/pkg.tar.xz")
+	dir := t.TempDir()
+
+	path := a.WorkingDirectory(dir)
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	xzw, err := xz.NewWriter(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tw := tar.NewWriter(xzw)
+
+	entries := map[string]string{
+		"pkg/README.md":        "hello from xz",
+		"pkg/internal/code.go": "package internal\n",
+	}
+	for name, contents := range entries {
+		header := &tar.Header{
+			Name: name,
+			Mode: 0644,
+			Size: int64(len(contents)),
+		}
+		if err := tw.WriteHeader(header); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := xzw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := detectMimeType(path); got != "application/x-xz" {
+		t.Fatalf("detectMimeType() = %q, want application/x-xz", got)
+	}
+
+	dest, err := a.Extract(dir)
+	if err != nil {
+		t.Fatalf("Extract() error: %v", err)
+	}
+	if dest == "" {
+		t.Fatal("Extract() returned empty destination")
+	}
+
+	files, _ := listAllFiles(dest)
+	sort.Strings(files)
+
+	expected := []string{
+		"README.md",
+		"internal",
+		filepath.Join("internal", "code.go"),
+	}
+	sort.Strings(expected)
+
+	if len(files) != len(expected) {
+		t.Fatalf("got %d files, want %d\ngot:  %v\nwant: %v", len(files), len(expected), files, expected)
+	}
+	for i, f := range files {
+		if f != expected[i] {
+			t.Errorf("files[%d] = %q, want %q", i, f, expected[i])
+		}
 	}
 }
 
@@ -262,7 +339,7 @@ func TestShouldStripTopLevel(t *testing.T) {
 		{[]string{"a.txt", "b.txt"}, false},
 		{[]string{"pkg/a.txt", "other/b.txt"}, false},
 		{[]string{}, false},
-		{[]string{"pkg/"}, false},           // only a root dir, no non-root entries
+		{[]string{"pkg/"}, false},             // only a root dir, no non-root entries
 		{[]string{"pkg/", "pkg/a.txt"}, true}, // root dir plus files inside
 	}
 	for _, tt := range tests {

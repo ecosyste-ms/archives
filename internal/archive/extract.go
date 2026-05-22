@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/ulikunitz/xz"
 )
 
 func (a *RemoteArchive) Extract(dir string) (string, error) {
@@ -65,6 +67,8 @@ func (a *RemoteArchive) doExtract(path, dir string) (string, error) {
 		return extractZip(path, dir)
 	case "application/gzip":
 		return extractTarGz(path, dir)
+	case "application/x-xz":
+		return extractTarXz(path, dir)
 	case "application/x-tar":
 		return extractTar(path, dir)
 	default:
@@ -180,6 +184,26 @@ func extractTarGz(path, dir string) (string, error) {
 	defer gz.Close()
 
 	return destination, extractTarReader(tar.NewReader(gz), destination, true)
+}
+
+func extractTarXz(path, dir string) (string, error) {
+	destination := filepath.Join(dir, "tar")
+	if err := os.MkdirAll(destination, 0755); err != nil {
+		return "", err
+	}
+
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	xzr, err := xz.NewReader(f)
+	if err != nil {
+		return "", fmt.Errorf("opening xz: %w", err)
+	}
+
+	return destination, extractTarReader(tar.NewReader(xzr), destination, true)
 }
 
 func extractTar(path, dir string) (string, error) {
