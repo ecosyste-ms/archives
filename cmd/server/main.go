@@ -20,6 +20,12 @@ func main() {
 	// Find project root (where templates and openapi dirs live)
 	root := projectRoot()
 
+	staticDir := filepath.Join(root, "static")
+	if err := handler.InitAssets(staticDir); err != nil {
+		slog.Error("failed to load static assets", "error", err)
+		os.Exit(1)
+	}
+
 	templateDir := filepath.Join(root, "templates")
 	if err := handler.InitTemplates(templateDir); err != nil {
 		slog.Error("failed to load templates", "error", err)
@@ -49,7 +55,6 @@ func main() {
 	mux.HandleFunc("GET /500", handler.HandleInternalError)
 
 	// Static files
-	staticDir := filepath.Join(root, "static")
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
 
 	// Home page (must be last to act as catch-all)

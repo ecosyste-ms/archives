@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"html/template"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -91,6 +94,34 @@ var serviceCategories = []string{"Data", "Tools", "Indexes", "Applications", "Ex
 
 var templates *template.Template
 
+var assetDigests = map[string]string{}
+
+func InitAssets(staticDir string) error {
+	return filepath.WalkDir(staticDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(staticDir, path)
+		if err != nil {
+			return err
+		}
+		sum := sha256.Sum256(b)
+		assetDigests[filepath.ToSlash(rel)] = hex.EncodeToString(sum[:4])
+		return nil
+	})
+}
+
+func assetPath(p string) string {
+	if d, ok := assetDigests[p]; ok {
+		return "/static/" + p + "?v=" + d
+	}
+	return "/static/" + p
+}
+
 func InitTemplates(templateDir string) error {
 	funcMap := template.FuncMap{
 		"join": func(items []string, sep string) string {
@@ -106,6 +137,7 @@ func InitTemplates(templateDir string) error {
 		"serviceCategories": func() []string {
 			return serviceCategories
 		},
+		"asset": assetPath,
 	}
 
 	var err error

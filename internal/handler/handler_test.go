@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	"github.com/ecosyste-ms/archives/internal/archive"
@@ -413,6 +414,36 @@ func TestHandleHomeReturnsHTML(t *testing.T) {
 	}
 	if !containsStr(body, "Archives") {
 		t.Error("expected Archives in home page")
+	}
+}
+
+func TestAssetDigest(t *testing.T) {
+	staticDir := filepath.Join("..", "..", "static")
+	templateDir := filepath.Join("..", "..", "templates")
+	if _, err := os.Stat(staticDir); os.IsNotExist(err) {
+		t.Skip("static directory not found")
+	}
+	if err := InitAssets(staticDir); err != nil {
+		t.Fatalf("InitAssets: %v", err)
+	}
+	if err := InitTemplates(templateDir); err != nil {
+		t.Fatalf("InitTemplates: %v", err)
+	}
+
+	got := assetPath("css/application.css")
+	if !regexp.MustCompile(`^/static/css/application\.css\?v=[0-9a-f]{8}$`).MatchString(got) {
+		t.Fatalf("expected versioned asset url, got %q", got)
+	}
+
+	if assetPath("does/not/exist.css") != "/static/does/not/exist.css" {
+		t.Fatal("expected unversioned path for unknown asset")
+	}
+
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	HandleHome(w, req)
+	if !containsStr(w.Body.String(), got) {
+		t.Errorf("expected %q in rendered home page", got)
 	}
 }
 
