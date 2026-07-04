@@ -14,5 +14,5 @@ require (
 	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/niklasfasching/go-org v1.9.1 // indirect
 	github.com/yuin/goldmark v1.8.2 // indirect
-	golang.org/x/net v0.45.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
 )
