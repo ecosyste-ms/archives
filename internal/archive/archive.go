@@ -1,6 +1,7 @@
 package archive
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -20,10 +21,19 @@ const (
 )
 
 type RemoteArchive struct {
-	URL string
+	URL     string
+	context context.Context
 }
 
 func New(rawURL string) (*RemoteArchive, error) {
+	return NewWithContext(context.Background(), rawURL)
+}
+
+func NewWithContext(ctx context.Context, rawURL string) (*RemoteArchive, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("invalid URL: %w", err)
@@ -31,7 +41,7 @@ func New(rawURL string) (*RemoteArchive, error) {
 	if u.Scheme != "http" && u.Scheme != "https" {
 		return nil, fmt.Errorf("only HTTP/HTTPS URLs are allowed")
 	}
-	return &RemoteArchive{URL: rawURL}, nil
+	return &RemoteArchive{URL: rawURL, context: ctx}, nil
 }
 
 func (a *RemoteArchive) Basename() string {
@@ -57,7 +67,7 @@ func (a *RemoteArchive) WorkingDirectory(dir string) string {
 func (a *RemoteArchive) Download(dir string) error {
 	path := a.WorkingDirectory(dir)
 
-	req, err := http.NewRequest("GET", a.URL, nil)
+	req, err := http.NewRequestWithContext(a.context, "GET", a.URL, nil)
 	if err != nil {
 		return fmt.Errorf("creating request: %w", err)
 	}
@@ -111,12 +121,12 @@ func (a *RemoteArchive) ListFiles() ([]string, error) {
 }
 
 type FileContent struct {
-	Name      string   `json:"name"`
-	Directory bool     `json:"directory"`
-	Contents  any      `json:"contents,omitempty"`
-	Binary    bool     `json:"binary,omitempty"`
-	MimeType  string   `json:"mime_type,omitempty"`
-	Error     string   `json:"error,omitempty"`
+	Name      string `json:"name"`
+	Directory bool   `json:"directory"`
+	Contents  any    `json:"contents,omitempty"`
+	Binary    bool   `json:"binary,omitempty"`
+	MimeType  string `json:"mime_type,omitempty"`
+	Error     string `json:"error,omitempty"`
 }
 
 func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {

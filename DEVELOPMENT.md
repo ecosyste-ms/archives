@@ -49,3 +49,8 @@ Run benchmarks with:
 ## Deployment
 
 A container-based deployment is highly recommended, we use [dokku.com](https://dokku.com/).
+
+AppSignal tracing requires `APPSIGNAL_APP_NAME`, `APPSIGNAL_PUSH_API_KEY`, and
+`APPSIGNAL_COLLECTOR_ENDPOINT`. Set the endpoint to the hosted collector URL from
+AppSignal. `APPSIGNAL_APP_ENV` defaults to `production`, and deploy revisions are
+read from `APP_REVISION`.

@@ -1,6 +1,9 @@
 package archive
 
 import (
+	"context"
+	"errors"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -41,6 +44,32 @@ func TestNewRejectsInvalidURL(t *testing.T) {
 	}
 }
 
+func TestDownloadUsesArchiveContext(t *testing.T) {
+	type contextKey string
+	const key contextKey = "request"
+
+	previousClient := httpClient
+	t.Cleanup(func() { SetHTTPClient(previousClient) })
+
+	var value string
+	SetHTTPClient(&http.Client{Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		value, _ = req.Context().Value(key).(string)
+		return nil, errors.New("stop download")
+	})})
+
+	ctx := context.WithValue(context.Background(), key, "parent-span")
+	a, err := NewWithContext(ctx, "https://example.com/file.zip")
+	if err != nil {
+		t.Fatalf("NewWithContext() error: %v", err)
+	}
+	if err := a.Download(t.TempDir()); err == nil {
+		t.Fatal("Download() error = nil, want transport error")
+	}
+	if value != "parent-span" {
+		t.Errorf("request context value = %q, want parent-span", value)
+	}
+}
+
 func TestBasename(t *testing.T) {
 	a, _ := New("https://example.com/files/foo.tar.gz")
 	if got := a.Basename(); got != "foo.tar.gz" {
@@ -68,6 +97,12 @@ func TestWorkingDirectory(t *testing.T) {
 	if got != "/tmp/thing.zip" {
 		t.Errorf("WorkingDirectory() = %q, want %q", got, "/tmp/thing.zip")
 	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
 }
 
 func TestScrubUTF8Valid(t *testing.T) {
