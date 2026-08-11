@@ -5,9 +5,15 @@ import (
 	"encoding/hex"
 	"html/template"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+)
+
+const (
+	appDescription = "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading."
+	appName        = "Archives"
 )
 
 type Format struct {
@@ -16,14 +22,14 @@ type Format struct {
 }
 
 type HomeData struct {
-	Formats          []Format
-	AppName          string
-	AppDescription   string
-	MetaTitle        string
-	MetaDescription  string
-	GithubRepoName   string
-	Services         map[string][]Service
-	RequestBaseURL   string
+	Formats         []Format
+	AppName         string
+	AppDescription  string
+	MetaTitle       string
+	MetaDescription string
+	GithubRepoName  string
+	Services        map[string][]Service
+	RequestBaseURL  string
 }
 
 type Service struct {
@@ -32,15 +38,15 @@ type Service struct {
 }
 
 type ErrorData struct {
-	AppName          string
-	AppDescription   string
-	MetaTitle        string
-	MetaDescription  string
-	GithubRepoName   string
-	Services         map[string][]Service
-	RequestBaseURL   string
-	StatusCode       int
-	StatusText       string
+	AppName         string
+	AppDescription  string
+	MetaTitle       string
+	MetaDescription string
+	GithubRepoName  string
+	Services        map[string][]Service
+	RequestBaseURL  string
+	StatusCode      int
+	StatusText      string
 }
 
 var formats = []Format{
@@ -64,7 +70,7 @@ var services = map[string][]Service{
 		{Name: "SBOM Parser", URL: "https://sbom.ecosyste.ms"},
 		{Name: "License Parser", URL: "https://licenses.ecosyste.ms"},
 		{Name: "Digest", URL: "https://digest.ecosyste.ms"},
-		{Name: "Archives", URL: "https://archives.ecosyste.ms"},
+		{Name: appName, URL: "https://archives.ecosyste.ms"},
 		{Name: "Diff", URL: "https://diff.ecosyste.ms"},
 		{Name: "Summary", URL: "https://summary.ecosyste.ms"},
 	},
@@ -160,17 +166,17 @@ func HandleHome(w http.ResponseWriter, r *http.Request) {
 
 	data := HomeData{
 		Formats:         formats,
-		AppName:         "Archives",
-		AppDescription:  "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.",
+		AppName:         appName,
+		AppDescription:  appDescription,
 		MetaTitle:       "Ecosyste.ms: Archives",
-		MetaDescription: "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.",
+		MetaDescription: appDescription,
 		GithubRepoName:  githubRepoName(),
 		Services:        services,
 		RequestBaseURL:  requestBaseURL(r),
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	templates.ExecuteTemplate(w, "layout.html", data)
+	renderTemplate(w, "layout.html", data)
 }
 
 func HandleNotFound(w http.ResponseWriter, r *http.Request) {
@@ -181,19 +187,19 @@ func HandleNotFound(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := ErrorData{
-		AppName:        "Archives",
-		AppDescription: "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.",
+		AppName:        appName,
+		AppDescription: appDescription,
 		MetaTitle:      "Not Found | Ecosyste.ms: Archives",
 		GithubRepoName: githubRepoName(),
 		Services:       services,
 		RequestBaseURL: requestBaseURL(r),
-		StatusCode:     404,
+		StatusCode:     http.StatusNotFound,
 		StatusText:     "Not Found",
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
-	templates.ExecuteTemplate(w, "error.html", data)
+	renderTemplate(w, "error.html", data)
 }
 
 func HandleUnprocessable(w http.ResponseWriter, r *http.Request) {
@@ -204,19 +210,19 @@ func HandleUnprocessable(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := ErrorData{
-		AppName:        "Archives",
-		AppDescription: "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.",
+		AppName:        appName,
+		AppDescription: appDescription,
 		MetaTitle:      "Unprocessable | Ecosyste.ms: Archives",
 		GithubRepoName: githubRepoName(),
 		Services:       services,
 		RequestBaseURL: requestBaseURL(r),
-		StatusCode:     422,
+		StatusCode:     http.StatusUnprocessableEntity,
 		StatusText:     "Unprocessable Entity",
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusUnprocessableEntity)
-	templates.ExecuteTemplate(w, "error.html", data)
+	renderTemplate(w, "error.html", data)
 }
 
 func HandleInternalError(w http.ResponseWriter, r *http.Request) {
@@ -227,19 +233,25 @@ func HandleInternalError(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := ErrorData{
-		AppName:        "Archives",
-		AppDescription: "An open API service for inspecting package archives and files from many open source software ecosystems. Explore package contents without downloading.",
+		AppName:        appName,
+		AppDescription: appDescription,
 		MetaTitle:      "Internal Server Error | Ecosyste.ms: Archives",
 		GithubRepoName: githubRepoName(),
 		Services:       services,
 		RequestBaseURL: requestBaseURL(r),
-		StatusCode:     500,
+		StatusCode:     http.StatusInternalServerError,
 		StatusText:     "Internal Server Error",
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusInternalServerError)
-	templates.ExecuteTemplate(w, "error.html", data)
+	renderTemplate(w, "error.html", data)
+}
+
+func renderTemplate(w http.ResponseWriter, name string, data any) {
+	if err := templates.ExecuteTemplate(w, name, data); err != nil {
+		slog.Error("failed to render template", "name", name, "error", err)
+	}
 }
 
 func isJSONRequest(accept string) bool {

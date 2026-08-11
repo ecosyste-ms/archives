@@ -18,8 +18,10 @@ func BenchmarkExtractTarGz(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
 		dir := b.TempDir()
-		os.WriteFile(a.WorkingDirectory(dir), data, 0644)
-		a.Extract(dir)
+		writeTestFile(b, a.WorkingDirectory(dir), data)
+		if _, err := a.Extract(dir); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -35,8 +37,10 @@ func BenchmarkExtractZip(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
 		dir := b.TempDir()
-		os.WriteFile(a.WorkingDirectory(dir), data, 0644)
-		a.Extract(dir)
+		writeTestFile(b, a.WorkingDirectory(dir), data)
+		if _, err := a.Extract(dir); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -52,8 +56,10 @@ func BenchmarkExtractJar(b *testing.B) {
 	b.ResetTimer()
 	for b.Loop() {
 		dir := b.TempDir()
-		os.WriteFile(a.WorkingDirectory(dir), data, 0644)
-		a.Extract(dir)
+		writeTestFile(b, a.WorkingDirectory(dir), data)
+		if _, err := a.Extract(dir); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -68,12 +74,17 @@ func BenchmarkListFiles(b *testing.B) {
 
 	// Pre-extract once to get the directory
 	dir := b.TempDir()
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
-	extractDir, _ := a.Extract(dir)
+	writeTestFile(b, a.WorkingDirectory(dir), data)
+	extractDir, err := a.Extract(dir)
+	if err != nil {
+		b.Fatal(err)
+	}
 
 	b.ResetTimer()
 	for b.Loop() {
-		listAllFiles(extractDir)
+		if _, err := listAllFiles(extractDir); err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
@@ -87,8 +98,11 @@ func BenchmarkRenderMarkdown(b *testing.B) {
 	a, _ := New("http://example.com/base62-2.0.1.tgz")
 
 	dir := b.TempDir()
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
-	extractDir, _ := a.Extract(dir)
+	writeTestFile(b, a.WorkingDirectory(dir), data)
+	extractDir, err := a.Extract(dir)
+	if err != nil {
+		b.Fatal(err)
+	}
 
 	readmeData, err := os.ReadFile(filepath.Join(extractDir, "Readme.md"))
 	if err != nil {
@@ -119,8 +133,8 @@ func BenchmarkScrubUTF8(b *testing.B) {
 
 func BenchmarkShouldStripTopLevel(b *testing.B) {
 	names := []string{
-		"pkg/a.txt", "pkg/b.txt", "pkg/sub/c.txt",
-		"pkg/sub/d.txt", "pkg/sub/e.txt", "pkg/",
+		testPackageFilename, "pkg/b.txt", "pkg/sub/c.txt",
+		"pkg/sub/d.txt", "pkg/sub/e.txt", testPackageDirectory,
 	}
 
 	b.ResetTimer()

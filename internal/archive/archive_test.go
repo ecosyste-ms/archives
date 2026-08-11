@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -144,9 +143,9 @@ func TestIsTextMime(t *testing.T) {
 
 func TestListAllFiles(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "sub"), 0755)
-	os.WriteFile(filepath.Join(dir, "a.txt"), []byte("a"), 0644)
-	os.WriteFile(filepath.Join(dir, "sub", "b.txt"), []byte("b"), 0644)
+	makeTestDirectory(t, filepath.Join(dir, "sub"))
+	writeTestFile(t, filepath.Join(dir, "a.txt"), []byte("a"))
+	writeTestFile(t, filepath.Join(dir, "sub", "b.txt"), []byte("b"))
 
 	files, err := listAllFiles(dir)
 	if err != nil {

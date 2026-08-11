@@ -28,10 +28,10 @@ func setupFixtureServer(t *testing.T) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Map URL paths to fixture files
 		fixtures := map[string]string{
-			"/base62/-/base62-2.0.1.tgz":                                          "base62-2.0.1.tgz",
-			"/adobe/parcel-plugin-htl/archive/refs/heads/master.zip":               "parcel-plugin-htl-master.zip",
+			"/base62/-/base62-2.0.1.tgz":                                                  "base62-2.0.1.tgz",
+			"/adobe/parcel-plugin-htl/archive/refs/heads/master.zip":                      "parcel-plugin-htl-master.zip",
 			"/org/clojars/majorcluster/clj-data-adapter/0.2.1/clj-data-adapter-0.2.1.jar": "clj-data-adapter-0.2.1.jar",
-			"/splitrb/split/archive/refs/heads/main.zip":                           "main.zip",
+			"/splitrb/split/archive/refs/heads/main.zip":                                  "main.zip",
 		}
 
 		filename, ok := fixtures[r.URL.Path]
@@ -45,8 +45,15 @@ func setupFixtureServer(t *testing.T) *httptest.Server {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		w.Write(data)
+		_, _ = w.Write(data)
 	}))
+}
+
+func decodeResponse(t *testing.T, w *httptest.ResponseRecorder, value any) {
+	t.Helper()
+	if err := json.NewDecoder(w.Body).Decode(value); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
 }
 
 func TestHandleListTarGz(t *testing.T) {
@@ -64,7 +71,7 @@ func TestHandleListTarGz(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -97,7 +104,7 @@ func TestHandleListZip(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -127,7 +134,7 @@ func TestHandleListJar(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -154,7 +161,7 @@ func TestHandleContentsFile(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != ".eslintignore" {
 		t.Errorf("expected name .eslintignore, got %v", result["name"])
@@ -183,7 +190,7 @@ func TestHandleContentsFolder(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "lib" {
 		t.Errorf("expected name lib, got %v", result["name"])
@@ -236,7 +243,7 @@ func TestHandleReadme(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "Readme.md" {
 		t.Errorf("expected name Readme.md, got %v", result["name"])
@@ -284,7 +291,7 @@ func TestHandleChangelog(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "CHANGELOG.md" {
 		t.Errorf("expected name CHANGELOG.md, got %v", result["name"])
@@ -459,7 +466,7 @@ func TestHandleNotFoundJSON(t *testing.T) {
 	}
 
 	var result map[string]string
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 	if result["error"] != "not found" {
 		t.Errorf("expected error 'not found', got %q", result["error"])
 	}
@@ -470,7 +477,9 @@ func TestHandleNotFoundHTML(t *testing.T) {
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		t.Skip("templates directory not found")
 	}
-	InitTemplates(templateDir)
+	if err := InitTemplates(templateDir); err != nil {
+		t.Fatal(err)
+	}
 
 	req := httptest.NewRequest("GET", "/nonexistent", nil)
 	req.Header.Set("Accept", "text/html")

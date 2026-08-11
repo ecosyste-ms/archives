@@ -14,7 +14,7 @@ func setupBenchmarkFixtureServer(b *testing.B) *httptest.Server {
 
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fixtures := map[string]string{
-			"/base62/-/base62-2.0.1.tgz":                            "base62-2.0.1.tgz",
+			"/base62/-/base62-2.0.1.tgz":                             "base62-2.0.1.tgz",
 			"/adobe/parcel-plugin-htl/archive/refs/heads/master.zip": "parcel-plugin-htl-master.zip",
 			"/splitrb/split/archive/refs/heads/main.zip":             "main.zip",
 		}
@@ -30,7 +30,7 @@ func setupBenchmarkFixtureServer(b *testing.B) *httptest.Server {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		w.Write(data)
+		_, _ = w.Write(data)
 	}))
 }
 
@@ -124,7 +124,9 @@ func BenchmarkHandleHomeHTML(b *testing.B) {
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		b.Skip("templates directory not found")
 	}
-	InitTemplates(templateDir)
+	if err := InitTemplates(templateDir); err != nil {
+		b.Fatal(err)
+	}
 
 	b.ResetTimer()
 	for b.Loop() {
