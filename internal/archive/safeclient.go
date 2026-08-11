@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"syscall"
 	"time"
+
+	"github.com/ecosyste-ms/archives/internal/telemetry"
 )
 
 // safeClient returns an HTTP client that blocks connections to private,
@@ -30,7 +32,7 @@ func safeClient() *http.Client {
 	}
 
 	return &http.Client{
-		Transport: transport,
+		Transport: telemetry.HTTPTransport(transport),
 		Timeout:   60 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) >= 10 {

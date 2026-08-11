@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -9,9 +11,27 @@ import (
 	"time"
 
 	"github.com/ecosyste-ms/archives/internal/handler"
+	"github.com/ecosyste-ms/archives/internal/telemetry"
 )
 
 func main() {
+	if err := run(); err != nil {
+		slog.Error("server failed", "error", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	shutdownTelemetry, err := telemetry.Start(context.Background(), telemetry.ConfigFromEnv())
+	if err != nil {
+		slog.Warn("AppSignal disabled", "error", err)
+	}
+	defer func() {
+		if err := shutdownTelemetry(context.Background()); err != nil {
+			slog.Warn("failed to shut down AppSignal", "error", err)
+		}
+	}()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "5000"
@@ -22,14 +42,12 @@ func main() {
 
 	staticDir := filepath.Join(root, "static")
 	if err := handler.InitAssets(staticDir); err != nil {
-		slog.Error("failed to load static assets", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("load static assets: %w", err)
 	}
 
 	templateDir := filepath.Join(root, "templates")
 	if err := handler.InitTemplates(templateDir); err != nil {
-		slog.Error("failed to load templates", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("load templates: %w", err)
 	}
 
 	docs := handler.NewDocsHandler(filepath.Join(root, "openapi"))
@@ -37,28 +55,35 @@ func main() {
 	mux := http.NewServeMux()
 
 	// API routes
-	mux.HandleFunc("GET /api/v1/archives/list", handler.HandleList)
-	mux.HandleFunc("GET /api/v1/archives/contents", handler.HandleContents)
-	mux.HandleFunc("GET /api/v1/archives/readme", handler.HandleReadme)
-	mux.HandleFunc("GET /api/v1/archives/changelog", handler.HandleChangelog)
-	mux.HandleFunc("GET /api/v1/archives/repopack", handler.HandleRepopack)
-	mux.HandleFunc("GET /api/v1/archives/repomix", handler.HandleRepopack)
+	handle := func(pattern string, h http.Handler) {
+		mux.Handle(pattern, telemetry.HTTPHandler(pattern, h))
+	}
+	handleFunc := func(pattern string, h http.HandlerFunc) {
+		handle(pattern, h)
+	}
+
+	handleFunc("GET /api/v1/archives/list", handler.HandleList)
+	handleFunc("GET /api/v1/archives/contents", handler.HandleContents)
+	handleFunc("GET /api/v1/archives/readme", handler.HandleReadme)
+	handleFunc("GET /api/v1/archives/changelog", handler.HandleChangelog)
+	handleFunc("GET /api/v1/archives/repopack", handler.HandleRepopack)
+	handleFunc("GET /api/v1/archives/repomix", handler.HandleRepopack)
 
 	// Docs
-	mux.HandleFunc("GET /docs", handler.RedirectDocs)
-	mux.HandleFunc("GET /docs/", docs.HandleDocs)
-	mux.HandleFunc("GET /docs/api/v1/openapi.yaml", docs.HandleOpenAPISpec)
+	handleFunc("GET /docs", handler.RedirectDocs)
+	handleFunc("GET /docs/", docs.HandleDocs)
+	handleFunc("GET /docs/api/v1/openapi.yaml", docs.HandleOpenAPISpec)
 
 	// Error pages
-	mux.HandleFunc("GET /404", handler.HandleNotFound)
-	mux.HandleFunc("GET /422", handler.HandleUnprocessable)
-	mux.HandleFunc("GET /500", handler.HandleInternalError)
+	handleFunc("GET /404", handler.HandleNotFound)
+	handleFunc("GET /422", handler.HandleUnprocessable)
+	handleFunc("GET /500", handler.HandleInternalError)
 
 	// Static files
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
+	handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticDir))))
 
 	// Home page (must be last to act as catch-all)
-	mux.HandleFunc("GET /", handler.HandleHome)
+	handleFunc("GET /", handler.HandleHome)
 
 	// Middleware: CORS for API routes, security headers for all
 	corsHandler := handler.CORSMiddleware()
@@ -73,10 +98,7 @@ func main() {
 	}
 
 	slog.Info("starting server", "port", port)
-	if err := server.ListenAndServe(); err != nil {
-		slog.Error("server failed", "error", err)
-		os.Exit(1)
-	}
+	return server.ListenAndServe()
 }
 
 func projectRoot() string {
