@@ -25,7 +25,7 @@ func TestExtractTarGzFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -45,7 +45,7 @@ func TestExtractTarGzFixture(t *testing.T) {
 	for _, f := range files {
 		fileSet[f] = true
 	}
-	if !fileSet["package.json"] {
+	if !fileSet[testPackageJSONFilename] {
 		t.Error("expected package.json in extracted files")
 	}
 	if !fileSet["Readme.md"] {
@@ -112,7 +112,7 @@ func TestExtractTarXz(t *testing.T) {
 	sort.Strings(files)
 
 	expected := []string{
-		"README.md",
+		testReadmeFilename,
 		"internal",
 		filepath.Join("internal", "code.go"),
 	}
@@ -138,7 +138,7 @@ func TestExtractZipFixture(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -154,10 +154,10 @@ func TestExtractZipFixture(t *testing.T) {
 		fileSet[f] = true
 	}
 
-	if !fileSet["README.md"] {
+	if !fileSet[testReadmeFilename] {
 		t.Error("expected README.md in extracted files")
 	}
-	if !fileSet["package.json"] {
+	if !fileSet[testPackageJSONFilename] {
 		t.Error("expected package.json in extracted files")
 	}
 }
@@ -172,7 +172,7 @@ func TestExtractJarFixture(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -204,7 +204,7 @@ func TestExtractApkFixture(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -238,7 +238,7 @@ func TestExtractGemFixture(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -272,9 +272,16 @@ func TestExtractRejectsLargeFile(t *testing.T) {
 
 	// Create a file larger than 100MB
 	path := a.WorkingDirectory(dir)
-	f, _ := os.Create(path)
-	f.Truncate(101 * 1024 * 1024)
-	f.Close()
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Truncate(101 * 1024 * 1024); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -290,7 +297,7 @@ func TestExtractRejectsUnsupportedMimeType(t *testing.T) {
 	dir := t.TempDir()
 
 	path := a.WorkingDirectory(dir)
-	os.WriteFile(path, []byte("not an archive"), 0644)
+	writeTestFile(t, path, []byte("not an archive"))
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -308,7 +315,10 @@ func TestExtractBlocksPathTraversal(t *testing.T) {
 	path := a.WorkingDirectory(dir)
 
 	// Create a tar.gz with path traversal
-	f, _ := os.Create(path)
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
 	gw := gzip.NewWriter(f)
 	tw := tar.NewWriter(gw)
 
@@ -318,11 +328,21 @@ func TestExtractBlocksPathTraversal(t *testing.T) {
 		Mode: 0644,
 		Size: 5,
 	}
-	tw.WriteHeader(header)
-	tw.Write([]byte("oops!"))
-	tw.Close()
-	gw.Close()
-	f.Close()
+	if err := tw.WriteHeader(header); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tw.Write([]byte("oops!")); err != nil {
+		t.Fatal(err)
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
 
 	dest, err := a.Extract(dir)
 	if err == nil && dest != "" {
@@ -335,12 +355,12 @@ func TestShouldStripTopLevel(t *testing.T) {
 		names []string
 		want  bool
 	}{
-		{[]string{"pkg/a.txt", "pkg/b.txt", "pkg/"}, true},
+		{[]string{testPackageFilename, "pkg/b.txt", testPackageDirectory}, true},
 		{[]string{"a.txt", "b.txt"}, false},
-		{[]string{"pkg/a.txt", "other/b.txt"}, false},
+		{[]string{testPackageFilename, "other/b.txt"}, false},
 		{[]string{}, false},
-		{[]string{"pkg/"}, false},             // only a root dir, no non-root entries
-		{[]string{"pkg/", "pkg/a.txt"}, true}, // root dir plus files inside
+		{[]string{testPackageDirectory}, false},                     // only a root dir, no non-root entries
+		{[]string{testPackageDirectory, testPackageFilename}, true}, // root dir plus files inside
 	}
 	for _, tt := range tests {
 		got := shouldStripTopLevel(tt.names)
@@ -385,7 +405,7 @@ func TestExtractTarGzFileList(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -402,7 +422,7 @@ func TestExtractTarGzFileList(t *testing.T) {
 		".eslintrc",
 		".travis.yml",
 		"CODE_OF_CONDUCT.md",
-		"CONTRIBUTING.md",
+		testContributingFilename,
 		"LICENSE",
 		"Readme.md",
 		"benchmark",
@@ -411,8 +431,8 @@ func TestExtractTarGzFileList(t *testing.T) {
 		"fork",
 		filepath.Join("fork", ".editorconfig"),
 		filepath.Join("fork", ".eslintrc"),
-		filepath.Join("fork", "README.md"),
-		filepath.Join("fork", "package.json"),
+		filepath.Join("fork", testReadmeFilename),
+		filepath.Join("fork", testPackageJSONFilename),
 		filepath.Join("fork", "src"),
 		filepath.Join("fork", "src", "ascii.js"),
 		filepath.Join("fork", "src", "custom.js"),
@@ -424,7 +444,7 @@ func TestExtractTarGzFileList(t *testing.T) {
 		filepath.Join("lib", "ascii.js"),
 		filepath.Join("lib", "custom.js"),
 		filepath.Join("lib", "legacy.js"),
-		"package.json",
+		testPackageJSONFilename,
 		"test",
 		filepath.Join("test", "test_ascii.js"),
 		filepath.Join("test", "test_custom.js"),
@@ -454,7 +474,7 @@ func TestExtractZipFileList(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -478,11 +498,11 @@ func TestExtractZipFileList(t *testing.T) {
 		".snyk",
 		"CHANGELOG.md",
 		"CODE_OF_CONDUCT.md",
-		"CONTRIBUTING.md",
+		testContributingFilename,
 		"LICENSE.txt",
-		"README.md",
+		testReadmeFilename,
 		"package-lock.json",
-		"package.json",
+		testPackageJSONFilename,
 		"src",
 		filepath.Join("src", "HTLAsset.js"),
 		filepath.Join("src", "HelixJSAsset.js"),
@@ -519,7 +539,7 @@ func TestExtractJarFileList(t *testing.T) {
 	dir := t.TempDir()
 
 	data, _ := os.ReadFile(fixture)
-	os.WriteFile(a.WorkingDirectory(dir), data, 0644)
+	writeTestFile(t, a.WorkingDirectory(dir), data)
 
 	dest, err := a.Extract(dir)
 	if err != nil {
@@ -536,7 +556,7 @@ func TestExtractJarFileList(t *testing.T) {
 		filepath.Join("META-INF", "leiningen"),
 		filepath.Join("META-INF", "leiningen", "org.clojars.majorcluster"),
 		filepath.Join("META-INF", "leiningen", "org.clojars.majorcluster", "clj-data-adapter"),
-		filepath.Join("META-INF", "leiningen", "org.clojars.majorcluster", "clj-data-adapter", "README.md"),
+		filepath.Join("META-INF", "leiningen", "org.clojars.majorcluster", "clj-data-adapter", testReadmeFilename),
 		filepath.Join("META-INF", "leiningen", "org.clojars.majorcluster", "clj-data-adapter", "project.clj"),
 		filepath.Join("META-INF", "maven"),
 		filepath.Join("META-INF", "maven", "org.clojars.majorcluster"),

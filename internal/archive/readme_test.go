@@ -7,7 +7,7 @@ import (
 )
 
 func TestRenderFileMarkdown(t *testing.T) {
-	html, lang := renderFile("README.md", []byte("# Hello\n\nWorld **bold** text"))
+	html, lang := renderFile(testReadmeFilename, []byte("# Hello\n\nWorld **bold** text"))
 	if lang != "Markdown" {
 		t.Errorf("language = %q, want Markdown", lang)
 	}
@@ -60,7 +60,7 @@ func TestSupportedReadmeFormats(t *testing.T) {
 		path string
 		want bool
 	}{
-		{"README.md", true},
+		{testReadmeFilename, true},
 		{"README.markdown", true},
 		{"README.textile", true},
 		{"README.org", true},
@@ -85,12 +85,12 @@ func TestReadmePatternMatches(t *testing.T) {
 		name string
 		want bool
 	}{
-		{"README.md", true},
+		{testReadmeFilename, true},
 		{"Readme.md", true},
 		{"readme.txt", true},
 		{"README", true},
-		{"CONTRIBUTING.md", false},
-		{"package.json", false},
+		{testContributingFilename, false},
+		{testPackageJSONFilename, false},
 	}
 	for _, tt := range tests {
 		got := readmePattern.MatchString(tt.name)
@@ -110,8 +110,8 @@ func TestChangelogPatternMatches(t *testing.T) {
 		{"HISTORY.md", true},
 		{"NEWS.md", true},
 		{"changelog.md", true},
-		{"README.md", false},
-		{"package.json", false},
+		{testReadmeFilename, false},
+		{testPackageJSONFilename, false},
 	}
 	for _, tt := range tests {
 		got := changelogPattern.MatchString(tt.name)
