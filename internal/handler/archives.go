@@ -21,7 +21,9 @@ func setCacheHeaders(w http.ResponseWriter) {
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		slog.Error("failed to encode JSON response", "error", err)
+	}
 }
 
 func writeError(w http.ResponseWriter, status int, msg string) {

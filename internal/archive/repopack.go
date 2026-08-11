@@ -17,7 +17,7 @@ func (a *RemoteArchive) Repopack() (*RepopackResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	if err := a.Download(dir); err != nil {
 		return nil, err

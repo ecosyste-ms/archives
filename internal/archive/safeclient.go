@@ -10,6 +10,15 @@ import (
 	"github.com/ecosyste-ms/archives/internal/telemetry"
 )
 
+const (
+	dialTimeout           = 30 * time.Second
+	keepAliveInterval     = 30 * time.Second
+	maxRedirects          = 10
+	requestTimeout        = 60 * time.Second
+	responseHeaderTimeout = 30 * time.Second
+	tlsHandshakeTimeout   = 10 * time.Second
+)
+
 // safeClient returns an HTTP client that blocks connections to private,
 // loopback, and link-local IP addresses. This prevents SSRF attacks
 // where a user-supplied URL could reach internal services or cloud
@@ -20,22 +29,22 @@ import (
 // to a public IP but later resolves to a private one.
 func safeClient() *http.Client {
 	dialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
+		Timeout:   dialTimeout,
+		KeepAlive: keepAliveInterval,
 		Control:   blockPrivateIPs,
 	}
 
 	transport := &http.Transport{
 		DialContext:           dialer.DialContext,
-		TLSHandshakeTimeout:  10 * time.Second,
-		ResponseHeaderTimeout: 30 * time.Second,
+		TLSHandshakeTimeout:   tlsHandshakeTimeout,
+		ResponseHeaderTimeout: responseHeaderTimeout,
 	}
 
 	return &http.Client{
 		Transport: telemetry.HTTPTransport(transport),
-		Timeout:   60 * time.Second,
+		Timeout:   requestTimeout,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			if len(via) >= 10 {
+			if len(via) >= maxRedirects {
 				return fmt.Errorf("too many redirects")
 			}
 			return nil
