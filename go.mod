@@ -3,7 +3,7 @@ module github.com/ecosyste-ms/archives
 go 1.25.6
 
 require (
-	github.com/git-pkgs/changelog v0.1.3
+	github.com/git-pkgs/changelog v0.2.0
 	github.com/git-pkgs/markup v0.1.0
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
@@ -19,6 +19,7 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
+	github.com/git-pkgs/vers v0.3.0 // indirect
 	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
