@@ -4,7 +4,7 @@ go 1.25.6
 
 require (
 	github.com/git-pkgs/changelog v0.2.0
-	github.com/git-pkgs/markup v0.1.0
+	github.com/git-pkgs/markup v0.1.1
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
 	github.com/ulikunitz/xz v0.5.16
@@ -26,7 +26,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
 	github.com/niklasfasching/go-org v1.9.1 // indirect
-	github.com/yuin/goldmark v1.8.2 // indirect
+	github.com/yuin/goldmark v1.8.5 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.45.0 // indirect
 	go.opentelemetry.io/otel/metric v1.45.0 // indirect
