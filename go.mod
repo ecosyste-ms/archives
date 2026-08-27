@@ -1,6 +1,6 @@
 module github.com/ecosyste-ms/archives
 
-go 1.25.6
+go 1.27.0
 
 require (
 	github.com/git-pkgs/changelog v0.2.0
