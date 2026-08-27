@@ -1,6 +1,10 @@
 package handler
 
 import (
+	"archive/tar"
+	"archive/zip"
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -28,10 +32,10 @@ func setupFixtureServer(t *testing.T) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Map URL paths to fixture files
 		fixtures := map[string]string{
-			"/base62/-/base62-2.0.1.tgz":                                          "base62-2.0.1.tgz",
-			"/adobe/parcel-plugin-htl/archive/refs/heads/master.zip":               "parcel-plugin-htl-master.zip",
+			"/base62/-/base62-2.0.1.tgz":                                                  "base62-2.0.1.tgz",
+			"/adobe/parcel-plugin-htl/archive/refs/heads/master.zip":                      "parcel-plugin-htl-master.zip",
 			"/org/clojars/majorcluster/clj-data-adapter/0.2.1/clj-data-adapter-0.2.1.jar": "clj-data-adapter-0.2.1.jar",
-			"/splitrb/split/archive/refs/heads/main.zip":                           "main.zip",
+			"/splitrb/split/archive/refs/heads/main.zip":                                  "main.zip",
 		}
 
 		filename, ok := fixtures[r.URL.Path]
@@ -45,8 +49,66 @@ func setupFixtureServer(t *testing.T) *httptest.Server {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		w.Write(data)
+		_, _ = w.Write(data)
 	}))
+}
+
+func decodeResponse(t *testing.T, w *httptest.ResponseRecorder, value any) {
+	t.Helper()
+	if err := json.NewDecoder(w.Body).Decode(value); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+}
+
+type archiveFixtureEntry struct {
+	name     string
+	contents string
+}
+
+func zipFixture(t *testing.T, entries []archiveFixtureEntry) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	for _, entry := range entries {
+		w, err := zw.Create(entry.name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := w.Write([]byte(entry.contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
+}
+
+func tarGzFixture(t *testing.T, entries []archiveFixtureEntry) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+	for _, entry := range entries {
+		header := &tar.Header{
+			Name: entry.name,
+			Mode: 0o644,
+			Size: int64(len(entry.contents)),
+		}
+		if err := tw.WriteHeader(header); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(entry.contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
 }
 
 func TestHandleListTarGz(t *testing.T) {
@@ -64,7 +126,7 @@ func TestHandleListTarGz(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -79,6 +141,30 @@ func TestHandleListTarGz(t *testing.T) {
 	}
 	if !fileSet["LICENSE"] {
 		t.Error("expected LICENSE in file list")
+	}
+}
+
+func TestHandleListRejectsTarPrefixTraversal(t *testing.T) {
+	data := tarGzFixture(t, []archiveFixtureEntry{
+		{name: "pkg/../tar-escape/evil.txt", contents: "oops"},
+		{name: "pkg/ok.txt", contents: "ok"},
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(data)
+	}))
+	defer server.Close()
+
+	req := httptest.NewRequest("GET", "/api/v1/archives/list?url="+server.URL+"/evil.tar.gz", nil)
+	w := httptest.NewRecorder()
+	HandleList(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var files []string
+	decodeResponse(t, w, &files)
+	if len(files) != 0 {
+		t.Fatalf("expected no files from rejected archive, got %v", files)
 	}
 }
 
@@ -97,7 +183,7 @@ func TestHandleListZip(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -109,6 +195,30 @@ func TestHandleListZip(t *testing.T) {
 	}
 	if !fileSet["package.json"] {
 		t.Error("expected package.json in file list")
+	}
+}
+
+func TestHandleListRejectsZipPrefixTraversal(t *testing.T) {
+	data := zipFixture(t, []archiveFixtureEntry{
+		{name: "pkg/../zip-escape/evil.txt", contents: "oops"},
+		{name: "pkg/ok.txt", contents: "ok"},
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(data)
+	}))
+	defer server.Close()
+
+	req := httptest.NewRequest("GET", "/api/v1/archives/list?url="+server.URL+"/evil.zip", nil)
+	w := httptest.NewRecorder()
+	HandleList(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var files []string
+	decodeResponse(t, w, &files)
+	if len(files) != 0 {
+		t.Fatalf("expected no files from rejected archive, got %v", files)
 	}
 }
 
@@ -127,7 +237,7 @@ func TestHandleListJar(t *testing.T) {
 	}
 
 	var files []string
-	json.NewDecoder(w.Body).Decode(&files)
+	decodeResponse(t, w, &files)
 
 	fileSet := make(map[string]bool)
 	for _, f := range files {
@@ -154,7 +264,7 @@ func TestHandleContentsFile(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != ".eslintignore" {
 		t.Errorf("expected name .eslintignore, got %v", result["name"])
@@ -183,7 +293,7 @@ func TestHandleContentsFolder(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "lib" {
 		t.Errorf("expected name lib, got %v", result["name"])
@@ -236,7 +346,7 @@ func TestHandleReadme(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "Readme.md" {
 		t.Errorf("expected name Readme.md, got %v", result["name"])
@@ -284,7 +394,7 @@ func TestHandleChangelog(t *testing.T) {
 	}
 
 	var result map[string]any
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 
 	if result["name"] != "CHANGELOG.md" {
 		t.Errorf("expected name CHANGELOG.md, got %v", result["name"])
@@ -459,7 +569,7 @@ func TestHandleNotFoundJSON(t *testing.T) {
 	}
 
 	var result map[string]string
-	json.NewDecoder(w.Body).Decode(&result)
+	decodeResponse(t, w, &result)
 	if result["error"] != "not found" {
 		t.Errorf("expected error 'not found', got %q", result["error"])
 	}
@@ -470,7 +580,9 @@ func TestHandleNotFoundHTML(t *testing.T) {
 	if _, err := os.Stat(templateDir); os.IsNotExist(err) {
 		t.Skip("templates directory not found")
 	}
-	InitTemplates(templateDir)
+	if err := InitTemplates(templateDir); err != nil {
+		t.Fatal(err)
+	}
 
 	req := httptest.NewRequest("GET", "/nonexistent", nil)
 	req.Header.Set("Accept", "text/html")

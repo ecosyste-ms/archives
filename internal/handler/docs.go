@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -22,7 +23,9 @@ func (d *DocsHandler) HandleOpenAPISpec(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.Header().Set("Content-Type", "application/yaml")
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		slog.Error("failed to write OpenAPI response", "error", err)
+	}
 }
 
 func RedirectDocs(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +34,9 @@ func RedirectDocs(w http.ResponseWriter, r *http.Request) {
 
 func (d *DocsHandler) HandleDocs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(swaggerUIHTML))
+	if _, err := w.Write([]byte(swaggerUIHTML)); err != nil {
+		slog.Error("failed to write API documentation response", "error", err)
+	}
 }
 
 const swaggerUIHTML = `<!DOCTYPE html>

@@ -15,9 +15,13 @@ import (
 )
 
 const (
-	maxFileSize  = 100 * 1024 * 1024 // 100MB
-	maxFileCount = 10_000
-	userAgent    = "archives.ecosyste.ms"
+	directoryMode              os.FileMode = 0o755
+	downloadFileMode           os.FileMode = 0o644
+	downloadFilename                       = "archive"
+	maxFileSize                            = 100 * 1024 * 1024 // 100MB
+	maxFileCount                           = 10_000
+	mimeApplicationOctetStream             = "application/octet-stream"
+	userAgent                              = "archives.ecosyste.ms"
 )
 
 type RemoteArchive struct {
@@ -60,8 +64,8 @@ func (a *RemoteArchive) Domain() string {
 	return strings.ToLower(u.Hostname())
 }
 
-func (a *RemoteArchive) WorkingDirectory(dir string) string {
-	return filepath.Join(dir, a.Basename())
+func (*RemoteArchive) WorkingDirectory(dir string) string {
+	return filepath.Join(dir, downloadFilename)
 }
 
 func (a *RemoteArchive) Download(dir string) error {
@@ -77,9 +81,9 @@ func (a *RemoteArchive) Download(dir string) error {
 	if err != nil {
 		return fmt.Errorf("downloading: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("download failed: HTTP %d", resp.StatusCode)
 	}
 
@@ -93,7 +97,7 @@ func (a *RemoteArchive) Download(dir string) error {
 		return fmt.Errorf("file is larger than 100MB")
 	}
 
-	return os.WriteFile(path, data, 0644)
+	return os.WriteFile(path, data, downloadFileMode)
 }
 
 func (a *RemoteArchive) ListFiles() ([]string, error) {
@@ -101,7 +105,7 @@ func (a *RemoteArchive) ListFiles() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	if err := a.Download(dir); err != nil {
 		slog.Info("download failed", "error", err)
@@ -134,7 +138,7 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(dir)
+	defer func() { _ = os.RemoveAll(dir) }()
 
 	if err := a.Download(dir); err != nil {
 		return nil, err
@@ -247,7 +251,7 @@ func listAllFiles(dir string) ([]string, error) {
 func detectMimeType(path string) string {
 	out, err := exec.Command("file", "--brief", "--mime-type", path).Output()
 	if err != nil {
-		return "application/octet-stream"
+		return mimeApplicationOctetStream
 	}
 	return strings.TrimSpace(string(out))
 }
@@ -261,7 +265,7 @@ func isTextMime(mime string) bool {
 			return true
 		}
 	}
-	return mime == "application/octet-stream"
+	return mime == mimeApplicationOctetStream
 }
 
 func scrubUTF8(data []byte) string {

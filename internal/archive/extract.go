@@ -16,6 +16,8 @@ import (
 	"github.com/ulikunitz/xz"
 )
 
+const extractionTimeout = 30 * time.Second
+
 func (a *RemoteArchive) Extract(dir string) (string, error) {
 	path := a.WorkingDirectory(dir)
 
@@ -29,7 +31,7 @@ func (a *RemoteArchive) Extract(dir string) (string, error) {
 		return "", nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), extractionTimeout)
 	defer cancel()
 
 	type result struct {
@@ -79,15 +81,20 @@ func (a *RemoteArchive) doExtract(path, dir string) (string, error) {
 
 func extractZip(path, dir string) (string, error) {
 	destination := filepath.Join(dir, "zip")
-	if err := os.MkdirAll(destination, 0755); err != nil {
+	if err := os.MkdirAll(destination, directoryMode); err != nil {
 		return "", err
 	}
+	root, err := os.OpenRoot(destination)
+	if err != nil {
+		return "", err
+	}
+	defer func() { _ = root.Close() }()
 
 	r, err := zip.OpenReader(path)
 	if err != nil {
 		return "", fmt.Errorf("opening zip: %w", err)
 	}
-	defer r.Close()
+	defer func() { _ = r.Close() }()
 
 	// Check if we should strip a single top-level directory
 	shouldStrip := shouldStripTopLevel(zipEntryNames(r.File))
@@ -114,28 +121,23 @@ func extractZip(path, dir string) (string, error) {
 			continue
 		}
 
-		entryPath := filepath.Join(destination, stripped)
-		absEntry, _ := filepath.Abs(entryPath)
-		absDest, _ := filepath.Abs(destination)
-		if !strings.HasPrefix(absEntry, absDest) {
-			return "", fmt.Errorf("blocked extraction outside target dir")
-		}
-
 		fileCount++
 		if fileCount > maxFileCount {
 			return "", fmt.Errorf("too many files in archive")
 		}
 
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(entryPath, 0755)
+			if err := root.MkdirAll(stripped, directoryMode); err != nil {
+				return "", err
+			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(entryPath), 0755); err != nil {
+		if err := root.MkdirAll(filepath.Dir(stripped), directoryMode); err != nil {
 			return "", err
 		}
 
-		if err := extractZipFile(f, entryPath); err != nil {
+		if err := extractZipFile(f, root, stripped); err != nil {
 			slog.Warn("failed to extract file", "name", f.Name, "error", err)
 			continue
 		}
@@ -148,26 +150,28 @@ func extractZip(path, dir string) (string, error) {
 // This prevents decompression bombs where a small archive expands to fill disk.
 const maxDecompressedFileSize = 200 * 1024 * 1024
 
-func extractZipFile(f *zip.File, dest string) error {
+func extractZipFile(f *zip.File, root *os.Root, dest string) error {
 	rc, err := f.Open()
 	if err != nil {
 		return err
 	}
-	defer rc.Close()
+	defer func() { _ = rc.Close() }()
 
-	out, err := os.Create(dest)
+	out, err := root.Create(dest)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
-
-	_, err = io.Copy(out, io.LimitReader(rc, maxDecompressedFileSize))
-	return err
+	_, copyErr := io.Copy(out, io.LimitReader(rc, maxDecompressedFileSize))
+	closeErr := out.Close()
+	if copyErr != nil {
+		return copyErr
+	}
+	return closeErr
 }
 
 func extractTarGz(path, dir string) (string, error) {
 	destination := filepath.Join(dir, "tar")
-	if err := os.MkdirAll(destination, 0755); err != nil {
+	if err := os.MkdirAll(destination, directoryMode); err != nil {
 		return "", err
 	}
 
@@ -175,20 +179,20 @@ func extractTarGz(path, dir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	gz, err := gzip.NewReader(f)
 	if err != nil {
 		return "", fmt.Errorf("opening gzip: %w", err)
 	}
-	defer gz.Close()
+	defer func() { _ = gz.Close() }()
 
 	return destination, extractTarReader(tar.NewReader(gz), destination, true)
 }
 
 func extractTarXz(path, dir string) (string, error) {
 	destination := filepath.Join(dir, "tar")
-	if err := os.MkdirAll(destination, 0755); err != nil {
+	if err := os.MkdirAll(destination, directoryMode); err != nil {
 		return "", err
 	}
 
@@ -196,7 +200,7 @@ func extractTarXz(path, dir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	xzr, err := xz.NewReader(f)
 	if err != nil {
@@ -208,7 +212,7 @@ func extractTarXz(path, dir string) (string, error) {
 
 func extractTar(path, dir string) (string, error) {
 	destination := filepath.Join(dir, "tar")
-	if err := os.MkdirAll(destination, 0755); err != nil {
+	if err := os.MkdirAll(destination, directoryMode); err != nil {
 		return "", err
 	}
 
@@ -216,7 +220,7 @@ func extractTar(path, dir string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	// Extract without stripping top level first, since formats like .gem
 	// have flat entries (data.tar.gz, metadata.gz) with no top-level dir.
@@ -232,7 +236,7 @@ func extractTar(path, dir string) (string, error) {
 		}
 
 		innerDestination := filepath.Join(dir, "inner")
-		if err := os.MkdirAll(innerDestination, 0755); err != nil {
+		if err := os.MkdirAll(innerDestination, directoryMode); err != nil {
 			return "", err
 		}
 
@@ -240,13 +244,13 @@ func extractTar(path, dir string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		defer df.Close()
+		defer func() { _ = df.Close() }()
 
 		gz, err := gzip.NewReader(df)
 		if err != nil {
 			return "", err
 		}
-		defer gz.Close()
+		defer func() { _ = gz.Close() }()
 
 		if err := extractTarReader(tar.NewReader(gz), innerDestination, false); err != nil {
 			return "", err
@@ -258,6 +262,12 @@ func extractTar(path, dir string) (string, error) {
 }
 
 func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
+	root, err := os.OpenRoot(destination)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = root.Close() }()
+
 	fileCount := 0
 
 	for {
@@ -274,28 +284,9 @@ func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
 			continue
 		}
 
-		components := splitPath(header.Name)
-		if len(components) == 0 {
+		stripped, ok := strippedTarPath(header.Name, stripTop)
+		if !ok || stripped == "" {
 			continue
-		}
-
-		var stripped string
-		if stripTop && len(components) > 1 {
-			stripped = filepath.Join(components[1:]...)
-		} else if stripTop {
-			continue
-		} else {
-			stripped = header.Name
-		}
-		if stripped == "" {
-			continue
-		}
-
-		destPath := filepath.Join(destination, stripped)
-		absDest, _ := filepath.Abs(destPath)
-		absBase, _ := filepath.Abs(destination)
-		if !strings.HasPrefix(absDest, absBase) {
-			return fmt.Errorf("blocked extraction outside target dir")
 		}
 
 		fileCount++
@@ -305,24 +296,51 @@ func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			os.MkdirAll(destPath, 0755)
+			if err := root.MkdirAll(stripped, directoryMode); err != nil {
+				return err
+			}
 		case tar.TypeReg:
-			if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+			if err := extractTarFile(tr, root, stripped); err != nil {
 				return err
 			}
-			out, err := os.Create(destPath)
-			if err != nil {
-				return err
-			}
-			if _, err := io.Copy(out, io.LimitReader(tr, maxDecompressedFileSize)); err != nil {
-				out.Close()
-				return err
-			}
-			out.Close()
 		}
 	}
 
 	return nil
+}
+
+func strippedTarPath(name string, stripTop bool) (string, bool) {
+	components := splitPath(name)
+	if len(components) == 0 {
+		return "", false
+	}
+
+	switch {
+	case !stripTop:
+		return name, true
+	case len(components) > 1:
+		return filepath.Join(components[1:]...), true
+	default:
+		return "", false
+	}
+}
+
+func extractTarFile(tr *tar.Reader, root *os.Root, destPath string) error {
+	if err := root.MkdirAll(filepath.Dir(destPath), directoryMode); err != nil {
+		return err
+	}
+
+	out, err := root.Create(destPath)
+	if err != nil {
+		return err
+	}
+
+	_, copyErr := io.Copy(out, io.LimitReader(tr, maxDecompressedFileSize))
+	closeErr := out.Close()
+	if copyErr != nil {
+		return copyErr
+	}
+	return closeErr
 }
 
 func zipEntryNames(files []*zip.File) []string {

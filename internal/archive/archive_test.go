@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -94,8 +93,9 @@ func TestDomain(t *testing.T) {
 func TestWorkingDirectory(t *testing.T) {
 	a, _ := New("https://example.com/thing.zip")
 	got := a.WorkingDirectory("/tmp")
-	if got != "/tmp/thing.zip" {
-		t.Errorf("WorkingDirectory() = %q, want %q", got, "/tmp/thing.zip")
+	want := filepath.Join("/tmp", downloadFilename)
+	if got != want {
+		t.Errorf("WorkingDirectory() = %q, want %q", got, want)
 	}
 }
 
@@ -144,9 +144,9 @@ func TestIsTextMime(t *testing.T) {
 
 func TestListAllFiles(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "sub"), 0755)
-	os.WriteFile(filepath.Join(dir, "a.txt"), []byte("a"), 0644)
-	os.WriteFile(filepath.Join(dir, "sub", "b.txt"), []byte("b"), 0644)
+	makeTestDirectory(t, filepath.Join(dir, "sub"))
+	writeTestFile(t, filepath.Join(dir, "a.txt"), []byte("a"))
+	writeTestFile(t, filepath.Join(dir, "sub", "b.txt"), []byte("b"))
 
 	files, err := listAllFiles(dir)
 	if err != nil {

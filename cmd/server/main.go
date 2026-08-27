@@ -14,6 +14,12 @@ import (
 	"github.com/ecosyste-ms/archives/internal/telemetry"
 )
 
+const (
+	serverReadTimeout  = 10 * time.Second
+	serverWriteTimeout = 120 * time.Second
+	serverIdleTimeout  = 60 * time.Second
+)
+
 func main() {
 	if err := run(); err != nil {
 		slog.Error("server failed", "error", err)
@@ -92,9 +98,9 @@ func run() error {
 	server := &http.Server{
 		Addr:         ":" + port,
 		Handler:      wrapped,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 120 * time.Second, // long enough for archive download + extraction
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  serverReadTimeout,
+		WriteTimeout: serverWriteTimeout,
+		IdleTimeout:  serverIdleTimeout,
 	}
 
 	slog.Info("starting server", "port", port)
