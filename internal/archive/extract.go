@@ -84,6 +84,11 @@ func extractZip(path, dir string) (string, error) {
 	if err := os.MkdirAll(destination, directoryMode); err != nil {
 		return "", err
 	}
+	root, err := os.OpenRoot(destination)
+	if err != nil {
+		return "", err
+	}
+	defer func() { _ = root.Close() }()
 
 	r, err := zip.OpenReader(path)
 	if err != nil {
@@ -116,30 +121,23 @@ func extractZip(path, dir string) (string, error) {
 			continue
 		}
 
-		entryPath := filepath.Join(destination, stripped)
-		absEntry, _ := filepath.Abs(entryPath)
-		absDest, _ := filepath.Abs(destination)
-		if !strings.HasPrefix(absEntry, absDest) {
-			return "", fmt.Errorf("blocked extraction outside target dir")
-		}
-
 		fileCount++
 		if fileCount > maxFileCount {
 			return "", fmt.Errorf("too many files in archive")
 		}
 
 		if f.FileInfo().IsDir() {
-			if err := os.MkdirAll(entryPath, directoryMode); err != nil {
+			if err := root.MkdirAll(stripped, directoryMode); err != nil {
 				return "", err
 			}
 			continue
 		}
 
-		if err := os.MkdirAll(filepath.Dir(entryPath), directoryMode); err != nil {
+		if err := root.MkdirAll(filepath.Dir(stripped), directoryMode); err != nil {
 			return "", err
 		}
 
-		if err := extractZipFile(f, entryPath); err != nil {
+		if err := extractZipFile(f, root, stripped); err != nil {
 			slog.Warn("failed to extract file", "name", f.Name, "error", err)
 			continue
 		}
@@ -152,14 +150,14 @@ func extractZip(path, dir string) (string, error) {
 // This prevents decompression bombs where a small archive expands to fill disk.
 const maxDecompressedFileSize = 200 * 1024 * 1024
 
-func extractZipFile(f *zip.File, dest string) error {
+func extractZipFile(f *zip.File, root *os.Root, dest string) error {
 	rc, err := f.Open()
 	if err != nil {
 		return err
 	}
 	defer func() { _ = rc.Close() }()
 
-	out, err := os.Create(dest)
+	out, err := root.Create(dest)
 	if err != nil {
 		return err
 	}

@@ -17,6 +17,7 @@ import (
 const (
 	directoryMode              os.FileMode = 0o755
 	downloadFileMode           os.FileMode = 0o644
+	downloadFilename                       = "archive"
 	maxFileSize                            = 100 * 1024 * 1024 // 100MB
 	maxFileCount                           = 10_000
 	mimeApplicationOctetStream             = "application/octet-stream"
@@ -63,8 +64,8 @@ func (a *RemoteArchive) Domain() string {
 	return strings.ToLower(u.Hostname())
 }
 
-func (a *RemoteArchive) WorkingDirectory(dir string) string {
-	return filepath.Join(dir, a.Basename())
+func (*RemoteArchive) WorkingDirectory(dir string) string {
+	return filepath.Join(dir, downloadFilename)
 }
 
 func (a *RemoteArchive) Download(dir string) error {

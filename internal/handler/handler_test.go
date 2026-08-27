@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -54,6 +56,25 @@ func decodeResponse(t *testing.T, w *httptest.ResponseRecorder, value any) {
 	if err := json.NewDecoder(w.Body).Decode(value); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
+}
+
+func zipFixture(t *testing.T, entries []struct{ name, contents string }) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	for _, entry := range entries {
+		w, err := zw.Create(entry.name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := w.Write([]byte(entry.contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
 }
 
 func TestHandleListTarGz(t *testing.T) {
@@ -116,6 +137,30 @@ func TestHandleListZip(t *testing.T) {
 	}
 	if !fileSet["package.json"] {
 		t.Error("expected package.json in file list")
+	}
+}
+
+func TestHandleListRejectsZipPrefixTraversal(t *testing.T) {
+	data := zipFixture(t, []struct{ name, contents string }{
+		{name: "pkg/../zip-escape/evil.txt", contents: "oops"},
+		{name: "pkg/ok.txt", contents: "ok"},
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(data)
+	}))
+	defer server.Close()
+
+	req := httptest.NewRequest("GET", "/api/v1/archives/list?url="+server.URL+"/evil.zip", nil)
+	w := httptest.NewRecorder()
+	HandleList(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var files []string
+	decodeResponse(t, w, &files)
+	if len(files) != 0 {
+		t.Fatalf("expected no files from rejected archive, got %v", files)
 	}
 }
 

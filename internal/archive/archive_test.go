@@ -93,8 +93,9 @@ func TestDomain(t *testing.T) {
 func TestWorkingDirectory(t *testing.T) {
 	a, _ := New("https://example.com/thing.zip")
 	got := a.WorkingDirectory("/tmp")
-	if got != "/tmp/thing.zip" {
-		t.Errorf("WorkingDirectory() = %q, want %q", got, "/tmp/thing.zip")
+	want := filepath.Join("/tmp", downloadFilename)
+	if got != want {
+		t.Errorf("WorkingDirectory() = %q, want %q", got, want)
 	}
 }
 

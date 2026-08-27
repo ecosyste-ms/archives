@@ -2,6 +2,7 @@ package archive
 
 import (
 	"archive/tar"
+	"archive/zip"
 	"compress/gzip"
 	"os"
 	"path/filepath"
@@ -159,6 +160,38 @@ func TestExtractZipFixture(t *testing.T) {
 	}
 	if !fileSet[testPackageJSONFilename] {
 		t.Error("expected package.json in extracted files")
+	}
+}
+
+func TestExtractZipBlocksSiblingPrefixTraversal(t *testing.T) {
+	a, _ := New("http://example.com/evil.zip")
+	dir := t.TempDir()
+
+	f, err := os.Create(a.WorkingDirectory(dir))
+	if err != nil {
+		t.Fatal(err)
+	}
+	zw := zip.NewWriter(f)
+	w, err := zw.Create("pkg/../zip-escape/evil.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte("oops")); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := a.Extract(dir); err == nil {
+		t.Fatal("Extract() error = nil, want path traversal error")
+	}
+	outside := filepath.Join(dir, "zip-escape", "evil.txt")
+	if _, err := os.Stat(outside); !os.IsNotExist(err) {
+		t.Fatalf("outside file exists or stat failed: %v", err)
 	}
 }
 
