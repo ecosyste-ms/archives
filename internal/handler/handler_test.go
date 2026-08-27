@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"archive/tar"
 	"archive/zip"
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -58,7 +60,12 @@ func decodeResponse(t *testing.T, w *httptest.ResponseRecorder, value any) {
 	}
 }
 
-func zipFixture(t *testing.T, entries []struct{ name, contents string }) []byte {
+type archiveFixtureEntry struct {
+	name     string
+	contents string
+}
+
+func zipFixture(t *testing.T, entries []archiveFixtureEntry) []byte {
 	t.Helper()
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
@@ -72,6 +79,33 @@ func zipFixture(t *testing.T, entries []struct{ name, contents string }) []byte 
 		}
 	}
 	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return buf.Bytes()
+}
+
+func tarGzFixture(t *testing.T, entries []archiveFixtureEntry) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+	for _, entry := range entries {
+		header := &tar.Header{
+			Name: entry.name,
+			Mode: 0o644,
+			Size: int64(len(entry.contents)),
+		}
+		if err := tw.WriteHeader(header); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(entry.contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gw.Close(); err != nil {
 		t.Fatal(err)
 	}
 	return buf.Bytes()
@@ -110,6 +144,30 @@ func TestHandleListTarGz(t *testing.T) {
 	}
 }
 
+func TestHandleListRejectsTarPrefixTraversal(t *testing.T) {
+	data := tarGzFixture(t, []archiveFixtureEntry{
+		{name: "pkg/../tar-escape/evil.txt", contents: "oops"},
+		{name: "pkg/ok.txt", contents: "ok"},
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(data)
+	}))
+	defer server.Close()
+
+	req := httptest.NewRequest("GET", "/api/v1/archives/list?url="+server.URL+"/evil.tar.gz", nil)
+	w := httptest.NewRecorder()
+	HandleList(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var files []string
+	decodeResponse(t, w, &files)
+	if len(files) != 0 {
+		t.Fatalf("expected no files from rejected archive, got %v", files)
+	}
+}
+
 func TestHandleListZip(t *testing.T) {
 	server := setupFixtureServer(t)
 	defer server.Close()
@@ -141,7 +199,7 @@ func TestHandleListZip(t *testing.T) {
 }
 
 func TestHandleListRejectsZipPrefixTraversal(t *testing.T) {
-	data := zipFixture(t, []struct{ name, contents string }{
+	data := zipFixture(t, []archiveFixtureEntry{
 		{name: "pkg/../zip-escape/evil.txt", contents: "oops"},
 		{name: "pkg/ok.txt", contents: "ok"},
 	})

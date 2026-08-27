@@ -262,6 +262,12 @@ func extractTar(path, dir string) (string, error) {
 }
 
 func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
+	root, err := os.OpenRoot(destination)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = root.Close() }()
+
 	fileCount := 0
 
 	for {
@@ -283,13 +289,6 @@ func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
 			continue
 		}
 
-		destPath := filepath.Join(destination, stripped)
-		absDest, _ := filepath.Abs(destPath)
-		absBase, _ := filepath.Abs(destination)
-		if !strings.HasPrefix(absDest, absBase) {
-			return fmt.Errorf("blocked extraction outside target dir")
-		}
-
 		fileCount++
 		if fileCount > maxFileCount {
 			return fmt.Errorf("too many files in archive")
@@ -297,11 +296,11 @@ func extractTarReader(tr *tar.Reader, destination string, stripTop bool) error {
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if err := os.MkdirAll(destPath, directoryMode); err != nil {
+			if err := root.MkdirAll(stripped, directoryMode); err != nil {
 				return err
 			}
 		case tar.TypeReg:
-			if err := extractTarFile(tr, destPath); err != nil {
+			if err := extractTarFile(tr, root, stripped); err != nil {
 				return err
 			}
 		}
@@ -326,12 +325,12 @@ func strippedTarPath(name string, stripTop bool) (string, bool) {
 	}
 }
 
-func extractTarFile(tr *tar.Reader, destPath string) error {
-	if err := os.MkdirAll(filepath.Dir(destPath), directoryMode); err != nil {
+func extractTarFile(tr *tar.Reader, root *os.Root, destPath string) error {
+	if err := root.MkdirAll(filepath.Dir(destPath), directoryMode); err != nil {
 		return err
 	}
 
-	out, err := os.Create(destPath)
+	out, err := root.Create(destPath)
 	if err != nil {
 		return err
 	}

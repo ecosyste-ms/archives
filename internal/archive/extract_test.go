@@ -341,13 +341,11 @@ func TestExtractRejectsUnsupportedMimeType(t *testing.T) {
 	}
 }
 
-func TestExtractBlocksPathTraversal(t *testing.T) {
+func TestExtractTarGzBlocksSiblingPrefixTraversal(t *testing.T) {
 	a, _ := New("http://example.com/evil.tar.gz")
 	dir := t.TempDir()
 
 	path := a.WorkingDirectory(dir)
-
-	// Create a tar.gz with path traversal
 	f, err := os.Create(path)
 	if err != nil {
 		t.Fatal(err)
@@ -355,16 +353,16 @@ func TestExtractBlocksPathTraversal(t *testing.T) {
 	gw := gzip.NewWriter(f)
 	tw := tar.NewWriter(gw)
 
-	// Write a file with path traversal - include a top-level dir since tar extraction strips it
+	contents := []byte("oops")
 	header := &tar.Header{
-		Name: "pkg/../../evil.txt",
-		Mode: 0644,
-		Size: 5,
+		Name: "pkg/../tar-escape/evil.txt",
+		Mode: 0o644,
+		Size: int64(len(contents)),
 	}
 	if err := tw.WriteHeader(header); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := tw.Write([]byte("oops!")); err != nil {
+	if _, err := tw.Write(contents); err != nil {
 		t.Fatal(err)
 	}
 	if err := tw.Close(); err != nil {
@@ -377,9 +375,12 @@ func TestExtractBlocksPathTraversal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	dest, err := a.Extract(dir)
-	if err == nil && dest != "" {
-		t.Error("expected error or empty dest for path traversal archive")
+	if _, err := a.Extract(dir); err == nil {
+		t.Fatal("Extract() error = nil, want path traversal error")
+	}
+	outside := filepath.Join(dir, "tar-escape", "evil.txt")
+	if _, err := os.Stat(outside); !os.IsNotExist(err) {
+		t.Fatalf("outside file exists or stat failed: %v", err)
 	}
 }
 
