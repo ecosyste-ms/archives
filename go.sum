@@ -6,12 +6,12 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
 github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
-github.com/git-pkgs/changelog v0.2.0 h1:9THaZA38qg24Qpuf/kf01OKduWHaNuanbxPp/GJ7NLU=
-github.com/git-pkgs/changelog v0.2.0/go.mod h1:4R1qfD9+PVbzlRd2h9SRBOYFLtUXI8N+VcDrYpErI90=
+github.com/git-pkgs/changelog v0.2.1 h1:xQ6j4Zg3/JJ8zevD/eG7ff7vhLRALN9hTri5UZivIIs=
+github.com/git-pkgs/changelog v0.2.1/go.mod h1:mKDtTTEk6UucEH98JiqowF+bIDfL6QTxH0pfO5j1UNE=
 github.com/git-pkgs/markup v0.1.1 h1:qFPY2w4a6gYx0yg1/JCxBweHOphHLFgpu3Zth66FVkY=
 github.com/git-pkgs/markup v0.1.1/go.mod h1:wgpUZVSYekAqlWa7VCtRHLNPWNRUb56jHRAejN+HW7E=
-github.com/git-pkgs/vers v0.3.0 h1:xM4LLUCRmqzdDfe+/pVQUx4SRyFXRVth6tOsJ14wMKU=
-github.com/git-pkgs/vers v0.3.0/go.mod h1:biTbSQK1qdbrsxDEKnqe3Jzclxz8vW6uDcwKjfUGcOo=
+github.com/git-pkgs/vers v0.7.0 h1:7PD2DKFB8jTDIfiyWXbqYW54iVuNkFCBgXHgxOTdr8A=
+github.com/git-pkgs/vers v0.7.0/go.mod h1:ofLiBpPNkQmC0LB1k0zmN1gCv7Hi3MiZx8WtmWZ4A9A=
 github.com/go-enry/go-enry/v2 v2.9.6 h1:np63eOtMV56zfYDHnFVgpEVOk8fr2kmylcMnAZUDbSs=
 github.com/go-enry/go-enry/v2 v2.9.6/go.mod h1:9yrj4ES1YrbNb1Wb7/PWYr2bpaCXUGRt0uafN0ISyG8=
 github.com/go-enry/go-oniguruma v1.2.1 h1:k8aAMuJfMrqm/56SG2lV9Cfti6tC4x8673aHCcBk+eo=
