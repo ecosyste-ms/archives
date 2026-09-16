@@ -20,6 +20,7 @@ import (
 const (
 	testAppName  = "Archives"
 	testEndpoint = "https://collector.example.com"
+	testHostname = "archives-1"
 	testPushKey  = "push-key"
 	testRevision = "abc123"
 )
@@ -30,6 +31,7 @@ func TestConfigFromEnv(t *testing.T) {
 	t.Setenv("APPSIGNAL_COLLECTOR_ENDPOINT", testEndpoint)
 	t.Setenv("APPSIGNAL_PUSH_API_KEY", testPushKey)
 	t.Setenv("APP_REVISION", testRevision)
+	t.Setenv("GIT_REV", "fallback-revision")
 
 	config := ConfigFromEnv()
 
@@ -53,10 +55,22 @@ func TestConfigFromEnv(t *testing.T) {
 	}
 }
 
+func TestConfigFromEnvUsesGitRevision(t *testing.T) {
+	t.Setenv("APP_REVISION", "")
+	t.Setenv("GIT_REV", testRevision)
+
+	config := ConfigFromEnv()
+
+	if config.Revision != testRevision {
+		t.Errorf("Revision = %q, want %q", config.Revision, testRevision)
+	}
+}
+
 func TestConfigFromEnvDefaults(t *testing.T) {
 	t.Setenv("APPSIGNAL_APP_ENV", "")
 	t.Setenv("APP_ENV", "")
 	t.Setenv("APP_REVISION", "")
+	t.Setenv("GIT_REV", "")
 
 	config := ConfigFromEnv()
 
@@ -65,6 +79,48 @@ func TestConfigFromEnvDefaults(t *testing.T) {
 	}
 	if config.Revision != "unknown" {
 		t.Errorf("Revision = %q, want unknown", config.Revision)
+	}
+}
+
+func TestStartExportsTracesToCollectorTracePath(t *testing.T) {
+	paths := make(chan string, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		paths <- r.URL.Path
+		w.Header().Set("Content-Type", "application/x-protobuf")
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	previousProvider := otel.GetTracerProvider()
+	t.Cleanup(func() { otel.SetTracerProvider(previousProvider) })
+
+	shutdown, err := Start(context.Background(), Config{
+		AppName:     testAppName,
+		AppPath:     defaultAppPath,
+		Environment: defaultEnvironment,
+		Endpoint:    server.URL,
+		Hostname:    testHostname,
+		PushAPIKey:  testPushKey,
+		Revision:    testRevision,
+		ServiceName: defaultServiceName,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, span := otel.Tracer(instrumentationName).Start(context.Background(), "test")
+	span.End()
+	if err := shutdown(context.Background()); err != nil {
+		t.Fatalf("shutdown tracer provider: %v", err)
+	}
+
+	select {
+	case path := <-paths:
+		if path != "/v1/traces" {
+			t.Errorf("export path = %q, want /v1/traces", path)
+		}
+	default:
+		t.Fatal("collector did not receive a trace export")
 	}
 }
 
@@ -114,7 +170,7 @@ func TestResourceForAppSignal(t *testing.T) {
 		AppName:     testAppName,
 		AppPath:     defaultAppPath,
 		Environment: defaultEnvironment,
-		Hostname:    "archives-1",
+		Hostname:    testHostname,
 		PushAPIKey:  testPushKey,
 		Revision:    testRevision,
 		ServiceName: defaultServiceName,
@@ -131,7 +187,7 @@ func TestResourceForAppSignal(t *testing.T) {
 		"appsignal.config.language_integration": "go",
 		"appsignal.config.app_path":             defaultAppPath,
 		"service.name":                          defaultServiceName,
-		"host.name":                             "archives-1",
+		"host.name":                             testHostname,
 	}
 	for key, want := range wants {
 		value, ok := appResource.Set().Value(key)

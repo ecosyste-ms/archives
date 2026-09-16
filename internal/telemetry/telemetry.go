@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	collectorTracePath  = "/v1/traces"
 	defaultAppPath      = "/app"
 	defaultEnvironment  = "production"
 	defaultServiceName  = "web"
@@ -55,7 +56,7 @@ func ConfigFromEnv() Config {
 		Endpoint:    firstSet(os.Getenv("APPSIGNAL_COLLECTOR_ENDPOINT"), os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")),
 		Hostname:    hostname,
 		PushAPIKey:  os.Getenv("APPSIGNAL_PUSH_API_KEY"),
-		Revision:    firstSet(os.Getenv("APP_REVISION"), "unknown"),
+		Revision:    firstSet(os.Getenv("APP_REVISION"), os.Getenv("GIT_REV"), "unknown"),
 		ServiceName: defaultServiceName,
 	}
 }
@@ -80,7 +81,11 @@ func Start(ctx context.Context, config Config) (func(context.Context) error, err
 		return shutdown, err
 	}
 
-	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpointURL(config.Endpoint))
+	exporter, err := otlptracehttp.New(
+		ctx,
+		otlptracehttp.WithEndpointURL(config.Endpoint),
+		otlptracehttp.WithURLPath(collectorTracePath),
+	)
 	if err != nil {
 		return shutdown, err
 	}
