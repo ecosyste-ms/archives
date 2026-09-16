@@ -150,6 +150,24 @@ func (zeroReader) Read(p []byte) (int, error) {
 	return len(p), nil
 }
 
+func TestDownloadWrapsTransportError(t *testing.T) {
+	previousClient := httpClient
+	t.Cleanup(func() { SetHTTPClient(previousClient) })
+
+	SetHTTPClient(&http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return nil, errors.New("no such host")
+	})})
+
+	a, err := New("https://example.invalid/archive.tar.gz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = a.Download(t.TempDir())
+	if !errors.Is(err, ErrUpstream) {
+		t.Errorf("Download() error = %v, want error matching %v", err, ErrUpstream)
+	}
+}
+
 func TestDownloadRejectsOversizedBody(t *testing.T) {
 	previousClient := httpClient
 	t.Cleanup(func() { SetHTTPClient(previousClient) })

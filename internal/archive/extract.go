@@ -59,7 +59,7 @@ func (a *RemoteArchive) Extract(dir string) (string, error) {
 				slog.Info("archive has too many files (>10,000), skipping extraction")
 				return "", nil
 			}
-			return "", r.err
+			return "", fmt.Errorf("%w: %w", ErrInvalidArchive, r.err)
 		}
 		return r.dest, nil
 	}

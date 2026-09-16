@@ -475,6 +475,7 @@ func TestArchiveErrorStatus(t *testing.T) {
 	}{
 		{archive.ErrNotFound, http.StatusNotFound},
 		{archive.ErrTooLarge, http.StatusRequestEntityTooLarge},
+		{archive.ErrInvalidArchive, http.StatusUnprocessableEntity},
 		{archive.ErrUpstream, http.StatusBadGateway},
 		{errors.New("other"), http.StatusInternalServerError},
 	}

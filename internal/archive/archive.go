@@ -16,9 +16,10 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("archive not found")
-	ErrUpstream = errors.New("upstream error")
-	ErrTooLarge = errors.New("archive too large")
+	ErrNotFound       = errors.New("archive not found")
+	ErrUpstream       = errors.New("upstream error")
+	ErrTooLarge       = errors.New("archive too large")
+	ErrInvalidArchive = errors.New("invalid archive")
 )
 
 const (
@@ -86,7 +87,7 @@ func (a *RemoteArchive) Download(dir string) error {
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("downloading: %w", err)
+		return fmt.Errorf("%w: downloading: %w", ErrUpstream, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -103,7 +104,7 @@ func (a *RemoteArchive) Download(dir string) error {
 	limited := io.LimitReader(resp.Body, maxFileSize+1)
 	data, err := io.ReadAll(limited)
 	if err != nil {
-		return fmt.Errorf("reading response: %w", err)
+		return fmt.Errorf("%w: reading response: %w", ErrUpstream, err)
 	}
 	if len(data) > maxFileSize {
 		return fmt.Errorf("%w: file is larger than 100MB", ErrTooLarge)

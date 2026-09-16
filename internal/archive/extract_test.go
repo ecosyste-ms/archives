@@ -5,6 +5,7 @@ import (
 	"archive/zip"
 	"compress/gzip"
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"sort"
@@ -187,8 +188,8 @@ func TestExtractZipBlocksSiblingPrefixTraversal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := a.Extract(dir); err == nil {
-		t.Fatal("Extract() error = nil, want path traversal error")
+	if _, err := a.Extract(dir); !errors.Is(err, ErrInvalidArchive) {
+		t.Fatalf("Extract() error = %v, want error matching %v", err, ErrInvalidArchive)
 	}
 	outside := filepath.Join(dir, "zip-escape", "evil.txt")
 	if _, err := os.Stat(outside); !os.IsNotExist(err) {
@@ -393,8 +394,8 @@ func TestExtractTarGzBlocksSiblingPrefixTraversal(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := a.Extract(dir); err == nil {
-		t.Fatal("Extract() error = nil, want path traversal error")
+	if _, err := a.Extract(dir); !errors.Is(err, ErrInvalidArchive) {
+		t.Fatalf("Extract() error = %v, want error matching %v", err, ErrInvalidArchive)
 	}
 	outside := filepath.Join(dir, "tar-escape", "evil.txt")
 	if _, err := os.Stat(outside); !os.IsNotExist(err) {

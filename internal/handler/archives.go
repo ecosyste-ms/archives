@@ -43,7 +43,7 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 func writeArchiveError(w http.ResponseWriter, r *http.Request, err error, op, msg string, extra ...any) {
 	status := archiveErrorStatus(err)
 	level := slog.LevelInfo
-	if status >= http.StatusInternalServerError {
+	if status == http.StatusInternalServerError {
 		telemetry.RecordError(r.Context(), err)
 		level = slog.LevelError
 	}
@@ -58,6 +58,8 @@ func archiveErrorStatus(err error) int {
 		return http.StatusNotFound
 	case errors.Is(err, archive.ErrTooLarge):
 		return http.StatusRequestEntityTooLarge
+	case errors.Is(err, archive.ErrInvalidArchive):
+		return http.StatusUnprocessableEntity
 	case errors.Is(err, archive.ErrUpstream):
 		return http.StatusBadGateway
 	default:
