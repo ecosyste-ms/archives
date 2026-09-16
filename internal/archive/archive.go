@@ -18,6 +18,7 @@ import (
 var (
 	ErrNotFound = errors.New("archive not found")
 	ErrUpstream = errors.New("upstream error")
+	ErrTooLarge = errors.New("archive too large")
 )
 
 const (
@@ -105,7 +106,7 @@ func (a *RemoteArchive) Download(dir string) error {
 		return fmt.Errorf("reading response: %w", err)
 	}
 	if len(data) > maxFileSize {
-		return fmt.Errorf("file is larger than 100MB")
+		return fmt.Errorf("%w: file is larger than 100MB", ErrTooLarge)
 	}
 
 	return os.WriteFile(path, data, downloadFileMode)

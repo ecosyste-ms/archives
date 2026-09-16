@@ -40,10 +40,24 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
+func writeArchiveError(w http.ResponseWriter, r *http.Request, err error, op, msg string, extra ...any) {
+	status := archiveErrorStatus(err)
+	level := slog.LevelInfo
+	if status >= http.StatusInternalServerError {
+		telemetry.RecordError(r.Context(), err)
+		level = slog.LevelError
+	}
+	attrs := append([]any{"error", err}, extra...)
+	slog.Log(r.Context(), level, "error in "+op, attrs...)
+	writeError(w, status, msg)
+}
+
 func archiveErrorStatus(err error) int {
 	switch {
 	case errors.Is(err, archive.ErrNotFound):
 		return http.StatusNotFound
+	case errors.Is(err, archive.ErrTooLarge):
+		return http.StatusRequestEntityTooLarge
 	case errors.Is(err, archive.ErrUpstream):
 		return http.StatusBadGateway
 	default:
@@ -68,9 +82,7 @@ func HandleList(w http.ResponseWriter, r *http.Request) {
 
 	files, err := a.ListFiles()
 	if err != nil {
-		telemetry.RecordError(r.Context(), err)
-		slog.Error("error in list", "error", err, "url", rawURL)
-		writeError(w, archiveErrorStatus(err), "failed to list archive contents")
+		writeArchiveError(w, r, err, "list", "failed to list archive contents", "url", rawURL)
 		return
 	}
 
@@ -100,9 +112,7 @@ func HandleContents(w http.ResponseWriter, r *http.Request) {
 
 	contents, err := a.Contents(filePath)
 	if err != nil {
-		telemetry.RecordError(r.Context(), err)
-		slog.Error("error in contents", "error", err, "url", rawURL, "path", filePath)
-		writeError(w, archiveErrorStatus(err), "failed to read archive contents")
+		writeArchiveError(w, r, err, "contents", "failed to read archive contents", "url", rawURL, "path", filePath)
 		return
 	}
 
@@ -131,9 +141,7 @@ func HandleReadme(w http.ResponseWriter, r *http.Request) {
 
 	readme, err := a.Readme()
 	if err != nil {
-		telemetry.RecordError(r.Context(), err)
-		slog.Error("error in readme", "error", err, "url", rawURL)
-		writeError(w, archiveErrorStatus(err), "failed to extract readme")
+		writeArchiveError(w, r, err, "readme", "failed to extract readme", "url", rawURL)
 		return
 	}
 
@@ -162,9 +170,7 @@ func HandleChangelog(w http.ResponseWriter, r *http.Request) {
 
 	cl, err := a.Changelog()
 	if err != nil {
-		telemetry.RecordError(r.Context(), err)
-		slog.Error("error in changelog", "error", err, "url", rawURL)
-		writeError(w, archiveErrorStatus(err), "failed to extract changelog")
+		writeArchiveError(w, r, err, "changelog", "failed to extract changelog", "url", rawURL)
 		return
 	}
 
@@ -193,9 +199,7 @@ func HandleRepopack(w http.ResponseWriter, r *http.Request) {
 
 	result, err := a.Repopack()
 	if err != nil {
-		telemetry.RecordError(r.Context(), err)
-		slog.Error("error in repopack", "error", err, "url", rawURL)
-		writeError(w, archiveErrorStatus(err), "failed to generate repopack output")
+		writeArchiveError(w, r, err, "repopack", "failed to generate repopack output", "url", rawURL)
 		return
 	}
 

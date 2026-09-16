@@ -144,6 +144,33 @@ func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req)
 }
 
+type zeroReader struct{}
+
+func (zeroReader) Read(p []byte) (int, error) {
+	return len(p), nil
+}
+
+func TestDownloadRejectsOversizedBody(t *testing.T) {
+	previousClient := httpClient
+	t.Cleanup(func() { SetHTTPClient(previousClient) })
+
+	SetHTTPClient(&http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(zeroReader{}),
+		}, nil
+	})})
+
+	a, err := New("https://example.com/big.tar.gz")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = a.Download(t.TempDir())
+	if !errors.Is(err, ErrTooLarge) {
+		t.Errorf("Download() error = %v, want error matching %v", err, ErrTooLarge)
+	}
+}
+
 func TestScrubUTF8Valid(t *testing.T) {
 	input := "hello world"
 	got := scrubUTF8([]byte(input))

@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -17,6 +18,8 @@ import (
 
 	"github.com/ecosyste-ms/archives/internal/archive"
 )
+
+const errorCacheHeader = "public, max-age=3600, s-maxage=3600"
 
 func TestMain(m *testing.M) {
 	// Use an unrestricted HTTP client for tests since the fixture
@@ -432,9 +435,9 @@ func TestArchiveHandlersMapUpstreamErrors(t *testing.T) {
 		want      int
 		wantCache string
 	}{
-		{upstream: http.StatusNotFound, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
-		{upstream: http.StatusGone, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
-		{upstream: http.StatusForbidden, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
+		{upstream: http.StatusNotFound, want: http.StatusNotFound, wantCache: errorCacheHeader},
+		{upstream: http.StatusGone, want: http.StatusNotFound, wantCache: errorCacheHeader},
+		{upstream: http.StatusForbidden, want: http.StatusNotFound, wantCache: errorCacheHeader},
 		{upstream: http.StatusInternalServerError, want: http.StatusBadGateway, wantCache: "no-store"},
 		{upstream: http.StatusServiceUnavailable, want: http.StatusBadGateway, wantCache: "no-store"},
 	}
@@ -465,6 +468,23 @@ func TestArchiveHandlersMapUpstreamErrors(t *testing.T) {
 	}
 }
 
+func TestArchiveErrorStatus(t *testing.T) {
+	tests := []struct {
+		err  error
+		want int
+	}{
+		{archive.ErrNotFound, http.StatusNotFound},
+		{archive.ErrTooLarge, http.StatusRequestEntityTooLarge},
+		{archive.ErrUpstream, http.StatusBadGateway},
+		{errors.New("other"), http.StatusInternalServerError},
+	}
+	for _, tt := range tests {
+		if got := archiveErrorStatus(tt.err); got != tt.want {
+			t.Errorf("archiveErrorStatus(%v) = %d, want %d", tt.err, got, tt.want)
+		}
+	}
+}
+
 func TestHandleListMissingURL(t *testing.T) {
 	req := httptest.NewRequest("GET", "/api/v1/archives/list", nil)
 	w := httptest.NewRecorder()
@@ -474,7 +494,7 @@ func TestHandleListMissingURL(t *testing.T) {
 	if w.Code != 400 {
 		t.Fatalf("expected 400, got %d", w.Code)
 	}
-	if got, want := w.Header().Get("Cache-Control"), "public, max-age=3600, s-maxage=3600"; got != want {
+	if got, want := w.Header().Get("Cache-Control"), errorCacheHeader; got != want {
 		t.Errorf("Cache-Control = %q, want %q", got, want)
 	}
 }
