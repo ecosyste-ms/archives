@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
+	"context"
 	"os"
 	"path/filepath"
 	"sort"
@@ -192,6 +193,23 @@ func TestExtractZipBlocksSiblingPrefixTraversal(t *testing.T) {
 	outside := filepath.Join(dir, "zip-escape", "evil.txt")
 	if _, err := os.Stat(outside); !os.IsNotExist(err) {
 		t.Fatalf("outside file exists or stat failed: %v", err)
+	}
+}
+
+func TestExtractHonorsRequestContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	a, _ := NewWithContext(ctx, "http://example.com/pkg.tgz")
+	dir := t.TempDir()
+	writeTestFile(t, a.WorkingDirectory(dir), []byte("placeholder"))
+
+	dest, err := a.Extract(dir)
+	if err != nil {
+		t.Fatalf("Extract() error: %v", err)
+	}
+	if dest != "" {
+		t.Errorf("Extract() = %q, want \"\" when request context is cancelled", dest)
 	}
 }
 

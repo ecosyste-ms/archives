@@ -31,8 +31,12 @@ func (a *RemoteArchive) Extract(dir string) (string, error) {
 		return "", nil
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), extractionTimeout)
+	ctx, cancel := context.WithTimeout(a.context, extractionTimeout)
 	defer cancel()
+
+	if ctx.Err() != nil {
+		return "", nil
+	}
 
 	type result struct {
 		dest string
@@ -47,7 +51,7 @@ func (a *RemoteArchive) Extract(dir string) (string, error) {
 
 	select {
 	case <-ctx.Done():
-		slog.Info("extraction timed out after 30 seconds")
+		slog.Info("extraction aborted", "error", ctx.Err())
 		return "", nil
 	case r := <-ch:
 		if r.err != nil {
