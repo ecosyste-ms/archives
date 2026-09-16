@@ -12,7 +12,10 @@ import (
 	"github.com/ecosyste-ms/archives/internal/telemetry"
 )
 
-const cacheDuration = 60 * 24 * time.Hour // 60 days
+const (
+	cacheDuration      = 60 * 24 * time.Hour // 60 days
+	errorCacheDuration = time.Hour
+)
 
 func setCacheHeaders(w http.ResponseWriter) {
 	seconds := int(cacheDuration.Seconds())
@@ -28,6 +31,12 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 }
 
 func writeError(w http.ResponseWriter, status int, msg string) {
+	if status >= http.StatusInternalServerError {
+		w.Header().Set("Cache-Control", "no-store")
+	} else {
+		seconds := int(errorCacheDuration.Seconds())
+		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d, s-maxage=%d", seconds, seconds))
+	}
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 

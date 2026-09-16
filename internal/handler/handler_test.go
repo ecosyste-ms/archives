@@ -428,14 +428,15 @@ func TestArchiveHandlersMapUpstreamErrors(t *testing.T) {
 		{name: "repopack", path: "/api/v1/archives/repopack?url=", handler: HandleRepopack},
 	}
 	statuses := []struct {
-		upstream int
-		want     int
+		upstream  int
+		want      int
+		wantCache string
 	}{
-		{upstream: http.StatusNotFound, want: http.StatusNotFound},
-		{upstream: http.StatusGone, want: http.StatusNotFound},
-		{upstream: http.StatusForbidden, want: http.StatusNotFound},
-		{upstream: http.StatusInternalServerError, want: http.StatusBadGateway},
-		{upstream: http.StatusServiceUnavailable, want: http.StatusBadGateway},
+		{upstream: http.StatusNotFound, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
+		{upstream: http.StatusGone, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
+		{upstream: http.StatusForbidden, want: http.StatusNotFound, wantCache: "public, max-age=3600, s-maxage=3600"},
+		{upstream: http.StatusInternalServerError, want: http.StatusBadGateway, wantCache: "no-store"},
+		{upstream: http.StatusServiceUnavailable, want: http.StatusBadGateway, wantCache: "no-store"},
 	}
 
 	for _, status := range statuses {
@@ -455,6 +456,9 @@ func TestArchiveHandlersMapUpstreamErrors(t *testing.T) {
 					if w.Code != status.want {
 						t.Errorf("status = %d, want %d: %s", w.Code, status.want, w.Body.String())
 					}
+					if got := w.Header().Get("Cache-Control"); got != status.wantCache {
+						t.Errorf("Cache-Control = %q, want %q", got, status.wantCache)
+					}
 				})
 			}
 		})
@@ -469,6 +473,9 @@ func TestHandleListMissingURL(t *testing.T) {
 
 	if w.Code != 400 {
 		t.Fatalf("expected 400, got %d", w.Code)
+	}
+	if got, want := w.Header().Get("Cache-Control"), "public, max-age=3600, s-maxage=3600"; got != want {
+		t.Errorf("Cache-Control = %q, want %q", got, want)
 	}
 }
 
