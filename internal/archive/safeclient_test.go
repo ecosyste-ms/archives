@@ -22,10 +22,10 @@ func TestIsPublicIP(t *testing.T) {
 		{"169.254.169.254", false}, // AWS metadata
 		{"169.254.0.1", false},     // link-local
 		{"0.0.0.0", false},
-		{"::1", false},             // IPv6 loopback
-		{"fe80::1", false},         // IPv6 link-local
-		{"fc00::1", false},         // IPv6 unique local
-		{"fd00::1", false},         // IPv6 unique local
+		{"::1", false},     // IPv6 loopback
+		{"fe80::1", false}, // IPv6 link-local
+		{"fc00::1", false}, // IPv6 unique local
+		{"fd00::1", false}, // IPv6 unique local
 
 		// Should allow
 		{"8.8.8.8", true},
