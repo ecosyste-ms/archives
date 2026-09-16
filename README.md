@@ -69,7 +69,9 @@ The default rate limit for the API is 5000/req per hour based on your IP address
 
 ## Development
 
-For development and deployment documentation, check out [DEVELOPMENT.md](DEVELOPMENT.md)
+Requires Go 1.24+. Run the server locally with `go run ./cmd/server/` and open http://localhost:5000, or use `docker-compose up --build`. Run the tests with `go test ./...`.
+
+Deployment is container-based via [Dokku](https://dokku.com/). AppSignal tracing needs `APPSIGNAL_APP_NAME`, `APPSIGNAL_PUSH_API_KEY` and `APPSIGNAL_COLLECTOR_ENDPOINT` set; `APPSIGNAL_APP_ENV` defaults to `production` and the deploy revision is read from `APP_REVISION` or Dokku's `GIT_REV`.
 
 ## Contribute
 
