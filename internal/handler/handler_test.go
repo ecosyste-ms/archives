@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -411,6 +412,52 @@ func TestHandleChangelog(t *testing.T) {
 	html, ok := result["html"].(string)
 	if !ok || html == "" {
 		t.Error("expected non-empty html content")
+	}
+}
+
+func TestArchiveHandlersMapUpstreamErrors(t *testing.T) {
+	handlers := []struct {
+		name    string
+		path    string
+		handler http.HandlerFunc
+	}{
+		{name: "list", path: "/api/v1/archives/list?url=", handler: HandleList},
+		{name: "contents", path: "/api/v1/archives/contents?path=README.md&url=", handler: HandleContents},
+		{name: "readme", path: "/api/v1/archives/readme?url=", handler: HandleReadme},
+		{name: "changelog", path: "/api/v1/archives/changelog?url=", handler: HandleChangelog},
+		{name: "repopack", path: "/api/v1/archives/repopack?url=", handler: HandleRepopack},
+	}
+	statuses := []struct {
+		upstream int
+		want     int
+	}{
+		{upstream: http.StatusNotFound, want: http.StatusNotFound},
+		{upstream: http.StatusGone, want: http.StatusNotFound},
+		{upstream: http.StatusForbidden, want: http.StatusNotFound},
+		{upstream: http.StatusInternalServerError, want: http.StatusBadGateway},
+		{upstream: http.StatusServiceUnavailable, want: http.StatusBadGateway},
+	}
+
+	for _, status := range statuses {
+		t.Run(http.StatusText(status.upstream), func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.WriteHeader(status.upstream)
+			}))
+			defer server.Close()
+
+			for _, endpoint := range handlers {
+				t.Run(endpoint.name, func(t *testing.T) {
+					req := httptest.NewRequest(http.MethodGet, endpoint.path+url.QueryEscape(server.URL+"/archive.tar.gz"), nil)
+					w := httptest.NewRecorder()
+
+					endpoint.handler(w, req)
+
+					if w.Code != status.want {
+						t.Errorf("status = %d, want %d: %s", w.Code, status.want, w.Body.String())
+					}
+				})
+			}
+		})
 	}
 }
 

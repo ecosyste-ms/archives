@@ -2,6 +2,7 @@ package archive
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -12,6 +13,11 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode/utf8"
+)
+
+var (
+	ErrNotFound = errors.New("archive not found")
+	ErrUpstream = errors.New("upstream error")
 )
 
 const (
@@ -84,7 +90,12 @@ func (a *RemoteArchive) Download(dir string) error {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("download failed: HTTP %d", resp.StatusCode)
+		switch resp.StatusCode {
+		case http.StatusNotFound, http.StatusGone, http.StatusForbidden:
+			return fmt.Errorf("%w: HTTP %d", ErrNotFound, resp.StatusCode)
+		default:
+			return fmt.Errorf("%w: HTTP %d", ErrUpstream, resp.StatusCode)
+		}
 	}
 
 	// Read with size limit
@@ -108,8 +119,7 @@ func (a *RemoteArchive) ListFiles() ([]string, error) {
 	defer func() { _ = os.RemoveAll(dir) }()
 
 	if err := a.Download(dir); err != nil {
-		slog.Info("download failed", "error", err)
-		return []string{}, nil
+		return nil, err
 	}
 
 	extractDir, err := a.Extract(dir)

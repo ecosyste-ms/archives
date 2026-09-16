@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -30,6 +31,17 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
+func archiveErrorStatus(err error) int {
+	switch {
+	case errors.Is(err, archive.ErrNotFound):
+		return http.StatusNotFound
+	case errors.Is(err, archive.ErrUpstream):
+		return http.StatusBadGateway
+	default:
+		return http.StatusInternalServerError
+	}
+}
+
 func HandleList(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w)
 
@@ -49,7 +61,7 @@ func HandleList(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		telemetry.RecordError(r.Context(), err)
 		slog.Error("error in list", "error", err, "url", rawURL)
-		writeError(w, http.StatusInternalServerError, "failed to list archive contents")
+		writeError(w, archiveErrorStatus(err), "failed to list archive contents")
 		return
 	}
 
@@ -81,7 +93,7 @@ func HandleContents(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		telemetry.RecordError(r.Context(), err)
 		slog.Error("error in contents", "error", err, "url", rawURL, "path", filePath)
-		writeError(w, http.StatusInternalServerError, "failed to read archive contents")
+		writeError(w, archiveErrorStatus(err), "failed to read archive contents")
 		return
 	}
 
@@ -112,7 +124,7 @@ func HandleReadme(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		telemetry.RecordError(r.Context(), err)
 		slog.Error("error in readme", "error", err, "url", rawURL)
-		writeError(w, http.StatusInternalServerError, "failed to extract readme")
+		writeError(w, archiveErrorStatus(err), "failed to extract readme")
 		return
 	}
 
@@ -143,7 +155,7 @@ func HandleChangelog(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		telemetry.RecordError(r.Context(), err)
 		slog.Error("error in changelog", "error", err, "url", rawURL)
-		writeError(w, http.StatusInternalServerError, "failed to extract changelog")
+		writeError(w, archiveErrorStatus(err), "failed to extract changelog")
 		return
 	}
 
@@ -174,7 +186,7 @@ func HandleRepopack(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		telemetry.RecordError(r.Context(), err)
 		slog.Error("error in repopack", "error", err, "url", rawURL)
-		writeError(w, http.StatusInternalServerError, "failed to generate repopack output")
+		writeError(w, archiveErrorStatus(err), "failed to generate repopack output")
 		return
 	}
 
