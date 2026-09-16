@@ -3,9 +3,11 @@ package archive
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"path/filepath"
 	"sort"
+	"strings"
 	"testing"
 )
 
@@ -66,6 +68,43 @@ func TestDownloadUsesArchiveContext(t *testing.T) {
 	}
 	if value != "parent-span" {
 		t.Errorf("request context value = %q, want parent-span", value)
+	}
+}
+
+func TestDownloadClassifiesUpstreamErrors(t *testing.T) {
+	previousClient := httpClient
+	t.Cleanup(func() { SetHTTPClient(previousClient) })
+
+	tests := []struct {
+		name       string
+		statusCode int
+		want       error
+	}{
+		{name: "not found", statusCode: http.StatusNotFound, want: ErrNotFound},
+		{name: "gone", statusCode: http.StatusGone, want: ErrNotFound},
+		{name: "forbidden", statusCode: http.StatusForbidden, want: ErrNotFound},
+		{name: "internal server error", statusCode: http.StatusInternalServerError, want: ErrUpstream},
+		{name: "service unavailable", statusCode: http.StatusServiceUnavailable, want: ErrUpstream},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			SetHTTPClient(&http.Client{Transport: roundTripFunc(func(*http.Request) (*http.Response, error) {
+				return &http.Response{
+					StatusCode: tt.statusCode,
+					Body:       io.NopCloser(strings.NewReader("")),
+				}, nil
+			})})
+
+			a, err := New("https://example.com/archive.tar.gz")
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = a.Download(t.TempDir())
+			if !errors.Is(err, tt.want) {
+				t.Errorf("Download() error = %v, want error matching %v", err, tt.want)
+			}
+		})
 	}
 }
 
