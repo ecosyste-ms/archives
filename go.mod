@@ -9,7 +9,7 @@ require (
 	github.com/git-pkgs/markup v0.1.1
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
-	github.com/ulikunitz/xz v0.5.16
+	github.com/ulikunitz/xz v0.5.17
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.71.0
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.46.0
