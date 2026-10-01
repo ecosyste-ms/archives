@@ -12,6 +12,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"unicode/utf8"
 )
 
@@ -180,7 +181,7 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 	}
 
 	info, err := os.Stat(fullPath)
-	if os.IsNotExist(err) {
+	if os.IsNotExist(err) || errors.Is(err, syscall.ENOTDIR) {
 		return nil, nil
 	}
 	if err != nil {

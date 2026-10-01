@@ -282,6 +282,52 @@ func TestHandleContentsFile(t *testing.T) {
 	}
 }
 
+func TestHandleContentsTarFileAsDirectory(t *testing.T) {
+	data := tarGzFixture(t, []archiveFixtureEntry{
+		{name: "heemod/heemod.Rproj", contents: "Version: 1.0\n"},
+		{name: "heemod/docs/docsearch.js", contents: "console.log('search');\n"},
+	})
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(data)
+	}))
+	defer server.Close()
+
+	for _, tt := range []struct {
+		path     string
+		status   int
+		contents string
+	}{
+		{path: "heemod.Rproj/docsearch.js", status: http.StatusNotFound},
+		{path: "heemod.Rproj/subdir/docsearch.js", status: http.StatusNotFound},
+		{path: "heemod.Rproj", status: http.StatusOK, contents: "Version: 1.0\n"},
+		{path: "docs/docsearch.js", status: http.StatusOK, contents: "console.log('search');\n"},
+	} {
+		t.Run(tt.path, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/api/v1/archives/contents?url="+server.URL+"/heemod.tar.gz&path="+tt.path, nil)
+			w := httptest.NewRecorder()
+			HandleContents(w, req)
+
+			if w.Code != tt.status {
+				t.Fatalf("expected %d, got %d: %s", tt.status, w.Code, w.Body.String())
+			}
+			if tt.status == http.StatusNotFound {
+				var result map[string]string
+				decodeResponse(t, w, &result)
+				if result["error"] != "path not found" {
+					t.Fatalf("unexpected error response: %v", result)
+				}
+				return
+			}
+
+			var result archive.FileContent
+			decodeResponse(t, w, &result)
+			if result.Name != tt.path || result.Directory || result.Contents != tt.contents {
+				t.Fatalf("unexpected file response: %+v", result)
+			}
+		})
+	}
+}
+
 func TestHandleContentsFolder(t *testing.T) {
 	server := setupFixtureServer(t)
 	defer server.Close()
