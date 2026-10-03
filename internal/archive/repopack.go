@@ -31,8 +31,14 @@ func (a *RemoteArchive) Repopack() (*RepopackResult, error) {
 		return nil, nil
 	}
 
+	// Keep the config outside the input tree and bypass archive-supplied configs.
+	configPath := filepath.Join(dir, "repomix.config.json")
+	if err := os.WriteFile(configPath, []byte("{}"), downloadFileMode); err != nil {
+		return nil, fmt.Errorf("writing repomix config: %w", err)
+	}
+
 	var stderr bytes.Buffer
-	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose", "--config", "/dev/null")
+	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose", "--config", configPath)
 	cmd.Dir = extractDir
 	cmd.Stderr = &stderr
 	if err := cmd.Run(); err != nil {
