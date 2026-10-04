@@ -3,9 +3,11 @@ package archive
 import (
 	"archive/tar"
 	"archive/zip"
+	"bytes"
 	"compress/gzip"
 	"context"
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -13,6 +15,60 @@ import (
 
 	"github.com/ulikunitz/xz"
 )
+
+type cancellingReader struct {
+	reader    io.Reader
+	cancel    context.CancelFunc
+	remaining int
+}
+
+func (r *cancellingReader) Read(p []byte) (int, error) {
+	if len(p) > r.remaining {
+		p = p[:r.remaining]
+	}
+	n, err := r.reader.Read(p)
+	r.remaining -= n
+	if r.remaining == 0 {
+		r.cancel()
+	}
+	return n, err
+}
+
+func TestExtractTarCancellationDuringFileCopy(t *testing.T) {
+	var buf bytes.Buffer
+	tw := tar.NewWriter(&buf)
+	contents := bytes.Repeat([]byte("x"), 1024*1024)
+	for _, name := range []string{"pkg/data/large.txt", "pkg/README.md"} {
+		if err := tw.WriteHeader(&tar.Header{Name: name, Mode: 0o644, Size: int64(len(contents))}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write(contents); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	const copiedBytes = 32 * 1024
+	reader := &cancellingReader{reader: &buf, cancel: cancel, remaining: 512 + copiedBytes}
+	dir := t.TempDir()
+	if err := extractTarReader(ctx, reader, dir, true); !errors.Is(err, context.Canceled) {
+		t.Fatalf("extractTarReader() error = %v, want context.Canceled", err)
+	}
+	info, err := os.Stat(filepath.Join(dir, "data", "large.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Size() != copiedBytes {
+		t.Errorf("extracted size = %d, want %d", info.Size(), copiedBytes)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "README.md")); !os.IsNotExist(err) {
+		t.Errorf("extraction continued after cancellation: %v", err)
+	}
+}
 
 func TestExtractTarGzFixture(t *testing.T) {
 	fixture := filepath.Join("testdata", "base62-2.0.1.tgz")

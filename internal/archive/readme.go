@@ -45,7 +45,7 @@ func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = os.RemoveAll(dir) }()
+	defer cleanupDirectory(dir)
 
 	if err := a.Download(dir); err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = os.RemoveAll(dir) }()
+	defer cleanupDirectory(dir)
 
 	if err := a.Download(dir); err != nil {
 		return nil, err

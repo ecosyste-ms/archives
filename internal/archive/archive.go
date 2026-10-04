@@ -119,7 +119,7 @@ func (a *RemoteArchive) ListFiles() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = os.RemoveAll(dir) }()
+	defer cleanupDirectory(dir)
 
 	if err := a.Download(dir); err != nil {
 		return nil, err
@@ -151,7 +151,7 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { _ = os.RemoveAll(dir) }()
+	defer cleanupDirectory(dir)
 
 	if err := a.Download(dir); err != nil {
 		return nil, err
@@ -262,11 +262,21 @@ func listAllFiles(dir string) ([]string, error) {
 }
 
 func detectMimeType(path string) string {
-	out, err := exec.Command("file", "--brief", "--mime-type", path).Output()
+	return detectMimeTypeContext(context.Background(), path)
+}
+
+func detectMimeTypeContext(ctx context.Context, path string) string {
+	out, err := exec.CommandContext(ctx, "file", "--brief", "--mime-type", path).Output()
 	if err != nil {
 		return mimeApplicationOctetStream
 	}
 	return strings.TrimSpace(string(out))
+}
+
+func cleanupDirectory(dir string) {
+	if err := os.RemoveAll(dir); err != nil {
+		slog.Error("failed to remove archive directory", "path", dir, "error", err)
+	}
 }
 
 func isTextMime(mime string) bool {
