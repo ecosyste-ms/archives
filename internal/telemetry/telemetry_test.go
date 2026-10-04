@@ -15,6 +15,9 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
+	collectortrace "go.opentelemetry.io/proto/otlp/collector/trace/v1"
+	tracepb "go.opentelemetry.io/proto/otlp/trace/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -82,17 +85,36 @@ func TestConfigFromEnvDefaults(t *testing.T) {
 	}
 }
 
-func TestStartExportsTracesToCollectorTracePath(t *testing.T) {
-	paths := make(chan string, 1)
+func TestStartExportsHTTPErrorToCollectorTracePath(t *testing.T) {
+	exports := make(chan *collectortrace.ExportTraceServiceRequest, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		paths <- r.URL.Path
+		if r.URL.Path != collectorTracePath {
+			t.Errorf("export path = %q, want %s", r.URL.Path, collectorTracePath)
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Error(err)
+			http.Error(w, "read export", http.StatusBadRequest)
+			return
+		}
+		var export collectortrace.ExportTraceServiceRequest
+		if err := proto.Unmarshal(body, &export); err != nil {
+			t.Error(err)
+			http.Error(w, "decode export", http.StatusBadRequest)
+			return
+		}
+		exports <- &export
 		w.Header().Set("Content-Type", "application/x-protobuf")
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
 
 	previousProvider := otel.GetTracerProvider()
-	t.Cleanup(func() { otel.SetTracerProvider(previousProvider) })
+	previousPropagator := otel.GetTextMapPropagator()
+	t.Cleanup(func() {
+		otel.SetTracerProvider(previousProvider)
+		otel.SetTextMapPropagator(previousPropagator)
+	})
 
 	shutdown, err := Start(context.Background(), Config{
 		AppName:     testAppName,
@@ -108,19 +130,46 @@ func TestStartExportsTracesToCollectorTracePath(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, span := otel.Tracer(instrumentationName).Start(context.Background(), "test")
-	span.End()
+	handler := HTTPHandler("GET /archive", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		RecordError(r.Context(), errors.New("archive failed"))
+		http.Error(w, "failed", http.StatusInternalServerError)
+	}))
+	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/archive?token=secret", nil))
 	if err := shutdown(context.Background()); err != nil {
 		t.Fatalf("shutdown tracer provider: %v", err)
 	}
 
 	select {
-	case path := <-paths:
-		if path != "/v1/traces" {
-			t.Errorf("export path = %q, want /v1/traces", path)
-		}
+	case export := <-exports:
+		assertExportedHTTPError(t, export)
 	default:
 		t.Fatal("collector did not receive a trace export")
+	}
+}
+
+func assertExportedHTTPError(t *testing.T, export *collectortrace.ExportTraceServiceRequest) {
+	t.Helper()
+	if len(export.ResourceSpans) != 1 || len(export.ResourceSpans[0].ScopeSpans) != 1 {
+		t.Fatalf("unexpected trace export: %v", export)
+	}
+	spans := export.ResourceSpans[0].ScopeSpans[0].Spans
+	if len(spans) != 1 {
+		t.Fatalf("exported %d spans, want 1", len(spans))
+	}
+	span := spans[0]
+	if span.Name != "GET /archive" || span.Kind != tracepb.Span_SPAN_KIND_SERVER {
+		t.Errorf("unexpected server span: %v", span)
+	}
+	if span.Status.GetCode() != tracepb.Status_STATUS_CODE_ERROR {
+		t.Errorf("exported status = %v, want error", span.Status)
+	}
+	if len(span.Events) != 1 || span.Events[0].Name != "exception" {
+		t.Errorf("exported events = %v, want exception event", span.Events)
+	}
+	for _, attr := range span.Attributes {
+		if attr.Key == "url.query" || strings.Contains(attr.Value.GetStringValue(), "token=secret") {
+			t.Errorf("exported request query string: %v", attr)
+		}
 	}
 }
 
