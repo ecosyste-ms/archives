@@ -2,7 +2,6 @@ package archive
 
 import (
 	"log/slog"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -41,28 +40,12 @@ type ChangelogResult struct {
 }
 
 func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
-	dir, err := os.MkdirTemp("", "archives-*")
-	if err != nil {
+	b, err := a.browse()
+	if err != nil || b == nil {
 		return nil, err
 	}
-	defer cleanupDirectory(dir)
-
-	if err := a.Download(dir); err != nil {
-		return nil, err
-	}
-
-	extractDir, err := a.Extract(dir)
-	if err != nil {
-		return nil, err
-	}
-	if extractDir == "" {
-		return nil, nil
-	}
-
-	allFiles, err := listAllFiles(extractDir)
-	if err != nil {
-		return nil, err
-	}
+	defer b.close()
+	allFiles := b.list("")
 
 	// Find README files (match against full path, so only top-level READMEs match ^readme)
 	var readmeFiles []string
@@ -87,18 +70,12 @@ func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
 	}
 
 	readmeFile := readmeFiles[0]
-	fullPath := filepath.Join(extractDir, readmeFile)
-
-	raw, err := os.ReadFile(fullPath)
-	if err != nil {
-		slog.Info("skipping readme", "file", readmeFile, "error", err)
+	if b.files[readmeFile].IsDir {
 		return nil, nil
 	}
-
-	// Check if it's actually a directory
-	info, _ := os.Stat(fullPath)
-	if info != nil && info.IsDir() {
-		slog.Info("skipping readme directory", "file", readmeFile)
+	raw, err := b.read(readmeFile, maxDecompressedFileSize)
+	if err != nil {
+		slog.Info("skipping readme", "file", readmeFile, "error", err)
 		return nil, nil
 	}
 
@@ -125,36 +102,18 @@ func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
 }
 
 func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
-	dir, err := os.MkdirTemp("", "archives-*")
-	if err != nil {
+	b, err := a.browse()
+	if err != nil || b == nil {
 		return nil, err
 	}
-	defer cleanupDirectory(dir)
-
-	if err := a.Download(dir); err != nil {
-		return nil, err
-	}
-
-	extractDir, err := a.Extract(dir)
-	if err != nil {
-		return nil, err
-	}
-	if extractDir == "" {
-		return nil, nil
-	}
-
-	allFiles, err := listAllFiles(extractDir)
-	if err != nil {
-		return nil, err
-	}
+	defer b.close()
+	allFiles := b.list("")
 
 	// Find changelog files
 	var changelogFiles []string
 	for _, f := range allFiles {
 		base := filepath.Base(f)
-		fullPath := filepath.Join(extractDir, f)
-		info, err := os.Stat(fullPath)
-		if err != nil || info.IsDir() {
+		if b.files[f].IsDir {
 			continue
 		}
 		if changelogPattern.MatchString(base) {
@@ -177,17 +136,9 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	}
 
 	changelogFile := changelogFiles[0]
-	fullPath := filepath.Join(extractDir, changelogFile)
-
-	raw, err := os.ReadFile(fullPath)
+	raw, err := b.read(changelogFile, maxDecompressedFileSize)
 	if err != nil {
 		slog.Info("skipping changelog", "file", changelogFile, "error", err)
-		return nil, nil
-	}
-
-	info, _ := os.Stat(fullPath)
-	if info != nil && info.IsDir() {
-		slog.Info("skipping changelog directory", "file", changelogFile)
 		return nil, nil
 	}
 

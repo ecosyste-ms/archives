@@ -1,6 +1,7 @@
 package archive
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -10,9 +11,9 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"unicode/utf8"
 )
 
@@ -115,26 +116,19 @@ func (a *RemoteArchive) Download(dir string) error {
 }
 
 func (a *RemoteArchive) ListFiles() ([]string, error) {
-	dir, err := os.MkdirTemp("", "archives-*")
+	b, err := a.browse()
+	if errors.Is(err, ErrInvalidArchive) {
+		slog.Info("archive listing failed", "error", err)
+		return []string{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	defer cleanupDirectory(dir)
-
-	if err := a.Download(dir); err != nil {
-		return nil, err
-	}
-
-	extractDir, err := a.Extract(dir)
-	if err != nil {
-		slog.Info("extraction failed", "error", err)
+	if b == nil {
 		return []string{}, nil
 	}
-	if extractDir == "" {
-		return []string{}, nil
-	}
-
-	return listAllFiles(extractDir)
+	defer b.close()
+	return b.list(""), nil
 }
 
 type FileContent struct {
@@ -147,122 +141,54 @@ type FileContent struct {
 }
 
 func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
-	dir, err := os.MkdirTemp("", "archives-*")
-	if err != nil {
+	b, err := a.browse()
+	if err != nil || b == nil {
 		return nil, err
 	}
-	defer cleanupDirectory(dir)
+	defer b.close()
 
-	if err := a.Download(dir); err != nil {
-		return nil, err
-	}
-
-	extractDir, err := a.Extract(dir)
-	if err != nil {
-		return nil, err
-	}
-	if extractDir == "" {
-		return nil, nil
-	}
-
-	fullPath := filepath.Join(extractDir, filePath)
-
-	// Prevent path traversal
-	absExtract, err := filepath.Abs(extractDir)
-	if err != nil {
-		return nil, fmt.Errorf("resolving extract path: %w", err)
-	}
-	absFull, err := filepath.Abs(fullPath)
-	if err != nil {
-		return nil, fmt.Errorf("resolving file path: %w", err)
-	}
-	if !strings.HasPrefix(absFull, absExtract) {
+	name := path.Clean(filePath)
+	if !filepath.IsLocal(name) {
 		return nil, fmt.Errorf("path traversal blocked")
 	}
+	file, exists := b.files[name]
+	if name == "." || (exists && file.IsDir) {
+		return &FileContent{Name: filePath, Directory: true, Contents: b.list(name)}, nil
+	}
+	if !exists {
+		return nil, nil
+	}
 
-	info, err := os.Stat(fullPath)
-	if os.IsNotExist(err) || errors.Is(err, syscall.ENOTDIR) {
+	const maxContentSize = 10 * 1024 * 1024
+	data, err := b.read(name, maxContentSize)
+	if b.ctx.Err() != nil {
 		return nil, nil
 	}
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %w", ErrInvalidArchive, err)
 	}
-
-	if info.IsDir() {
-		files, err := listAllFiles(fullPath)
-		if err != nil {
-			return nil, err
-		}
-		return &FileContent{
-			Name:      filePath,
-			Directory: true,
-			Contents:  files,
-		}, nil
+	cmd := exec.CommandContext(b.ctx, "file", "--brief", "--mime-type", "-")
+	cmd.Stdin = bytes.NewReader(data)
+	out, err := cmd.Output()
+	if b.ctx.Err() != nil {
+		return nil, nil
 	}
-
-	mime := detectMimeType(fullPath)
-
-	if !isTextMime(mime) {
-		return &FileContent{
-			Name:      filePath,
-			Directory: false,
-			Binary:    true,
-			MimeType:  mime,
-			Error:     "Binary file detected. Cannot display contents as text.",
-		}, nil
+	mime := mimeApplicationOctetStream
+	if err == nil {
+		mime = strings.TrimSpace(string(out))
 	}
-
-	// Cap file reads at 10MB to prevent excessive memory use
-	const maxContentSize = 10 * 1024 * 1024
-	if info.Size() > maxContentSize {
-		return &FileContent{
-			Name:      filePath,
-			Directory: false,
-			Binary:    true,
-			MimeType:  mime,
-			Error:     "File too large to display (>10MB).",
-		}, nil
+	result := &FileContent{Name: filePath}
+	switch {
+	case !isTextMime(mime):
+		result.Error = "Binary file detected. Cannot display contents as text."
+	case file.Size > maxContentSize:
+		result.Error = "File too large to display (>10MB)."
+	default:
+		result.Contents = scrubUTF8(data)
+		return result, nil
 	}
-
-	data, err := os.ReadFile(fullPath)
-	if err != nil {
-		return nil, err
-	}
-
-	contents := scrubUTF8(data)
-
-	return &FileContent{
-		Name:      filePath,
-		Directory: false,
-		Contents:  contents,
-	}, nil
-}
-
-func listAllFiles(dir string) ([]string, error) {
-	var files []string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return nil
-		}
-		rel, err := filepath.Rel(dir, path)
-		if err != nil {
-			return nil
-		}
-		if rel == "." {
-			return nil
-		}
-		// Skip symlinks
-		if info.Mode()&os.ModeSymlink != 0 {
-			return nil
-		}
-		files = append(files, rel)
-		return nil
-	})
-	return files, err
-}
-
-func detectMimeType(path string) string {
-	return detectMimeTypeContext(context.Background(), path)
+	result.Binary, result.MimeType = true, mime
+	return result, nil
 }
 
 func detectMimeTypeContext(ctx context.Context, path string) string {
