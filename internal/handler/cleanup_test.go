@@ -87,11 +87,11 @@ func TestHandleReadmeCancellationStopsExtractionBeforeCleanup(t *testing.T) {
 }
 
 func TestHandleReadmeCleansExtractedFiles(t *testing.T) {
-	for _, format := range []string{"tar", "zip"} {
+	for _, format := range []string{browseFormatTAR, browseFormatZIP} {
 		t.Run(format, func(t *testing.T) {
 			entries := []archiveFixtureEntry{{name: "pkg/README.md", contents: "# Example"}, {name: "pkg/data/file.txt", contents: "data"}}
 			var data []byte
-			if format == "tar" {
+			if format == browseFormatTAR {
 				data = tarGzFixture(t, entries)
 			} else {
 				data = zipFixture(t, entries)

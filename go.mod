@@ -5,6 +5,7 @@ go 1.26.0
 toolchain go1.27.1
 
 require (
+	github.com/git-pkgs/archives v0.9.0
 	github.com/git-pkgs/changelog v0.2.1
 	github.com/git-pkgs/markup v0.1.2
 	github.com/go-enry/go-enry/v2 v2.9.6
@@ -23,12 +24,14 @@ require (
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/felixge/httpsnoop v1.1.0 // indirect
+	github.com/git-pkgs/magic v0.5.0 // indirect
 	github.com/git-pkgs/vers v0.7.2 // indirect
 	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.31.0 // indirect
+	github.com/klauspost/compress v1.20.1 // indirect
 	github.com/niklasfasching/go-org v1.9.1 // indirect
 	github.com/yuin/goldmark v1.8.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
