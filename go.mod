@@ -6,7 +6,7 @@ toolchain go1.27.1
 
 require (
 	github.com/git-pkgs/changelog v0.2.1
-	github.com/git-pkgs/markup v0.1.1
+	github.com/git-pkgs/markup v0.1.2
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
 	github.com/ulikunitz/xz v0.5.17
