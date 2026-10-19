@@ -23,6 +23,7 @@ import (
 const (
 	browseFormatZIP     = "zip"
 	browseFormatTAR     = "tar"
+	browseFormatGZIP    = "gzip"
 	browseReadme        = "README.md"
 	browsePackageReadme = "pkg/README.md"
 	browseSymlink       = "sym"
@@ -64,13 +65,13 @@ func TestBrowsePreservesTreeAndDuplicateFiles(t *testing.T) {
 		{name: "pkg/README", contents: "plain readme"},
 		{name: "pkg/docs/README.md", contents: "nested readme"},
 	}
-	for _, format := range []string{browseFormatZIP, "gzip", "xz"} {
+	for _, format := range []string{browseFormatZIP, browseFormatGZIP, "xz"} {
 		t.Run(format, func(t *testing.T) {
 			var data []byte
 			switch format {
 			case browseFormatZIP:
 				data = zipFixture(t, entries)
-			case "gzip":
+			case browseFormatGZIP:
 				data = tarGzFixture(t, entries)
 			case "xz":
 				data = tarXZFixture(t, entries)
@@ -160,6 +161,39 @@ func TestBrowseNestedPackages(t *testing.T) {
 				t.Fatalf("readme = %#v", readme)
 			}
 		})
+	}
+}
+
+func TestBrowseDirectoryPaths(t *testing.T) {
+	for _, format := range []string{browseFormatZIP, browseFormatGZIP} {
+		for _, explicit := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/explicit=%t", format, explicit), func(t *testing.T) {
+				entries := []archiveFixtureEntry{{name: "pkg/docs/guide.txt", contents: "guide"}}
+				if explicit {
+					entries = append(entries, archiveFixtureEntry{name: "pkg/docs/"})
+				}
+				var data []byte
+				if format == browseFormatZIP {
+					data = zipFixture(t, entries)
+				} else {
+					data = tarGzFixture(t, entries)
+				}
+				source := serveBrowseFixture(t, data)
+				for _, name := range []string{"docs", "docs/"} {
+					var dir struct {
+						Directory bool
+						Contents  []string
+					}
+					browseRequest(t, HandleContents, "contents", source, name, &dir)
+					if !dir.Directory || !reflect.DeepEqual(dir.Contents, []string{"guide.txt"}) {
+						t.Fatalf("contents(%q) = %#v", name, dir)
+					}
+				}
+				if w := browseRequest(t, HandleContents, "contents", source, "doc", nil); w.Code != http.StatusNotFound {
+					t.Fatalf("missing path status = %d: %s", w.Code, w.Body.String())
+				}
+			})
+		}
 	}
 }
 

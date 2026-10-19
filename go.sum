@@ -6,8 +6,8 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
 github.com/felixge/httpsnoop v1.1.0/go.mod h1:Zqxgdd+1Rkcz8euOqdr7lqgCRJztwr5hp9vDSi5UZCE=
-github.com/git-pkgs/archives v0.8.2-0.20261018121304-37b9a6e2b526 h1:tOFUEAD+Dn1HxAKoIC4br3bAvMzskpO60KiTe04i7X4=
-github.com/git-pkgs/archives v0.8.2-0.20261018121304-37b9a6e2b526/go.mod h1:GJ/h7NPTUYiPinOUxpYNsHFCUikYZcJXvugBvP1VGNc=
+github.com/git-pkgs/archives v0.8.2-0.20261018162201-da3b1b0002c8 h1:uIcYxodgU1NajaB6clSxWF0Wkm3TG0C6+O01aAo46zI=
+github.com/git-pkgs/archives v0.8.2-0.20261018162201-da3b1b0002c8/go.mod h1:GJ/h7NPTUYiPinOUxpYNsHFCUikYZcJXvugBvP1VGNc=
 github.com/git-pkgs/changelog v0.2.1 h1:xQ6j4Zg3/JJ8zevD/eG7ff7vhLRALN9hTri5UZivIIs=
 github.com/git-pkgs/changelog v0.2.1/go.mod h1:mKDtTTEk6UucEH98JiqowF+bIDfL6QTxH0pfO5j1UNE=
 github.com/git-pkgs/magic v0.5.0 h1:Pm+4fkHR+K6kg9pwJM4hnwWUuBlkYdLmF1yIAI8lU9Q=

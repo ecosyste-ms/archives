@@ -5,7 +5,7 @@ go 1.26.0
 toolchain go1.27.1
 
 require (
-	github.com/git-pkgs/archives v0.8.2-0.20261018121304-37b9a6e2b526
+	github.com/git-pkgs/archives v0.8.2-0.20261018162201-da3b1b0002c8
 	github.com/git-pkgs/changelog v0.2.1
 	github.com/git-pkgs/markup v0.1.1
 	github.com/go-enry/go-enry/v2 v2.9.6
