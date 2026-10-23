@@ -391,3 +391,36 @@ func TestBrowseZipRootPaths(t *testing.T) {
 		})
 	}
 }
+
+func TestBrowseTarGzRootPaths(t *testing.T) {
+	for _, tt := range []struct {
+		name    string
+		entries []archiveFixtureEntry
+	}{
+		{"unwrapped", []archiveFixtureEntry{
+			{name: "pubspec.yaml", contents: "name: synchronized"},
+			{name: "skills/synchronized-lock/SKILL.md", contents: "---\nname: synchronized-lock\n---"},
+			{name: browseReadme, contents: "# Root"},
+		}},
+		{"wrapped", []archiveFixtureEntry{
+			{name: "package/pubspec.yaml", contents: "name: synchronized"},
+			{name: "package/skills/synchronized-lock/SKILL.md", contents: "---\nname: synchronized-lock\n---"},
+			{name: "package/" + browseReadme, contents: "# Root"},
+		}},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			source := serveBrowseFixture(t, tarGzFixture(t, tt.entries))
+			var files []string
+			browseRequest(t, HandleList, "list", source, "", &files)
+			want := []string{browseReadme, "pubspec.yaml", "skills", "skills/synchronized-lock", "skills/synchronized-lock/SKILL.md"}
+			if !reflect.DeepEqual(files, want) {
+				t.Fatalf("files = %v, want %v", files, want)
+			}
+			var readme archive.ReadmeResult
+			browseRequest(t, HandleReadme, "readme", source, "", &readme)
+			if readme.Raw != "# Root" {
+				t.Fatalf("readme = %#v", readme)
+			}
+		})
+	}
+}
