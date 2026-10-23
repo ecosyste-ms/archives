@@ -424,3 +424,37 @@ func TestBrowseTarGzRootPaths(t *testing.T) {
 		})
 	}
 }
+
+func TestHandleSkills(t *testing.T) {
+	source := serveBrowseFixture(t, zipFixture(t, []archiveFixtureEntry{
+		{name: "laravel-socialite-f721b2c/composer.json", contents: "{}"},
+		{name: "laravel-socialite-f721b2c/resources/boost/skills/socialite-development/SKILL.md",
+			contents: "---\nname: socialite-development\ndescription: Build OAuth logins\n---\nUse Socialite."},
+	}))
+	var result archive.SkillsResult
+	browseRequest(t, HandleSkills, "skills", source, "", &result)
+	if len(result.Skills) != 1 || len(result.Errors) != 0 {
+		t.Fatalf("result = %+v", result)
+	}
+	s := result.Skills[0]
+	if s.Path != "resources/boost/skills/socialite-development" || s.Name != "socialite-development" ||
+		s.Description != "Build OAuth logins" || s.Body != "Use Socialite." {
+		t.Fatalf("skill = %+v", s)
+	}
+}
+
+func TestHandleSkillsNone(t *testing.T) {
+	source := serveBrowseFixture(t, tarGzFixture(t, []archiveFixtureEntry{{name: "package/index.js", contents: "x"}}))
+	w := browseRequest(t, HandleSkills, "skills", source, "", nil)
+	if w.Code != http.StatusOK || strings.TrimSpace(w.Body.String()) != `{"skills":[],"errors":[]}` {
+		t.Fatalf("response = %d %s", w.Code, w.Body.String())
+	}
+}
+
+func TestHandleSkillsRequiresURL(t *testing.T) {
+	w := httptest.NewRecorder()
+	HandleSkills(w, httptest.NewRequest(http.MethodGet, "/api/v1/archives/skills", nil))
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d", w.Code)
+	}
+}
