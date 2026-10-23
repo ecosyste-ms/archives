@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"testing"
 
@@ -55,17 +56,17 @@ func TestExtractTarCancellationDuringFileCopy(t *testing.T) {
 	const copiedBytes = 32 * 1024
 	reader := &cancellingReader{reader: &buf, cancel: cancel, remaining: 512 + copiedBytes}
 	dir := t.TempDir()
-	if err := extractTarReader(ctx, reader, dir, true); !errors.Is(err, context.Canceled) {
+	if err := extractTarReader(ctx, reader, dir); !errors.Is(err, context.Canceled) {
 		t.Fatalf("extractTarReader() error = %v, want context.Canceled", err)
 	}
-	info, err := os.Stat(filepath.Join(dir, "data", "large.txt"))
+	info, err := os.Stat(filepath.Join(dir, "pkg", "data", "large.txt"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if info.Size() != copiedBytes {
 		t.Errorf("extracted size = %d, want %d", info.Size(), copiedBytes)
 	}
-	if _, err := os.Stat(filepath.Join(dir, "README.md")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(dir, "pkg", "README.md")); !os.IsNotExist(err) {
 		t.Errorf("extraction continued after cancellation: %v", err)
 	}
 }
@@ -686,5 +687,52 @@ func TestExtractJarFileList(t *testing.T) {
 		if f != expected[i] {
 			t.Errorf("files[%d] = %q, want %q", i, f, expected[i])
 		}
+	}
+}
+
+func TestExtractTarGzRootPaths(t *testing.T) {
+	for _, tt := range []struct {
+		name   string
+		prefix string
+	}{
+		{"unwrapped", ""},
+		{"wrapped", "package/"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			gw := gzip.NewWriter(&buf)
+			tw := tar.NewWriter(gw)
+			for _, name := range []string{"pubspec.yaml", "skills/x/SKILL.md"} {
+				if err := tw.WriteHeader(&tar.Header{Name: tt.prefix + name, Mode: 0o644, Size: 1}); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := tw.Write([]byte("x")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := tw.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if err := gw.Close(); err != nil {
+				t.Fatal(err)
+			}
+
+			a, _ := New("http://example.com/pkg.tar.gz")
+			dir := t.TempDir()
+			writeTestFile(t, a.WorkingDirectory(dir), buf.Bytes())
+			dest, err := a.Extract(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			files, err := listAllFiles(dest)
+			if err != nil {
+				t.Fatal(err)
+			}
+			sort.Strings(files)
+			want := []string{"pubspec.yaml", "skills", filepath.Join("skills", "x"), filepath.Join("skills", "x", "SKILL.md")}
+			if !reflect.DeepEqual(files, want) {
+				t.Fatalf("files = %v, want %v", files, want)
+			}
+		})
 	}
 }

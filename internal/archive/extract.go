@@ -188,7 +188,7 @@ func extractTarGz(ctx context.Context, path, dir string) (string, error) {
 	}
 	defer func() { _ = gz.Close() }()
 
-	return destination, extractTarReader(ctx, gz, destination, true)
+	return extractUnwrapped(ctx, gz, destination)
 }
 
 func extractTarXz(ctx context.Context, path, dir string) (string, error) {
@@ -208,7 +208,24 @@ func extractTarXz(ctx context.Context, path, dir string) (string, error) {
 		return "", fmt.Errorf("opening xz: %w", err)
 	}
 
-	return destination, extractTarReader(ctx, xzr, destination, true)
+	return extractUnwrapped(ctx, xzr, destination)
+}
+
+// extractUnwrapped extracts a tar stream and returns the single top-level
+// directory when everything sits under one, as with npm's package/. A tar
+// stream cannot be inspected before extraction, so the check runs after.
+func extractUnwrapped(ctx context.Context, reader io.Reader, destination string) (string, error) {
+	if err := extractTarReader(ctx, reader, destination); err != nil {
+		return "", err
+	}
+	entries, err := os.ReadDir(destination)
+	if err != nil {
+		return "", err
+	}
+	if len(entries) == 1 && entries[0].IsDir() {
+		return filepath.Join(destination, entries[0].Name()), nil
+	}
+	return destination, nil
 }
 
 func extractTar(ctx context.Context, path, dir string) (string, error) {
@@ -225,7 +242,7 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 
 	// Extract without stripping top level first, since formats like .gem
 	// have flat entries (data.tar.gz, metadata.gz) with no top-level dir.
-	if err := extractTarReader(ctx, f, destination, false); err != nil {
+	if err := extractTarReader(ctx, f, destination); err != nil {
 		return "", err
 	}
 
@@ -256,7 +273,7 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 		}
 		defer func() { _ = gz.Close() }()
 
-		if err := extractTarReader(ctx, gz, innerDestination, false); err != nil {
+		if err := extractTarReader(ctx, gz, innerDestination); err != nil {
 			return "", err
 		}
 		return innerDestination, nil
@@ -265,7 +282,7 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 	return destination, nil
 }
 
-func extractTarReader(ctx context.Context, reader io.Reader, destination string, stripTop bool) error {
+func extractTarReader(ctx context.Context, reader io.Reader, destination string) error {
 	tr := tar.NewReader(contextReader{ctx, reader})
 	root, err := os.OpenRoot(destination)
 	if err != nil {
@@ -292,8 +309,8 @@ func extractTarReader(ctx context.Context, reader io.Reader, destination string,
 			continue
 		}
 
-		stripped, ok := strippedTarPath(header.Name, stripTop)
-		if !ok || stripped == "" {
+		stripped := header.Name
+		if stripped == "" {
 			continue
 		}
 

@@ -120,9 +120,9 @@ func (b *archiveBrowser) index() error {
 	case "application/zip", "application/java-archive", "application/vnd.android.package-archive":
 		b.filename = "archive.zip"
 	case "application/gzip":
-		b.filename, stripTop = "archive.tar.gz", true
+		b.filename = "archive.tar.gz"
 	case "application/x-xz":
-		b.filename, stripTop = "archive.tar.xz", true
+		b.filename = "archive.tar.xz"
 	case "application/x-tar":
 		b.filename = "archive.tar"
 	default:
@@ -141,7 +141,9 @@ func (b *archiveBrowser) index() error {
 			}
 		}
 	}
-	if b.filename == "archive.zip" {
+	// Strip a wrapper directory only when every entry sits under it: npm's
+	// package/ has one, pub tarballs do not.
+	if b.filename != "archive.tar" {
 		normalized := make([]archives.FileInfo, 0, len(files))
 		for _, file := range files {
 			file.Path = strings.Join(splitPath(file.Path), "/")
