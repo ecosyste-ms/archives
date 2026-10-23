@@ -458,3 +458,33 @@ func TestHandleSkillsRequiresURL(t *testing.T) {
 		t.Fatalf("status = %d", w.Code)
 	}
 }
+
+func TestBrowseGoModuleZip(t *testing.T) {
+	source := serveBrowseFixture(t, zipFixture(t, []archiveFixtureEntry{
+		{name: "github.com/onsi/gomega@v1.44.0/go.mod", contents: "module github.com/onsi/gomega"},
+		{name: "github.com/onsi/gomega@v1.44.0/" + browseReadme, contents: "# Gomega"},
+	}))
+	var files []string
+	browseRequest(t, HandleList, "list", source, "", &files)
+	if !reflect.DeepEqual(files, []string{browseReadme, "go.mod"}) {
+		t.Fatalf("files = %v", files)
+	}
+	var readme archive.ReadmeResult
+	browseRequest(t, HandleReadme, "readme", source, "", &readme)
+	if readme.Raw != "# Gomega" {
+		t.Fatalf("readme = %#v", readme)
+	}
+}
+
+func TestBrowseZipKeepsScopedPackageDirs(t *testing.T) {
+	source := serveBrowseFixture(t, zipFixture(t, []archiveFixtureEntry{
+		{name: "project/node_modules/@vitejs/plugin-react/index.js", contents: "x"},
+		{name: "project/node_modules/@vitejs/plugin-react/package.json", contents: "{}"},
+	}))
+	var files []string
+	browseRequest(t, HandleList, "list", source, "", &files)
+	want := []string{"node_modules", "node_modules/@vitejs", "node_modules/@vitejs/plugin-react", "node_modules/@vitejs/plugin-react/index.js", "node_modules/@vitejs/plugin-react/package.json"}
+	if !reflect.DeepEqual(files, want) {
+		t.Fatalf("files = %v, want %v", files, want)
+	}
+}

@@ -736,3 +736,56 @@ func TestExtractTarGzRootPaths(t *testing.T) {
 		})
 	}
 }
+
+func TestGoModulePrefixDepth(t *testing.T) {
+	for _, tt := range []struct {
+		names []string
+		want  int
+	}{
+		{[]string{"github.com/onsi/gomega@v1.44.0/README.md", "github.com/onsi/gomega@v1.44.0/go.mod"}, 3},
+		{[]string{"golang.org/x/text@v0.14.0/LICENSE", "golang.org/x/text@v0.14.0/cases/cases.go"}, 3},
+		{[]string{"github.com/a/b@v1.0.0/", "github.com/a/b@v1.0.0/go.mod"}, 3},
+		{[]string{"package/README.md", "package/index.js"}, 0},
+		{[]string{"github.com/a/b@v1.0.0/go.mod", "README.md"}, 0},
+		{[]string{"docs/pkg@v2/notes.md", "src/main.go"}, 0},
+		{[]string{"github.com/a/b@v1.0.0"}, 0},
+		{[]string{"project/node_modules/@vitejs/plugin-react/index.js", "project/node_modules/@vitejs/plugin-react/package.json"}, 0},
+		{[]string{"pkg/@v1.0.0/file.go"}, 0},
+		{[]string{"github.com/a/b@v0.0.0-20261023164526-154674eb94dd/go.mod"}, 3},
+		{[]string{"github.com/a/b@v2.0.0+incompatible/go.mod"}, 3},
+		{[]string{"gopkg.in/yaml.v3@v3.0.1/yaml.go"}, 2},
+	} {
+		if got := goModulePrefixDepth(tt.names); got != tt.want {
+			t.Errorf("goModulePrefixDepth(%v) = %d, want %d", tt.names, got, tt.want)
+		}
+	}
+}
+
+func TestExtractGoModuleZip(t *testing.T) {
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	for _, name := range []string{"github.com/onsi/gomega@v1.44.0/go.mod", "github.com/onsi/gomega@v1.44.0/plugins/gomega/skills/async/SKILL.md"} {
+		w, err := zw.Create(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := w.Write([]byte("x")); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	a, _ := New("https://proxy.golang.org/github.com/onsi/gomega/@v/v1.44.0.zip")
+	dir := t.TempDir()
+	writeTestFile(t, a.WorkingDirectory(dir), buf.Bytes())
+	dest, err := a.Extract(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"go.mod", filepath.Join("plugins", "gomega", "skills", "async", "SKILL.md")} {
+		if _, err := os.Stat(filepath.Join(dest, name)); err != nil {
+			t.Errorf("missing %s: %v", name, err)
+		}
+	}
+}
