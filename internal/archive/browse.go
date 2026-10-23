@@ -115,7 +115,7 @@ func (b *archiveBrowser) index() error {
 	if err := b.ctx.Err(); err != nil {
 		return err
 	}
-	stripTop := false
+	stripDepth := 0
 	switch mime {
 	case "application/zip", "application/java-archive", "application/vnd.android.package-archive":
 		b.filename = "archive.zip"
@@ -145,13 +145,20 @@ func (b *archiveBrowser) index() error {
 	// package/ has one, pub tarballs do not.
 	if b.filename != "archive.tar" {
 		normalized := make([]archives.FileInfo, 0, len(files))
+		names := make([]string, 0, len(files))
 		for _, file := range files {
 			file.Path = strings.Join(splitPath(file.Path), "/")
 			if file.Path != "" && file.Path != "." {
 				normalized = append(normalized, file)
+				names = append(names, file.Path)
 			}
 		}
-		stripTop = archives.CommonRoot(normalized) != ""
+		if archives.CommonRoot(normalized) != "" {
+			stripDepth = 1
+		}
+		if b.filename == "archive.zip" {
+			stripDepth = max(stripDepth, goModulePrefixDepth(names))
+		}
 	}
 	b.files = make(map[string]indexedFile)
 	for i, file := range files {
@@ -159,7 +166,7 @@ func (b *archiveBrowser) index() error {
 		if !file.IsDir && !mode.IsRegular() {
 			continue
 		}
-		name, ok := strippedTarPath(file.Path, stripTop)
+		name, ok := stripComponents(file.Path, stripDepth)
 		if !ok || name == "" || name == "." {
 			continue
 		}

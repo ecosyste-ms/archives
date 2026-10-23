@@ -10,6 +10,8 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -91,8 +93,11 @@ func extractZip(ctx context.Context, path, dir string) (string, error) {
 	}
 	defer func() { _ = r.Close() }()
 
-	// Check if we should strip a single top-level directory
-	shouldStrip := shouldStripTopLevel(zipEntryNames(r.File))
+	names := zipEntryNames(r.File)
+	stripDepth := goModulePrefixDepth(names)
+	if stripDepth == 0 && shouldStripTopLevel(names) {
+		stripDepth = 1
+	}
 
 	fileCount := 0
 	for _, f := range r.File {
@@ -104,18 +109,8 @@ func extractZip(ctx context.Context, path, dir string) (string, error) {
 			continue
 		}
 
-		components := splitPath(f.Name)
-		if len(components) == 0 {
-			continue
-		}
-
-		var stripped string
-		if shouldStrip {
-			stripped = filepath.Join(components[1:]...)
-		} else {
-			stripped = f.Name
-		}
-		if stripped == "" {
+		stripped, ok := stripComponents(f.Name, stripDepth)
+		if !ok || stripped == "" {
 			continue
 		}
 
@@ -346,17 +341,17 @@ func (r contextReader) Read(p []byte) (int, error) {
 	return r.reader.Read(p)
 }
 
-func strippedTarPath(name string, stripTop bool) (string, bool) {
+func stripComponents(name string, depth int) (string, bool) {
 	components := splitPath(name)
 	if len(components) == 0 {
 		return "", false
 	}
 
 	switch {
-	case !stripTop:
+	case depth == 0:
 		return name, true
-	case len(components) > 1:
-		return filepath.Join(components[1:]...), true
+	case len(components) > depth:
+		return filepath.Join(components[depth:]...), true
 	default:
 		return "", false
 	}
@@ -386,6 +381,36 @@ func zipEntryNames(files []*zip.File) []string {
 		names[i] = f.Name
 	}
 	return names
+}
+
+// goModuleVersionComponent matches the last component of a Go module zip
+// prefix: a module name element, "@", and a semantic version such as v1.44.0,
+// a pseudo-version, or a +incompatible version.
+var goModuleVersionComponent = regexp.MustCompile(`^[^@]+@v\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+incompatible)?$`)
+
+// goModulePrefixDepth returns how many leading components make up the
+// <module>@<version>/ prefix that wraps every file in a Go module zip from
+// the module proxy, or 0 when the names do not share one.
+func goModulePrefixDepth(names []string) int {
+	var prefix []string
+	for _, name := range names {
+		parts := splitPath(name)
+		if i := slices.IndexFunc(parts, goModuleVersionComponent.MatchString); i >= 0 && i < len(parts)-1 {
+			prefix = parts[:i+1]
+			break
+		}
+	}
+	if prefix == nil {
+		return 0
+	}
+	for _, name := range names {
+		parts := splitPath(name)
+		n := min(len(parts), len(prefix))
+		if !slices.Equal(parts[:n], prefix[:n]) {
+			return 0
+		}
+	}
+	return len(prefix)
 }
 
 func shouldStripTopLevel(names []string) bool {
