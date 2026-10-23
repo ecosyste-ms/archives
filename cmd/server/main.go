@@ -72,6 +72,7 @@ func run() error {
 	handleFunc("GET /api/v1/archives/contents", handler.HandleContents)
 	handleFunc("GET /api/v1/archives/readme", handler.HandleReadme)
 	handleFunc("GET /api/v1/archives/changelog", handler.HandleChangelog)
+	handleFunc("GET /api/v1/archives/skills", handler.HandleSkills)
 	handleFunc("GET /api/v1/archives/repopack", handler.HandleRepopack)
 	handleFunc("GET /api/v1/archives/repomix", handler.HandleRepopack)
 

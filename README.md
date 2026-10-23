@@ -63,6 +63,13 @@ GET /api/v1/archives/readme?url=https://registry.npmjs.org/express/-/express-4.1
 # Returns: README content in multiple formats (raw, HTML, plain text)
 ```
 
+#### List agent skills
+```bash
+GET /api/v1/archives/skills?url=https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-2.13.0.tgz
+
+# Returns: each SKILL.md directory with its parsed frontmatter, body, files and spec warnings
+```
+
 ### Rate Limits
 
 The default rate limit for the API is 5000/req per hour based on your IP address, get in contact if you need to to increase your rate limit.

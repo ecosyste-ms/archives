@@ -102,6 +102,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Changelog'
+  /archives/skills:
+    get:
+      summary: list agent skills (SKILL.md directories) in an archive
+      operationId: skills
+      parameters:
+        - name: url
+          in: query
+          description: URL to a package archive file (e.g., https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-2.13.0.tgz)
+          required: true
+          schema:
+            type: string
+            example: "https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-2.13.0.tgz"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skills'
   /archives/repopack:
     get:
       summary: get repopack from an archive
@@ -172,6 +191,63 @@ components:
           type: string
         language:
           type: string
+    Skills:
+      type: object
+      properties:
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+        errors:
+          type: array
+          description: SKILL.md files that could not be parsed
+          items:
+            type: string
+    Skill:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Skill directory relative to the archive root
+          example: "skills/build-modern-redux-apps/modern-redux"
+        name:
+          type: string
+        description:
+          type: string
+        license:
+          type: string
+        compatibility:
+          type: string
+        allowed_tools:
+          type: string
+          description: Space-delimited tool list
+        metadata:
+          type: object
+          description: The spec's metadata mapping
+        extra:
+          type: object
+          description: Top-level frontmatter keys outside the Agent Skills spec
+        body:
+          type: string
+        files:
+          type: array
+          description: Other files in the skill directory, relative to it
+          items:
+            type: string
+        has_scripts:
+          type: boolean
+          description: Whether the skill ships a scripts/ directory
+        schema_json:
+          type: string
+          description: Contents of a sibling schema.json, if any
+        source_hash:
+          type: string
+          description: SHA-256 of SKILL.md followed by schema.json
+        warnings:
+          type: array
+          description: Agent Skills spec violations
+          items:
+            type: string
     RepoPack:
       type: object
       properties:

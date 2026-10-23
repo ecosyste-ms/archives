@@ -184,6 +184,30 @@ func HandleChangelog(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, cl)
 }
 
+func HandleSkills(w http.ResponseWriter, r *http.Request) {
+	setCacheHeaders(w)
+
+	rawURL := r.URL.Query().Get("url")
+	if rawURL == "" {
+		writeError(w, http.StatusBadRequest, "url parameter is required")
+		return
+	}
+
+	a, err := archive.NewWithContext(r.Context(), rawURL)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid url")
+		return
+	}
+
+	result, err := a.Skills()
+	if err != nil {
+		writeArchiveError(w, r, err, "skills", "failed to extract skills", "url", rawURL)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, result)
+}
+
 func HandleRepopack(w http.ResponseWriter, r *http.Request) {
 	setCacheHeaders(w)
 
