@@ -8,7 +8,7 @@ require (
 	github.com/git-pkgs/archives v0.10.0
 	github.com/git-pkgs/changelog v0.2.1
 	github.com/git-pkgs/markup v0.1.2
-	github.com/git-pkgs/skills v0.1.0
+	github.com/git-pkgs/skills v0.2.0
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/rs/cors v1.11.1
 	github.com/ulikunitz/xz v0.5.17
