@@ -425,6 +425,60 @@ func TestBrowseTarGzRootPaths(t *testing.T) {
 	}
 }
 
+func TestBrowseGitTarGzGlobalPAXHeader(t *testing.T) {
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+	if err := tw.WriteHeader(&tar.Header{
+		Name:       "pax_global_header",
+		Typeflag:   tar.TypeXGlobalHeader,
+		PAXRecords: map[string]string{"comment": "0123456789abcdef0123456789abcdef01234567"},
+	}); err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range []archiveFixtureEntry{
+		{name: "repo-main/README.md", contents: "# Repository"},
+		{name: "repo-main/src/main.go", contents: "package main"},
+	} {
+		if err := tw.WriteHeader(&tar.Header{Name: entry.name, Mode: 0o644, Size: int64(len(entry.contents))}); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := tw.Write([]byte(entry.contents)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := gw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	source := serveBrowseFixture(t, buf.Bytes())
+	var files []string
+	browseRequest(t, HandleList, "list", source, "", &files)
+	if !reflect.DeepEqual(files, []string{browseReadme, "src", "src/main.go"}) {
+		t.Fatalf("files = %v", files)
+	}
+	var readme archive.ReadmeResult
+	browseRequest(t, HandleReadme, "readme", source, "", &readme)
+	if readme.Name != browseReadme || readme.Raw != "# Repository" {
+		t.Fatalf("readme = %#v", readme)
+	}
+	var dir struct {
+		Directory bool
+		Contents  []string
+	}
+	browseRequest(t, HandleContents, "contents", source, "src", &dir)
+	if !dir.Directory || !reflect.DeepEqual(dir.Contents, []string{"main.go"}) {
+		t.Fatalf("directory = %#v", dir)
+	}
+	var file archive.FileContent
+	browseRequest(t, HandleContents, "contents", source, "src/main.go", &file)
+	if file.Directory || file.Contents != "package main" {
+		t.Fatalf("file = %#v", file)
+	}
+}
+
 func TestHandleSkills(t *testing.T) {
 	source := serveBrowseFixture(t, zipFixture(t, []archiveFixtureEntry{
 		{name: "laravel-socialite-f721b2c/composer.json", contents: "{}"},
