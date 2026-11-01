@@ -25,6 +25,7 @@ const (
 	browseFormatTAR     = "tar"
 	browseFormatGZIP    = "gzip"
 	browseReadme        = "README.md"
+	browseRootReadme    = "# Root"
 	browsePackageReadme = "pkg/README.md"
 	browseSymlink       = "sym"
 )
@@ -376,7 +377,7 @@ func TestBrowseZipRootPaths(t *testing.T) {
 			for i, name := range names {
 				entries[i].name = name
 			}
-			entries[len(entries)-1].contents = "# Root"
+			entries[len(entries)-1].contents = browseRootReadme
 			source := serveBrowseFixture(t, zipFixture(t, entries))
 			var files []string
 			browseRequest(t, HandleList, "list", source, "", &files)
@@ -385,7 +386,7 @@ func TestBrowseZipRootPaths(t *testing.T) {
 			}
 			var readme archive.ReadmeResult
 			browseRequest(t, HandleReadme, "readme", source, "", &readme)
-			if readme.Raw != "# Root" {
+			if readme.Raw != browseRootReadme {
 				t.Fatalf("readme = %#v", readme)
 			}
 		})
@@ -393,19 +394,28 @@ func TestBrowseZipRootPaths(t *testing.T) {
 }
 
 func TestBrowseTarGzRootPaths(t *testing.T) {
+	const (
+		pubspec = "name: synchronized"
+		skill   = "---\nname: synchronized-lock\n---"
+	)
 	for _, tt := range []struct {
 		name    string
 		entries []archiveFixtureEntry
 	}{
 		{"unwrapped", []archiveFixtureEntry{
-			{name: "pubspec.yaml", contents: "name: synchronized"},
-			{name: "skills/synchronized-lock/SKILL.md", contents: "---\nname: synchronized-lock\n---"},
-			{name: browseReadme, contents: "# Root"},
+			{name: "pubspec.yaml", contents: pubspec},
+			{name: "skills/synchronized-lock/SKILL.md", contents: skill},
+			{name: browseReadme, contents: browseRootReadme},
 		}},
 		{"wrapped", []archiveFixtureEntry{
-			{name: "package/pubspec.yaml", contents: "name: synchronized"},
-			{name: "package/skills/synchronized-lock/SKILL.md", contents: "---\nname: synchronized-lock\n---"},
-			{name: "package/" + browseReadme, contents: "# Root"},
+			{name: "package/pubspec.yaml", contents: pubspec},
+			{name: "package/skills/synchronized-lock/SKILL.md", contents: skill},
+			{name: "package/" + browseReadme, contents: browseRootReadme},
+		}},
+		{"wrapped with dot prefix", []archiveFixtureEntry{
+			{name: "./package/pubspec.yaml", contents: pubspec},
+			{name: "./package/skills/synchronized-lock/SKILL.md", contents: skill},
+			{name: "./package/" + browseReadme, contents: browseRootReadme},
 		}},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -418,7 +428,7 @@ func TestBrowseTarGzRootPaths(t *testing.T) {
 			}
 			var readme archive.ReadmeResult
 			browseRequest(t, HandleReadme, "readme", source, "", &readme)
-			if readme.Raw != "# Root" {
+			if readme.Raw != browseRootReadme {
 				t.Fatalf("readme = %#v", readme)
 			}
 		})

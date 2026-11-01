@@ -98,10 +98,10 @@ func (i browserFileInfo) Sys() any           { return nil }
 
 func (i browserFileInfo) Mode() fs.FileMode {
 	if i.dir {
-		return fs.ModeDir | 0o755
+		return fs.ModeDir | directoryMode
 	}
 	if i.mode == 0 {
-		return 0o644
+		return downloadFileMode
 	}
 	return i.mode
 }

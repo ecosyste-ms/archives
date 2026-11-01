@@ -2,7 +2,7 @@ module github.com/ecosyste-ms/archives
 
 go 1.26.0
 
-toolchain go1.27.1
+toolchain go1.27.3
 
 require (
 	github.com/git-pkgs/archives v0.10.1

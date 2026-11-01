@@ -14,6 +14,8 @@ import (
 	"github.com/git-pkgs/archives"
 )
 
+const browseTarFilename = "archive.tar"
+
 type indexedFile struct {
 	archives.FileInfo
 	ordinal int
@@ -115,7 +117,6 @@ func (b *archiveBrowser) index() error {
 	if err := b.ctx.Err(); err != nil {
 		return err
 	}
-	stripDepth := 0
 	switch mime {
 	case "application/zip", "application/java-archive", "application/vnd.android.package-archive":
 		b.filename = "archive.zip"
@@ -124,7 +125,7 @@ func (b *archiveBrowser) index() error {
 	case "application/x-xz":
 		b.filename = "archive.tar.xz"
 	case "application/x-tar":
-		b.filename = "archive.tar"
+		b.filename = browseTarFilename
 	default:
 		return errors.ErrUnsupported
 	}
@@ -132,7 +133,7 @@ func (b *archiveBrowser) index() error {
 	if err != nil {
 		return err
 	}
-	if b.filename == "archive.tar" {
+	if b.filename == browseTarFilename {
 		b.member = nestedMember(files)
 		if b.member != nil {
 			files, err = b.metadata()
@@ -141,25 +142,7 @@ func (b *archiveBrowser) index() error {
 			}
 		}
 	}
-	// Strip a wrapper directory only when every entry sits under it: npm's
-	// package/ has one, pub tarballs do not.
-	if b.filename != "archive.tar" {
-		normalized := make([]archives.FileInfo, 0, len(files))
-		names := make([]string, 0, len(files))
-		for _, file := range files {
-			file.Path = strings.Join(splitPath(file.Path), "/")
-			if file.Path != "" && file.Path != "." {
-				normalized = append(normalized, file)
-				names = append(names, file.Path)
-			}
-		}
-		if archives.CommonRoot(normalized) != "" {
-			stripDepth = 1
-		}
-		if b.filename == "archive.zip" {
-			stripDepth = max(stripDepth, goModulePrefixDepth(names))
-		}
-	}
+	stripDepth := b.stripDepth(files)
 	b.files = make(map[string]indexedFile)
 	for i, file := range files {
 		mode := os.FileMode(file.Mode)
@@ -182,6 +165,30 @@ func (b *archiveBrowser) index() error {
 		}
 	}
 	return nil
+}
+
+func (b *archiveBrowser) stripDepth(files []archives.FileInfo) int {
+	if b.filename == browseTarFilename {
+		return 0
+	}
+	normalized := make([]archives.FileInfo, 0, len(files))
+	names := make([]string, 0, len(files))
+	for _, file := range files {
+		file.Path = strings.Join(splitPath(file.Path), "/")
+		if file.Path != "" && file.Path != "." {
+			normalized = append(normalized, file)
+			names = append(names, file.Path)
+		}
+	}
+	// Strip a wrapper only when every entry sits under it.
+	depth := 0
+	if archives.CommonRoot(normalized) != "" {
+		depth = 1
+	}
+	if b.filename == "archive.zip" {
+		depth = max(depth, goModulePrefixDepth(names))
+	}
+	return depth
 }
 
 // Preserve the service's TAR wrapper convention, including unsigned packages.

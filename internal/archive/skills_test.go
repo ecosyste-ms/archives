@@ -11,6 +11,8 @@ import (
 	"testing/fstest"
 )
 
+const skillsPackageJSON = "package/package.json"
+
 func serveArchive(t *testing.T, data []byte) {
 	t.Helper()
 	previousClient := httpClient
@@ -44,7 +46,7 @@ func skillsTarGz(t *testing.T, files map[string]string) []byte {
 
 func TestBrowserFS(t *testing.T) {
 	serveArchive(t, skillsTarGz(t, map[string]string{
-		"package/package.json":               "{}",
+		skillsPackageJSON:                    "{}",
 		"package/skills/lint/SKILL.md":       "---\nname: lint\n---\n",
 		"package/skills/lint/scripts/run.sh": "#!/bin/sh\n",
 		"package/lib/deep/nested/index.js":   "x",
@@ -66,7 +68,7 @@ func TestBrowserFS(t *testing.T) {
 
 func TestSkills(t *testing.T) {
 	serveArchive(t, skillsTarGz(t, map[string]string{
-		"package/package.json": `{"name":"@reduxjs/toolkit"}`,
+		skillsPackageJSON: `{"name":"@reduxjs/toolkit"}`,
 		"package/skills/build-modern-redux-apps/modern-redux/SKILL.md": "---\nname: build-modern-redux-apps/modern-redux\n" +
 			"description: Set up Redux\nlibrary: '@reduxjs/toolkit'\nmetadata:\n  owner: redux\n---\nUse configureStore.\n",
 		"package/skills/build-modern-redux-apps/modern-redux/scripts/check.sh": "#!/bin/sh\n",
@@ -120,7 +122,7 @@ func TestSkillsUnsupportedArchive(t *testing.T) {
 
 func TestSkillsDeepAndUndescribed(t *testing.T) {
 	serveArchive(t, skillsTarGz(t, map[string]string{
-		"package/package.json":                         "{}",
+		skillsPackageJSON: "{}",
 		"package/a/b/c/d/e/f/g/h/skills/deep/SKILL.md": "---\nname: deep\ndescription: Nested ten levels down\n---\n",
 		"package/skills/nodesc/SKILL.md":               "---\nname: nodesc\n---\nbody\n",
 	}))
