@@ -489,6 +489,27 @@ func TestBrowseGitTarGzGlobalPAXHeader(t *testing.T) {
 	}
 }
 
+func TestBrowseReadmeRendering(t *testing.T) {
+	const markdown = "# Firmware & tools\n\n[Usage](docs/usage.md)\n\nRun `make <target>`.\n"
+	source := serveBrowseFixture(t, tarGzFixture(t, []archiveFixtureEntry{
+		{name: "repo-main/README.md", contents: markdown},
+	}))
+	var result archive.ReadmeResult
+	browseRequest(t, HandleReadme, "readme", source, "", &result)
+	if result.Name != browseReadme || result.Raw != markdown {
+		t.Fatalf("readme = %#v", result)
+	}
+	for _, want := range []string{
+		"Firmware &amp; tools</h1>",
+		`<a href="docs/usage.md">Usage</a>`,
+		"<code>make &lt;target&gt;</code>",
+	} {
+		if !strings.Contains(result.HTML, want) {
+			t.Errorf("rendered README missing %q: %s", want, result.HTML)
+		}
+	}
+}
+
 func TestHandleSkills(t *testing.T) {
 	source := serveBrowseFixture(t, zipFixture(t, []archiveFixtureEntry{
 		{name: "laravel-socialite-f721b2c/composer.json", contents: "{}"},
