@@ -5,7 +5,7 @@ go 1.26.0
 toolchain go1.27.3
 
 require (
-	github.com/git-pkgs/archives v0.10.1
+	github.com/git-pkgs/archives v0.11.0
 	github.com/git-pkgs/changelog v0.2.1
 	github.com/git-pkgs/markup v0.1.2
 	github.com/git-pkgs/skills v0.2.0
