@@ -22,7 +22,8 @@ RUN apk add --no-cache \
     perl \
     py3-pip \
  && pip install --break-system-packages docutils \
- && npm install -g repomix
+ && npm install -g repomix \
+ && adduser -D -u 10001 archives
 
 WORKDIR /app
 COPY --from=builder /archives /app/archives
@@ -32,5 +33,7 @@ COPY openapi/ /app/openapi/
 
 EXPOSE 5000
 ENV PORT=5000
+
+USER archives
 
 CMD ["/app/archives"]
