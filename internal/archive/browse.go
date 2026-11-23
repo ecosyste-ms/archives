@@ -249,6 +249,14 @@ func (b *archiveBrowser) read(name string, limit int64) ([]byte, error) {
 	return io.ReadAll(io.LimitReader(s, limit))
 }
 
+// readDocument reads a file that will be returned whole in a response.
+func (b *archiveBrowser) readDocument(name string) ([]byte, error) {
+	if size := b.files[name].Size; size > maxContentSize {
+		return nil, fmt.Errorf("%d bytes exceeds the %d-byte limit", size, maxContentSize)
+	}
+	return b.read(name, maxContentSize)
+}
+
 func seekEntry(s *archives.Stream, ordinal int) error {
 	for i := 0; i <= ordinal; i++ {
 		if _, err := s.Next(); err != nil {

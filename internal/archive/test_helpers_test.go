@@ -15,6 +15,10 @@ const (
 	testReadmeFilename       = "README.md"
 )
 
+func New(rawURL string) (*RemoteArchive, error) {
+	return NewWithContext(context.Background(), rawURL)
+}
+
 func makeTestDirectory(tb testing.TB, path string) {
 	tb.Helper()
 	if err := os.MkdirAll(path, directoryMode); err != nil {

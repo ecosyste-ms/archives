@@ -30,6 +30,7 @@ const (
 	downloadFilename                       = "archive"
 	maxFileSize                            = 100 * 1024 * 1024 // 100MB
 	maxFileCount                           = 10_000
+	maxContentSize                         = 10 * 1024 * 1024 // 10MB
 	mimeApplicationOctetStream             = "application/octet-stream"
 	userAgent                              = "archives.ecosyste.ms"
 )
@@ -37,10 +38,6 @@ const (
 type RemoteArchive struct {
 	URL     string
 	context context.Context
-}
-
-func New(rawURL string) (*RemoteArchive, error) {
-	return NewWithContext(context.Background(), rawURL)
 }
 
 func NewWithContext(ctx context.Context, rawURL string) (*RemoteArchive, error) {
@@ -56,22 +53,6 @@ func NewWithContext(ctx context.Context, rawURL string) (*RemoteArchive, error) 
 		return nil, fmt.Errorf("only HTTP/HTTPS URLs are allowed")
 	}
 	return &RemoteArchive{URL: rawURL, context: ctx}, nil
-}
-
-func (a *RemoteArchive) Basename() string {
-	return filepath.Base(a.URL)
-}
-
-func (a *RemoteArchive) Extension() string {
-	return filepath.Ext(a.Basename())
-}
-
-func (a *RemoteArchive) Domain() string {
-	u, err := url.Parse(a.URL)
-	if err != nil {
-		return ""
-	}
-	return strings.ToLower(u.Hostname())
 }
 
 func (*RemoteArchive) WorkingDirectory(dir string) string {
@@ -159,7 +140,6 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 		return nil, nil
 	}
 
-	const maxContentSize = 10 * 1024 * 1024
 	data, err := b.read(name, maxContentSize)
 	if b.ctx.Err() != nil {
 		return nil, nil

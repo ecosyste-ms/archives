@@ -56,7 +56,7 @@ func TestExtractTarCancellationDuringFileCopy(t *testing.T) {
 	const copiedBytes = 32 * 1024
 	reader := &cancellingReader{reader: &buf, cancel: cancel, remaining: 512 + copiedBytes}
 	dir := t.TempDir()
-	if err := extractTarReader(ctx, reader, dir); !errors.Is(err, context.Canceled) {
+	if err := extractTarReader(ctx, reader, dir, newExtractBudget()); !errors.Is(err, context.Canceled) {
 		t.Fatalf("extractTarReader() error = %v, want context.Canceled", err)
 	}
 	info, err := os.Stat(filepath.Join(dir, "pkg", "data", "large.txt"))

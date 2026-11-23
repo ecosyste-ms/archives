@@ -73,7 +73,7 @@ func (a *RemoteArchive) Readme() (*ReadmeResult, error) {
 	if b.files[readmeFile].IsDir {
 		return nil, nil
 	}
-	raw, err := b.read(readmeFile, maxDecompressedFileSize)
+	raw, err := b.readDocument(readmeFile)
 	if err != nil {
 		slog.Info("skipping readme", "file", readmeFile, "error", err)
 		return nil, nil
@@ -136,7 +136,7 @@ func (a *RemoteArchive) Changelog() (*ChangelogResult, error) {
 	}
 
 	changelogFile := changelogFiles[0]
-	raw, err := b.read(changelogFile, maxDecompressedFileSize)
+	raw, err := b.readDocument(changelogFile)
 	if err != nil {
 		slog.Info("skipping changelog", "file", changelogFile, "error", err)
 		return nil, nil

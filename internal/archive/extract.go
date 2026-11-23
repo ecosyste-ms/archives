@@ -5,6 +5,7 @@ import (
 	"archive/zip"
 	"compress/gzip"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -19,6 +20,32 @@ import (
 )
 
 const extractionTimeout = 30 * time.Second
+
+const defaultMaxExtractedBytes = 1024 * 1024 * 1024 // 1GB
+
+// maxExtractedBytes caps the total written to disk for one archive. A
+// variable so tests can shrink it.
+var maxExtractedBytes int64 = defaultMaxExtractedBytes
+
+var errExtractedTooLarge = errors.New("archive expands beyond the extraction limit")
+
+type extractBudget struct{ remaining int64 }
+
+func newExtractBudget() *extractBudget {
+	return &extractBudget{remaining: maxExtractedBytes}
+}
+
+func (b *extractBudget) copy(dst io.Writer, src io.Reader) error {
+	n, err := io.Copy(dst, io.LimitReader(src, min(maxDecompressedFileSize, b.remaining+1)))
+	b.remaining -= n
+	if err != nil {
+		return err
+	}
+	if b.remaining < 0 {
+		return errExtractedTooLarge
+	}
+	return nil
+}
 
 func (a *RemoteArchive) Extract(dir string) (string, error) {
 	path := a.WorkingDirectory(dir)
@@ -48,6 +75,10 @@ func (a *RemoteArchive) Extract(dir string) (string, error) {
 	if err != nil {
 		if strings.Contains(err.Error(), "too many files") {
 			slog.Info("archive has too many files (>10,000), skipping extraction")
+			return "", nil
+		}
+		if errors.Is(err, errExtractedTooLarge) {
+			slog.Info("archive is too large when extracted, skipping extraction")
 			return "", nil
 		}
 		return "", fmt.Errorf("%w: %w", ErrInvalidArchive, err)
@@ -99,6 +130,7 @@ func extractZip(ctx context.Context, path, dir string) (string, error) {
 		stripDepth = 1
 	}
 
+	budget := newExtractBudget()
 	fileCount := 0
 	for _, f := range r.File {
 		if err := ctx.Err(); err != nil {
@@ -130,9 +162,12 @@ func extractZip(ctx context.Context, path, dir string) (string, error) {
 			return "", err
 		}
 
-		if err := extractZipFile(ctx, f, root, stripped); err != nil {
+		if err := extractZipFile(ctx, f, root, stripped, budget); err != nil {
 			if ctx.Err() != nil {
 				return "", ctx.Err()
+			}
+			if errors.Is(err, errExtractedTooLarge) {
+				return "", err
 			}
 			slog.Warn("failed to extract file", "name", f.Name, "error", err)
 			continue
@@ -146,7 +181,7 @@ func extractZip(ctx context.Context, path, dir string) (string, error) {
 // This prevents decompression bombs where a small archive expands to fill disk.
 const maxDecompressedFileSize = 200 * 1024 * 1024
 
-func extractZipFile(ctx context.Context, f *zip.File, root *os.Root, dest string) error {
+func extractZipFile(ctx context.Context, f *zip.File, root *os.Root, dest string, budget *extractBudget) error {
 	rc, err := f.Open()
 	if err != nil {
 		return err
@@ -157,7 +192,7 @@ func extractZipFile(ctx context.Context, f *zip.File, root *os.Root, dest string
 	if err != nil {
 		return err
 	}
-	_, copyErr := io.Copy(out, io.LimitReader(contextReader{ctx, rc}, maxDecompressedFileSize))
+	copyErr := budget.copy(out, contextReader{ctx, rc})
 	closeErr := out.Close()
 	if copyErr != nil {
 		return copyErr
@@ -210,7 +245,7 @@ func extractTarXz(ctx context.Context, path, dir string) (string, error) {
 // directory when everything sits under one, as with npm's package/. A tar
 // stream cannot be inspected before extraction, so the check runs after.
 func extractUnwrapped(ctx context.Context, reader io.Reader, destination string) (string, error) {
-	if err := extractTarReader(ctx, reader, destination); err != nil {
+	if err := extractTarReader(ctx, reader, destination, newExtractBudget()); err != nil {
 		return "", err
 	}
 	entries, err := os.ReadDir(destination)
@@ -237,7 +272,8 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 
 	// Extract without stripping top level first, since formats like .gem
 	// have flat entries (data.tar.gz, metadata.gz) with no top-level dir.
-	if err := extractTarReader(ctx, f, destination); err != nil {
+	budget := newExtractBudget()
+	if err := extractTarReader(ctx, f, destination, budget); err != nil {
 		return "", err
 	}
 
@@ -268,7 +304,7 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 		}
 		defer func() { _ = gz.Close() }()
 
-		if err := extractTarReader(ctx, gz, innerDestination); err != nil {
+		if err := extractTarReader(ctx, gz, innerDestination, budget); err != nil {
 			return "", err
 		}
 		return innerDestination, nil
@@ -277,7 +313,7 @@ func extractTar(ctx context.Context, path, dir string) (string, error) {
 	return destination, nil
 }
 
-func extractTarReader(ctx context.Context, reader io.Reader, destination string) error {
+func extractTarReader(ctx context.Context, reader io.Reader, destination string, budget *extractBudget) error {
 	tr := tar.NewReader(contextReader{ctx, reader})
 	root, err := os.OpenRoot(destination)
 	if err != nil {
@@ -320,7 +356,7 @@ func extractTarReader(ctx context.Context, reader io.Reader, destination string)
 				return err
 			}
 		case tar.TypeReg:
-			if err := extractTarFile(tr, root, stripped); err != nil {
+			if err := extractTarFile(tr, root, stripped, budget); err != nil {
 				return err
 			}
 		}
@@ -357,7 +393,7 @@ func stripComponents(name string, depth int) (string, bool) {
 	}
 }
 
-func extractTarFile(tr *tar.Reader, root *os.Root, destPath string) error {
+func extractTarFile(tr *tar.Reader, root *os.Root, destPath string, budget *extractBudget) error {
 	if err := root.MkdirAll(filepath.Dir(destPath), directoryMode); err != nil {
 		return err
 	}
@@ -367,7 +403,7 @@ func extractTarFile(tr *tar.Reader, root *os.Root, destPath string) error {
 		return err
 	}
 
-	_, copyErr := io.Copy(out, io.LimitReader(tr, maxDecompressedFileSize))
+	copyErr := budget.copy(out, tr)
 	closeErr := out.Close()
 	if copyErr != nil {
 		return copyErr
