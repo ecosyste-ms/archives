@@ -40,10 +40,6 @@ type RemoteArchive struct {
 	context context.Context
 }
 
-func New(rawURL string) (*RemoteArchive, error) {
-	return NewWithContext(context.Background(), rawURL)
-}
-
 func NewWithContext(ctx context.Context, rawURL string) (*RemoteArchive, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -57,22 +53,6 @@ func NewWithContext(ctx context.Context, rawURL string) (*RemoteArchive, error) 
 		return nil, fmt.Errorf("only HTTP/HTTPS URLs are allowed")
 	}
 	return &RemoteArchive{URL: rawURL, context: ctx}, nil
-}
-
-func (a *RemoteArchive) Basename() string {
-	return filepath.Base(a.URL)
-}
-
-func (a *RemoteArchive) Extension() string {
-	return filepath.Ext(a.Basename())
-}
-
-func (a *RemoteArchive) Domain() string {
-	u, err := url.Parse(a.URL)
-	if err != nil {
-		return ""
-	}
-	return strings.ToLower(u.Hostname())
 }
 
 func (*RemoteArchive) WorkingDirectory(dir string) string {

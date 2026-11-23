@@ -108,27 +108,6 @@ func TestDownloadClassifiesUpstreamErrors(t *testing.T) {
 	}
 }
 
-func TestBasename(t *testing.T) {
-	a, _ := New("https://example.com/files/foo.tar.gz")
-	if got := a.Basename(); got != "foo.tar.gz" {
-		t.Errorf("Basename() = %q, want %q", got, "foo.tar.gz")
-	}
-}
-
-func TestExtension(t *testing.T) {
-	a, _ := New("https://example.com/files/foo.tar.gz")
-	if got := a.Extension(); got != ".gz" {
-		t.Errorf("Extension() = %q, want %q", got, ".gz")
-	}
-}
-
-func TestDomain(t *testing.T) {
-	a, _ := New("https://repo.hex.pm/tarball/package-1.0.0")
-	if got := a.Domain(); got != "repo.hex.pm" {
-		t.Errorf("Domain() = %q, want %q", got, "repo.hex.pm")
-	}
-}
-
 func TestWorkingDirectory(t *testing.T) {
 	a, _ := New("https://example.com/thing.zip")
 	got := a.WorkingDirectory("/tmp")
