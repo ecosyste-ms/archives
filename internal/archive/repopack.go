@@ -2,10 +2,22 @@ package archive
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
+)
+
+const repomixWaitDelay = 5 * time.Second
+
+// Variables so tests can shrink them.
+var (
+	repomixTimeout    = 60 * time.Second
+	maxRepopackOutput = int64(maxFileSize)
 )
 
 type RepopackResult struct {
@@ -37,21 +49,45 @@ func (a *RemoteArchive) Repopack() (*RepopackResult, error) {
 		return nil, fmt.Errorf("writing repomix config: %w", err)
 	}
 
+	ctx, cancel := context.WithTimeout(a.context, repomixTimeout)
+	defer cancel()
+
 	var stderr bytes.Buffer
-	cmd := exec.Command("repomix", ".", "--output", "repomix-output.txt", "--verbose", "--config", configPath)
+	cmd := exec.CommandContext(ctx, "repomix", ".", "--output", "repomix-output.txt", "--verbose", "--config", configPath)
 	cmd.Dir = extractDir
 	cmd.Stderr = &stderr
+	cmd.WaitDelay = repomixWaitDelay
 	if err := cmd.Run(); err != nil {
+		if ctx.Err() != nil {
+			slog.Info("repomix aborted", "error", ctx.Err())
+			return nil, nil
+		}
 		return nil, fmt.Errorf("repomix failed: %w: %s", err, stderr.String())
 	}
 
-	outputPath := filepath.Join(extractDir, "repomix-output.txt")
-	data, err := os.ReadFile(outputPath)
+	data, err := readRepopackOutput(filepath.Join(extractDir, "repomix-output.txt"))
 	if err != nil {
-		return nil, fmt.Errorf("reading repomix output: %w", err)
+		return nil, err
 	}
 
 	return &RepopackResult{
 		Output: string(data),
 	}, nil
+}
+
+func readRepopackOutput(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading repomix output: %w", err)
+	}
+	defer func() { _ = f.Close() }()
+
+	data, err := io.ReadAll(io.LimitReader(f, maxRepopackOutput+1))
+	if err != nil {
+		return nil, fmt.Errorf("reading repomix output: %w", err)
+	}
+	if int64(len(data)) > maxRepopackOutput {
+		return nil, fmt.Errorf("%w: repomix output is larger than %d bytes", ErrTooLarge, maxRepopackOutput)
+	}
+	return data, nil
 }
