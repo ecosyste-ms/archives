@@ -18,6 +18,7 @@ RUN apk add --no-cache \
     npm \
     oniguruma \
     ruby \
+    ruby-rdoc \
     asciidoctor \
     perl \
     py3-pip \
