@@ -30,6 +30,7 @@ const (
 	downloadFilename                       = "archive"
 	maxFileSize                            = 100 * 1024 * 1024 // 100MB
 	maxFileCount                           = 10_000
+	maxContentSize                         = 10 * 1024 * 1024 // 10MB
 	mimeApplicationOctetStream             = "application/octet-stream"
 	userAgent                              = "archives.ecosyste.ms"
 )
@@ -159,7 +160,6 @@ func (a *RemoteArchive) Contents(filePath string) (*FileContent, error) {
 		return nil, nil
 	}
 
-	const maxContentSize = 10 * 1024 * 1024
 	data, err := b.read(name, maxContentSize)
 	if b.ctx.Err() != nil {
 		return nil, nil
